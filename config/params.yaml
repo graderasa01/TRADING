@@ -1,0 +1,150 @@
+# BANK NIFTY CO-PILOT — PARAMETERS
+#
+# ⚠  EVERY VALUE HERE IS AN UNVALIDATED HYPOTHESIS.
+#    They were reasoned from market structure, not measured from data.
+#    Phase P9 (see CLAUDE.md §7) exists to find out which are real.
+#    Do not treat any number below as established fact.
+#
+# Rule: no numeric literal may appear in a logic file. Everything lives here.
+
+meta:
+  version: 1
+  validated: false          # set true only after a P9 run justifies it
+  last_tuned: null
+
+# ─────────────────────────────────────────────────────────────
+levels:
+  # TURN
+  swing_lookback_bars_1m: 3
+  swing_lookback_bars_5m: 2
+  wick_cluster_min_touches: 2
+  wick_cluster_tolerance_points: 5
+  wick_cluster_window_candles: 30
+
+  # LAUNCH  (the 1m level invisible on 5m — spec 03 §3)
+  launch_impulse_atr_mult: 2.0      # impulse candle range >= this × ATR20_1m
+  launch_base_atr_mult: 0.8         # combined base range <= this × ATR20_1m
+  launch_base_min_candles: 2
+  launch_base_max_candles: 4
+  min_departure_speed: 1.0          # (move 3 candles after impulse) ÷ ATR20_1m
+
+  # lifecycle
+  max_touches: 3                    # 3rd touch kills the level
+  acceptance_candles: 5             # bodies beyond → accepted_through
+  micro_level_ttl_minutes: 90       # 1m-born levels
+  axis_ttl_minutes: 120             # BREAK axis
+  relevance_atr_mult: 25            # further than this × ATR20_1m → irrelevant
+  max_active_levels: 8              # HARD CAP — this is a risk control, not a preference
+
+  # grading
+  grade_a_min_score: 3
+  grade_b_min_score: 2
+  clean_formation_min_candles: 10
+  clean_formation_fast_mult: 1.5
+
+# ─────────────────────────────────────────────────────────────
+structure:
+  regime_lookback_5m: 20
+  htf_last_third: 0.66
+  htf_close_buffer_minutes: 3       # no new entries in the final 3 min of a 15m candle
+  pullback_healthy_ratio: 0.6       # pullback_atr ÷ impulse_atr
+  pullback_control_flip_ratio: 1.0  # above this → control has changed
+
+# ─────────────────────────────────────────────────────────────
+time:
+  windows_normal:
+    - ["09:30", "11:15"]
+    - ["13:30", "14:45"]
+  windows_expiry:
+    - ["10:00", "14:00"]
+  opening_range_end: "09:30"
+  no_new_entries_after: "14:45"
+  force_flat_at: "15:15"
+  report_at: "15:40"
+  reconcile_at: "15:35"
+
+volatility:
+  atr_period: 14
+  atr_tf: "1m"
+  atr_min_points: 12                # below → dead market, no trades
+  atr_max_points: 60                # above → event vol, no trades
+  high_vol_slippage_threshold: 40   # slippage multiplier kicks in above this
+
+# ─────────────────────────────────────────────────────────────
+session:
+  max_trades: 3
+  max_consecutive_losses: 2
+  max_loss_r: 2.0
+  risk_per_trade_rupees: null       # ⚠ REQUIRED. Engine refuses to start if null.
+                                    #   No default on purpose — make this decision consciously.
+
+modes:
+  alert_distance_points: 20
+  alert_distance_atr_mult: 1.5      # effective = max(points, mult × ATR14_1m)
+
+# ─────────────────────────────────────────────────────────────
+setups:
+  max_attempts_per_level_per_session: 1
+  cooldown_candles_after_exit: 3
+
+  # A — flip retest
+  a_retest_tolerance_points: 8
+  a_retest_tolerance_atr_mult: 0.5
+  a_hold_tolerance_points: 5
+  a_hold_tolerance_atr_mult: 0.3
+  a_retest_max_candles: 20
+
+  # B — sweep reclaim
+  b_sweep_min_pierce_points: 8
+  b_sweep_min_pierce_atr_mult: 0.4
+  b_sweep_wick_ratio: 0.55          # wick as share of candle range
+  b_reclaim_min_points: 5
+  b_reclaim_min_atr_mult: 0.25
+  b_reclaim_max_candles: 2          # candle 3+ → stale
+
+  # C — range break retest
+  c_range_min_candles: 20
+  c_range_min_width_points: 25
+  c_range_max_width_points: 120
+  c_range_touch_tolerance_points: 5
+  c_compression_ratio: 0.7          # last third ÷ first third
+  c_acceptance_candles: 2
+
+# ─────────────────────────────────────────────────────────────
+risk:
+  sl_buffer_min_points: 10
+  sl_buffer_atr_mult: 0.25          # effective = max(min_points, mult × ATR14_1m)
+  r_min_points: 12                  # tighter → noise will hit it
+  r_max_points: 35                  # wider → R:R cannot fit the space
+  min_space_ratio: 2.5              # space to NEAREST obstacle ÷ R
+  t1_r_multiple: 1.5
+  t1_book_fraction: 0.5
+  expiry_size_multiplier: 0.5
+
+exits:
+  time_stop_candles_5m: 5
+  progress_threshold_r: 0.3
+  trail_tf: "5m"                    # NOT 1m — 1m trailing kills every runner
+
+# ─────────────────────────────────────────────────────────────
+options:
+  strike_step: 100
+  moneyness: "ATM"                  # ATM only — delta must be stable for sizing
+  expiry_preference: "nearest_weekly"
+  max_spread_pct: 1.5
+  min_depth_lots: 20
+  delta_measure_window_minutes: 30
+  delta_fallback_atm: 0.5           # using this sets a journal flag — never silent
+
+slippage:                            # premium points — CALIBRATE from observed quotes
+  entry_points: 2.0
+  exit_points: 2.0
+  stop_gap_extra: 1.5
+  high_vol_multiplier: 2.0
+
+# ─────────────────────────────────────────────────────────────
+feed:
+  synthetic_candle_max_consecutive: 1   # 2+ → FeedGapError
+  candle_emit_timeout_seconds: 2
+  reconnect_clean_candles_required: 2
+  block_minutes_after_gap: 15
