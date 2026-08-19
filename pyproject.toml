@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+# E741 "ambiguous variable name l" — `o/h/l/c` is the candle field naming fixed by
+# spec 02's data contract. Renaming `l` to `low` here would put the tools out of step
+# with every model in src/ and with every spec that references `candle.l`.
+ignore = ["E741"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"

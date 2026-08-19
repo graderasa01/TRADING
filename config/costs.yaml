@@ -1,0 +1,83 @@
+# BANK NIFTY CO-PILOT — COST MODEL
+#
+# ⚠⚠  THIS FILE WAS REFERENCED THROUGHOUT THE v1 SPECS BUT DID NOT EXIST.
+#     Every "net of costs" claim in the design was therefore unimplemented.
+#
+# ⚠  THESE RATES CHANGE. STT, exchange transaction charges and SEBI turnover
+#    fees have all been revised in the last two years. Verify every line
+#    against your broker's current published charge list AND the exchange
+#    circulars before trusting any P&L number. Then set last_verified.
+#
+#    The engine REFUSES TO START while last_verified is null or older than
+#    90 days. This is deliberate. A stale cost model produces a backtest that
+#    looks profitable and a live account that is not.
+
+costs:
+  last_verified: null            # ← YYYY-MM-DD. Engine will not start until set.
+  verified_against: null         # ← e.g. "zerodha.com/charges, NSE circular ref"
+  broker: "zerodha"
+  segment: "NFO_OPTIONS"
+
+  # ── Fill these from the broker's published list, do not guess ──
+  brokerage_per_order: null      # flat ₹ per executed order (options)
+  stt_pct_sell_premium: null     # % — charged on the SELL side of premium only
+  exchange_txn_charge_pct: null  # % of premium turnover
+  sebi_charges_pct: null         # % of turnover
+  stamp_duty_pct_buy: null       # % — buy side only
+  gst_pct: 18                    # % on (brokerage + txn charges + sebi charges)
+  ipft_pct: null                 # NSE investor protection fund, if applicable
+
+  # ── Rules the cost engine must follow ──
+  # 1. Charges are computed PER ORDER, not per round trip. A T1 partial plus a
+  #    final exit is THREE orders, not two.
+  # 2. gross_pnl is never displayed anywhere on its own. Reports, logs and the
+  #    daily summary show net_pnl. There is a lint check for this.
+  # 3. Slippage (config/params.yaml → slippage:) is modelled separately from
+  #    charges and reported separately. They are different failure modes:
+  #    charges are known and fixed, slippage is measured and drifts.
+  charges_per_order: true
+
+# ─────────────────────────────────────────────────────────────
+# WHY THIS FILE DECIDES WHETHER THE SYSTEM CAN WORK AT ALL
+#
+# Worked from the design's own numbers, R = 25 index points, ATM delta 0.5,
+# lot size 30:
+#
+#   R in premium points ........................ 12.5
+#   Round-trip slippage, spec's assumption ......  5.5 premium pts →  44% of R
+#   Round-trip slippage, realistic monthly ATM ..  8.0 premium pts →  64% of R
+#   Round-trip slippage, fast/wide market ....... 13.0 premium pts → 104% of R
+#
+# Break-even win rate for the 1.5R-T1-plus-runner exit scheme:
+#
+#   cost 0.10R → break-even win rate 36.7%
+#   cost 0.30R → break-even win rate 43.3%
+#   cost 0.50R → break-even win rate 50.0%
+#
+# This style of setup realistically wins 35–45%. So on a monthly ATM option
+# the system is at or below break-even on cost alone, before a single bad
+# read. That is the arithmetic behind the new cost gate in
+# params.yaml → risk.max_cost_as_fraction_of_r.
+#
+# Two levers exist, and only two:
+#   (a) Make R larger in premium terms — i.e. take fewer, wider-stopped trades
+#       with proportionally larger targets. The cost is fixed per round trip,
+#       so it shrinks as a share of R.
+#   (b) Change the vehicle. Bank Nifty futures cost roughly 3 index points
+#       round trip (~12% of the same R) because there is no delta divisor and
+#       the spread is 1–2 points. The trade-off is margin (~₹2 lakh/lot) and
+#       an uncapped gap loss.
+#
+# The current build is (a) on options. Log the real spread on every signal
+# from day one of paper — after two weeks the measured numbers replace the
+# guesses above, and that measurement decides whether (b) becomes necessary.
+# ─────────────────────────────────────────────────────────────
+
+# ── Populated by the calibration run, not by hand ──
+measured:
+  sample_size: 0
+  observed_spread_premium_pts: null    # median ATM bid-ask during trade windows
+  observed_entry_slippage: null
+  observed_exit_slippage: null
+  observed_stop_slippage: null
+  measured_between: null               # date range of the calibration sample

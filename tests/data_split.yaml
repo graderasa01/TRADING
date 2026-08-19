@@ -1,0 +1,94 @@
+# DATA SPLIT — spec 11 §D1. Written before the first teaching-loop measurement.
+#
+# DO NOT EDIT BY HAND, and do not regenerate to 'improve' a result. The whole
+# value of this file is that it was fixed before anyone knew what it would cost.
+#
+# teach     you may examine every individual miss in detail
+# validate  scores only. Never read an individual case here.
+# holdout   touched ONCE, at the very end, ever — and every read is logged to
+#           HOLDOUT-ACCESS.md by src/learning/split.py. There is no quiet read.
+#
+# Assignment rule, fixed in advance (tools/make_split.py):
+#   1. split by month, never by day
+#   2. any month containing an already-marked chart -> teach
+#   3. remaining months, chronological index mod 5: {0,1,2}->teach 3->validate 4->holdout
+
+generated: "2026-08-12T08:33:24+05:30"
+generator: "tools/make_split.py"
+digest: "5a702621fa6703bf"
+
+counts:
+  months_total: 37
+  teach: 27
+  validate: 5
+  holdout: 5
+
+# Months quarantined into `teach` by rule 2 — the trader has seen a chart from
+# each of these. They may be taught on; they may never certify anything.
+contaminated_months:
+  - "2023-10"
+  - "2023-11"
+  - "2024-12"
+  - "2025-01"
+  - "2025-03"
+  - "2025-06"
+  - "2025-12"
+  - "2026-01"
+  - "2026-06"
+  - "2026-07"
+
+# The specific sessions rendered for the P1 overlap gate.
+seen_sessions:
+  - "2023-10-26"
+  - "2023-11-29"
+  - "2024-12-17"
+  - "2025-01-13"
+  - "2025-03-25"
+  - "2025-06-06"
+  - "2025-12-19"
+  - "2026-01-07"
+  - "2026-06-11"
+  - "2026-07-21"
+
+teach:
+  - "2023-08"
+  - "2023-09"
+  - "2023-10"
+  - "2023-11"
+  - "2023-12"
+  - "2024-03"
+  - "2024-04"
+  - "2024-05"
+  - "2024-08"
+  - "2024-09"
+  - "2024-10"
+  - "2024-12"
+  - "2025-01"
+  - "2025-03"
+  - "2025-04"
+  - "2025-05"
+  - "2025-06"
+  - "2025-07"
+  - "2025-10"
+  - "2025-11"
+  - "2025-12"
+  - "2026-01"
+  - "2026-02"
+  - "2026-05"
+  - "2026-06"
+  - "2026-07"
+  - "2026-08"
+
+validate:
+  - "2024-01"
+  - "2024-06"
+  - "2024-11"
+  - "2025-08"
+  - "2026-03"
+
+holdout:
+  - "2024-02"
+  - "2024-07"
+  - "2025-02"
+  - "2025-09"
+  - "2026-04"

@@ -1,0 +1,70 @@
+# BANK NIFTY CO-PILOT — EVENT BLACKOUT CALENDAR
+#
+# This is a CALENDAR LOOKUP, not a news feed and not a forecast. The engine
+# never reads, interprets or reacts to news — that prohibition stands. It only
+# checks whether today's date appears in a list that was written in advance.
+#
+# WHY THIS EXISTS
+# ~75% of the Bank Nifty index sits in five stocks. When HDFC Bank or ICICI
+# Bank reports, the index does not respect the level structure the engine spent
+# the morning building — it gaps through it. Same for an RBI policy decision.
+# The volatility ceiling (ATR > 60) catches this AFTER the move; the calendar
+# catches it before.
+#
+# There is no curve-fitting risk here. RBI MPC dates are published a year in
+# advance and results dates are announced weeks ahead. Nothing is being fitted
+# to outcomes.
+#
+# MAINTENANCE
+# The engine refuses to start if this file is missing or if last_updated is
+# more than 30 days old (params.yaml → events.max_calendar_age_days). A stale
+# calendar is worse than no calendar: it produces false confidence.
+
+last_updated: null        # ← YYYY-MM-DD. Engine will not start until set.
+updated_by: null
+sources:
+  - "RBI MPC schedule: rbi.org.in — published for the full financial year"
+  - "Results calendar: nseindia.com corporate announcements, per symbol"
+  - "Union Budget: 1 February unless announced otherwise"
+
+# ─────────────────────────────────────────────────────────────
+# FULL-DAY BLACKOUT — no entries at all
+# ─────────────────────────────────────────────────────────────
+rbi_mpc: []
+  # - 2026-10-07          # example format; fill from the RBI schedule
+
+union_budget: []
+  # - 2027-02-01
+
+monetary_policy_unscheduled: []
+  # Off-cycle RBI action. Added same-day, by hand. If you are adding a date
+  # here during market hours, the correct action is to stop for the day.
+
+# ─────────────────────────────────────────────────────────────
+# PARTIAL BLACKOUT — no entries before the stated time
+# ─────────────────────────────────────────────────────────────
+heavyweight_bank_results: []
+  # Five names carry the index. Results reaction is largely done by 11:15;
+  # blocked until then, normal windows after.
+  #   - {date: 2026-10-18, symbol: HDFCBANK}
+  #   - {date: 2026-10-25, symbol: ICICIBANK}
+  #   - {date: 2026-11-03, symbol: SBIN}
+  #   - {date: 2026-10-22, symbol: AXISBANK}
+  #   - {date: 2026-10-20, symbol: KOTAKBANK}
+
+fomc_overnight: []
+  # US FOMC decision lands after Indian close; the reaction is in our open.
+  # Blocked until 10:00 the following Indian trading day.
+
+# ─────────────────────────────────────────────────────────────
+# WATCH-ONLY, NOT BLOCKED — tagged into the journal context block so the
+# weekly review can cut performance by these days without them being excluded
+# up front. If the data later shows they are bad, promote them to a blackout.
+# Do not promote on a hunch.
+# ─────────────────────────────────────────────────────────────
+tagged_only:
+  monthly_expiry: []      # last Tuesday — auto-derived from the instrument
+                          # master, listed here only for the report cut
+  us_cpi: []
+  index_rebalance: []
+  large_ipo_listing: []

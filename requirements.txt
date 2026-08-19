@@ -1,0 +1,7 @@
+# Python 3.11+ (developed on 3.14.4)
+kiteconnect>=5.2.1      # historical data + instrument master
+pyarrow>=25.0.0         # parquet storage for 1m candles
+PyYAML>=6.0             # config/*.yaml
+pytest>=9.0             # tests
+pytest-cov>=7.0
+ruff>=0.15              # lint

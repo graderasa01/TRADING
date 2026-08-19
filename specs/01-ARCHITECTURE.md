@@ -40,6 +40,30 @@ design is wrong. Push the difference into the Feed or the Broker.
 - The engine's `now` is supplied by the Feed. In replay it is the candle's close time.
   In live it is the tick clock. **The engine never calls `datetime.now()`.**
 
+### v2 — the one deliberate exception: exits run on ticks
+
+The closed-candles rule governs **detection and signal generation**. Nothing may see a
+forming candle when deciding whether to *enter*. That is the no-look-ahead guarantee
+and it is absolute.
+
+**Exiting an open position is a different operation.** There is no future information
+involved — only latency. v1 evaluated the index stop on 1m closes, which hands the
+market up to 59 seconds of free adverse movement on a 25-point R, and does so worst
+exactly when price is moving fastest against you.
+
+```
+ENTRY  path : closed candles only.  Engine.on_candle().  No exceptions, ever.
+EXIT   path : tick stream.          exits/ engine.       Separate code path.
+```
+
+Keep them physically separate — the exit path must not be reachable from
+`on_candle`, and `on_candle` must not read ticks. In replay, the exit path is driven by
+intra-candle price reconstruction and must fill **worse** than `sl_index`, never at it
+(spec 07 §2.2).
+
+The no-look-ahead truncation test (spec 09 §3.3) applies to the entry path. Write a
+separate test asserting that the exit path never influences a signal.
+
 ### Candle gaps
 Bank Nifty 1m data can have missing minutes (no trades, feed hiccup). Policy:
 - 1 missing minute → forward-fill a zero-range candle, flag `synthetic=True`,

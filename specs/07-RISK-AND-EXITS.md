@@ -11,8 +11,8 @@
 
 ```python
 sl_buffer = max(
-    params.risk.sl_buffer_min_points,          # 10   HYPOTHESIS
-    params.risk.sl_buffer_atr_mult * atr_1m,   # 0.25 HYPOTHESIS
+    params.risk.sl_buffer_min_points,          # v2: 6   (was 10)
+    params.risk.sl_buffer_atr_mult * atr_1m,   # v2: 0.45 (was 0.25)
 )
 
 # long
@@ -32,15 +32,38 @@ Two rules encoded here:
 2. **Buffer scales with volatility.** A flat 10 points is correct on a quiet day and
    suicidal on a 60-ATR day. The ATR term handles that automatically.
 
+**v2 correction — in v1 the ATR term never fired.** `max(10, 0.25 × ATR)` only exceeds
+10 when ATR > 40, and Bank Nifty 1m ATR14 sits in the 15–35 band for the large majority
+of tradeable minutes:
+
+| ATR14_1m | v1 buffer | which term won |
+|---|---|---|
+| 15 | 10.0 | flat 10 |
+| 25 | 10.0 | flat 10 |
+| 35 | 10.0 | flat 10 |
+| 40 | 10.0 | flat 10 (tie) |
+| 50 | 12.5 | ATR |
+
+So the claim above was false roughly 95% of the time — v1 shipped a flat 10-point
+buffer with an ATR expression decorating it. v2 uses `max(6, 0.45 × ATR)`, which gives
+6.8 / 11.3 / 15.8 / 22.5 across the same rows and actually adapts. The floor drops to 6
+only so that it never becomes the binding term in the normal range; it is a dead-market
+guard, not the operating value.
+
 ## 1.2 R bounds — hard rejections
 
 ```python
 r_points = abs(entry_index - sl_index)
 
-if r_points < params.risk.r_min_points:   # 12   HYPOTHESIS
-    return Rejection("r_too_tight", ...)
-if r_points > params.risk.r_max_points:   # 35   HYPOTHESIS
-    return Rejection("r_too_wide", ...)
+# v2 — bounds are ATR-relative. Points are floors, not the operating values.
+r_min = max(params.risk.r_min_points,      # 12
+            params.risk.r_min_atr_mult * atr_1m)      # 0.55
+r_max = min(params.risk.r_absolute_max_points,        # 60 — never exceed
+            max(params.risk.r_max_points,             # 35
+                params.risk.r_max_atr_mult * atr_1m)) # 1.40
+
+if r_points < r_min:  return Rejection("r_too_tight", ...)
+if r_points > r_max:  return Rejection("r_too_wide", ...)
 ```
 
 - **Too tight** — the stop is inside the noise band. It will be hit by random movement
@@ -52,23 +75,150 @@ if r_points > params.risk.r_max_points:   # 35   HYPOTHESIS
 **There is no path that adjusts the stop to satisfy these bounds.** The stop is
 determined by structure. If the resulting R is out of bounds, the trade does not exist.
 
+### v2 — why the flat 35-point ceiling had to go: it deleted Setup B
+
+Trace the geometry of a *qualifying* Setup B sweep candle (spec 06 §B2–B6). It must
+pierce by ≥8 points, its wick must be ≥55% of its range, and it must close in the top
+third. So the close sits around `low + 0.70 × range`, and:
+
+```
+R  =  entry − SL  =  (0.70 × range)  +  sl_buffer
+```
+
+With v1's buffer of 10:
+
+| sweep candle range | v1 R | v1 verdict |
+|---|---|---|
+| 20 | 24.0 | OK |
+| 25 | 27.5 | OK |
+| 30 | 31.0 | OK |
+| 40 | 38.0 | **r_too_wide — rejected** |
+| 50 | 45.0 | **r_too_wide — rejected** |
+
+A 40–50 point 1m candle is not unusual on Bank Nifty in an active window — it is what a
+real liquidity sweep at a defended level *looks like*. So v1's ceiling was not filtering
+out bad trades; it was filtering out **the strongest expression of the setup**, keeping
+only the small, timid sweeps. And note the ceiling was flat, so this happened *more*
+on high-volatility days, when the sweeps are most meaningful.
+
+Worse, the bias is systematic in the wrong direction. Combined with the cost gate
+(§1.6), small-R trades are exactly the ones where cost eats the most of R. v1's two
+gates pushed in opposite directions: `r_too_wide` forced R small, cost drag punished
+small R.
+
+v2's ceiling of `max(35, 1.40 × ATR)` gives 35 on a quiet 20-ATR day and 56 on a fast
+40-ATR day, with a hard absolute cap of 60. The space gate still scales with R
+automatically — it is a ratio — so a bigger R must earn proportionally bigger space.
+
+**Log both R bounds on every decision** (`r_max_v1`, `r_max_v2`) so the spec 09
+counterfactual study can measure whether this change helped, rather than anyone
+assuming it did.
+
 ## 1.3 Space check
 
 ```python
-obstacles = levels.obstacles_above(entry) if long else levels.obstacles_below(entry)
-nearest   = obstacles[0]                       # ALL obstacle types, any grade
+# v2 — the space GATE uses obstacles of strength >= medium (spec 03 §6b).
+#      T1 placement separately respects obstacles of ANY strength, incl. weak.
+nearest = levels.space_obstacle(entry_index, direction)   # strength >= medium
 space_points = abs(nearest.body_edge - entry_index)
 space_ratio  = space_points / r_points
 
 if space_ratio < params.risk.min_space_ratio:  # 2.5  HYPOTHESIS
     return Rejection("space_insufficient", ...)
+
+# always logged for the counterfactual study
+computed["space_v1_all_obstacles"] = abs(levels.t1_obstacle(entry_index, direction).body_edge - entry_index)
 ```
 
-The obstacle list includes Grade B and C levels, round numbers, PDH/PDL, day extremes
-and the far side of an active range — see spec 03 §9. **The nearest wins, always.**
+The gating obstacle list includes Grade A and B levels, PDH/PDL, day extremes, 500/1000
+round numbers and the far side of an active range. **The nearest of those wins, always.**
 
 This is the gate that fails most often, and that is the intended behaviour. A correct
 entry into a wall 30 points away is a losing trade with a good-looking chart.
+
+**v2 — why weak obstacles no longer gate.** v1 included every 100-point round number.
+Distance to the next 100-mark is essentially uniform on [0,100], so a 25-point R needed
+62.5 points of clear air against a mean available gap of 50 — a 37.5% pass rate driven
+entirely by the last two digits of the entry price, and 0% for any R ≥ 40. The gate was
+rejecting trades for a reason unrelated to the trade. Full arithmetic in spec 03 §6.
+
+---
+
+## 1.6 The COST GATE — v2, and the most consequential addition
+
+Everything above is about whether the *trade* is good. This gate asks whether the
+*execution* can be good enough for the trade to matter.
+
+### Why this is not optional on this instrument
+
+Bank Nifty weekly options were discontinued on **20 November 2024**. Only **monthly**
+contracts exist, expiring the **last Tuesday** of the month. A monthly ATM premium is
+3–4× a weekly's, and the spread scales with it.
+
+Working from the design's own numbers — R = 25 index points, ATM delta 0.5:
+
+```
+R in premium points ........................... 12.5
+
+round-trip slippage, spec's own assumption ....  5.5 prem pts  =  44% of R
+round-trip slippage, realistic monthly ATM ....  8.0 prem pts  =  64% of R
+round-trip slippage, fast/wide market ......... 13.0 prem pts  = 104% of R
+```
+
+Feeding that into the T1-at-1.5R-plus-runner exit scheme:
+
+| cost | avg win | avg loss | break-even win rate |
+|---|---|---|---|
+| 0.10R | +1.90R | −1.10R | **36.7%** |
+| 0.30R | +1.70R | −1.30R | **43.3%** |
+| 0.50R | +1.50R | −1.50R | **50.0%** |
+
+This style of setup realistically wins 35–45%. At 0.50R of cost the system is at or
+below break-even *before a single bad read*. Cost is therefore not a reporting line —
+it is the dominant term in the expectancy equation, and it varies trade by trade with
+the live spread. So it must be a gate, checked against the actual quote.
+
+### The gate
+
+```python
+r_premium   = r_points * ref_delta
+spread      = quote.ask - quote.bid                        # observed, not modelled
+cost_prem   = spread + slip.entry + slip.exit + slip.stop_gap_extra
+charges_r   = estimated_charges(lots) / (r_premium * lot_size * lots)
+
+if (cost_prem / r_premium) > params.risk.max_cost_as_fraction_of_r:   # 0.25
+    return Rejection("cost_excessive", ...)
+if r_premium < params.risk.min_r_premium_to_spread_ratio * spread:    # 8.0
+    return Rejection("cost_excessive", ...)
+```
+
+Both conditions are checked. The first is the economically meaningful one; the second
+is a fast sanity check that catches a blown-out spread even if the slippage model is
+stale.
+
+**Expect this gate to reject often, and expect it to reject small-R trades hardest.**
+That is correct: cost is fixed per round trip, so it shrinks as a share of R only when
+R grows. This gate is the mechanical form of the design's own conclusion in
+`mythinking.md` §9 — *"kam aur badi trade, zyada aur chhoti se behtar hai"* — fewer,
+larger trades beat more, smaller ones, because cost per trade is fixed while mistakes
+multiply with frequency.
+
+**Do not tune this gate down to get more trades.** If it rejects nearly everything, the
+honest readings in order of likelihood are: (1) R is too small for this vehicle, take
+setups with more room; (2) the spread genuinely is that bad and monthly ATM options are
+the wrong vehicle for a 25-point stop; (3) the slippage model is stale — go measure it.
+
+### The escape hatch you should know exists, and its price
+
+If measured costs land above ~0.35R persistently, the vehicle is the problem, not the
+strategy. Bank Nifty **futures** cost roughly 3 index points round trip on the same
+trade — about **12% of R** — because there is no delta divisor and the spread is 1–2
+points, and the index stop can then rest as a real SL-M order at the broker, which
+resolves the L2/L3 problem in §2 entirely. The price is margin (~₹2 lakh per lot versus
+~₹60k–1.5L of premium outlay) and an uncapped gap loss.
+
+This is not a recommendation to switch — it is the number to compare against when P8.5
+reports the measured spread. Make that decision on data, not now.
 
 ## 1.4 Targets
 
@@ -123,17 +273,89 @@ directions. Halve the size; do not widen the stop to compensate.
 
 # PART 2 — EXIT ENGINE
 
-Runs on every closed 1m candle while `mode == IN`. Evaluated **in this order** — the
-first match wins.
+Evaluated **in this order** — the first match wins.
 
 ```
-1. invalidation      (thesis broken)
-2. hard SL           (index touched sl_index)
-3. T1                (first 50%)
-4. trail             (after T1)
-5. time stop
-6. force flat 15:15
+1. invalidation      (thesis broken)          ── on 1m close
+2. index SL          (index touched sl_index) ── ON TICKS, not on close   ← v2
+3. T1                (first 50%)              ── on ticks
+4. trail             (after T1)               ── on 5m close
+5. time stop                                  ── on 5m close
+6. force flat 15:15                           ── on clock
 ```
+
+## 2.0 — v2: the stop architecture, stated honestly
+
+CLAUDE.md v1 §6 said *"Hard SL — always resting in the system. Never mental."*
+**That was not implementable and the document should not have claimed it.** The stop is
+an **index** level. The position is an **option**. No broker accepts an index-triggered
+stop on an option leg. v1's hard SL was a software stop that dies with the process,
+described as though it were resting at the exchange — the most dangerous kind of
+documentation error, because it stops you from building the thing that was missing.
+
+Three layers, and never confuse them:
+
+| Layer | What | Where it lives | Fires |
+|---|---|---|---|
+| **L1** | Thesis invalidation | software, 1m close | often — this is the money-saver |
+| **L2** | Index stop at `sl_index` | software, **tick-evaluated** | sometimes |
+| **L3** | Premium backstop SL-M | **resting at the broker** | ~never; if it does, investigate |
+
+### L2 must be evaluated on ticks, not on candle closes
+
+v1 ran the entire exit engine on closed 1m candles. On a 25-point R that hands the
+market up to 59 seconds of free adverse movement — frequently most of the R, and by
+construction it is worst exactly when price is moving fastest against you.
+
+**This does not violate the no-look-ahead rule.** CLAUDE.md §3 governs *detection and
+signal generation* — the engine must not see a forming candle when deciding to enter.
+Exiting an open position is a different operation: there is no future information
+involved, only latency. Keep the tick path in `exits/`, and keep it out of `on_candle`.
+
+In paper and replay, model L2 as: if `candle.low <= sl_index` (long), fill at
+`sl_index` **minus** adverse slippage **plus** `stop_gap_extra`. Never at `sl_index`
+exactly. A paper engine that fills stops perfectly overstates results by precisely the
+amount that decides whether the system is viable.
+
+### L3 — the backstop that actually rests at the broker
+
+```yaml
+exits:
+  premium_backstop_enabled: true
+  premium_backstop_r_multiple: 2.0
+```
+
+Immediately after the entry fill, place a real SL-M on the option leg at
+`entry_premium − 2.0 × R_premium` (for a long option). Then:
+
+- If L1 or L2 exits normally → **cancel L3 in the same event.** An orphaned backstop
+  order is its own hazard.
+- If the process dies, the machine loses power, or the websocket never comes back →
+  L3 is the only thing standing between you and an unmanaged position.
+- L3 filling is an **incident**, not a normal loss. It means all software protection
+  failed. Journal it with a distinct exit reason and review it.
+
+L3 is deliberately far away. It is not a wider stop — it is a different instrument
+serving a different purpose. Placing it close would let premium noise (an IV crush with
+the index thesis intact) exit a good trade, which is precisely the failure mode spec 08
+Part 1 exists to prevent.
+
+### The heartbeat watchdog
+
+```yaml
+exits:
+  heartbeat_timeout_seconds: 90
+```
+
+A **separate process**. The engine writes a heartbeat every candle. If the watchdog
+sees no heartbeat for 90 seconds during market hours, it flattens any open position
+through the broker and alerts. In the paper phase it only alerts — but build it now,
+because the habit and the plumbing are what matter, and the phase after this one places
+real orders.
+
+A trading process that can die holding a position, with nothing resting at the broker
+and nothing watching it, is the largest uncontrolled risk in the entire design. It is
+larger than any entry-rule question in specs 03–06.
 
 ## 2.1 Invalidation — the most important exit
 
@@ -153,14 +375,19 @@ reached the stop. Over a sample this matters more than any entry refinement.
 
 It also fires on winners that stop working. That is correct and not a bug.
 
-## 2.2 Hard SL
+## 2.2 Index SL (L2)
 
-Always resting in the system from the moment of fill. In paper, model it as: if
-`candle.low <= sl_index` (long), the stop filled at `sl_index` **minus modelled adverse
-slippage** — never assume a perfect fill at the stop price.
+Evaluated on **ticks** from the moment of fill — see §2.0 for why close-only evaluation
+gives away most of a 25-point R. In paper, model it as: if `candle.low <= sl_index`
+(long), the stop filled at `sl_index` **minus modelled adverse slippage minus
+`stop_gap_extra`** — never assume a perfect fill at the stop price.
 
 Never widened. Never cancelled. Never "temporarily disabled." There is no config flag
 for this and there must not be one.
+
+Backed at all times by the L3 premium backstop resting at the broker (§2.0). L2 is the
+trading stop; L3 is the disaster stop. Both exist because neither alone is sufficient:
+L2 cannot survive a dead process, and L3 cannot express an index-based thesis.
 
 ## 2.3 T1 and breakeven
 
@@ -213,27 +440,64 @@ At `15:15` any open position exits at market, reason `eod`. Unconditional.
 Setup B long at a Grade A support, ATR14_1m = 22
 
 sweep wick low     57,103
-sl_buffer          max(10, 0.25 × 22) = 10
-sl_index           57,093
+sl_buffer          v2: max(6, 0.45 × 22) = 9.9        (v1 would give a flat 10)
+sl_index           57,093.1
 reclaim close      57,118   ← entry
-r_points           25                        ✓ within [12, 35]
 
-obstacles above    57,190 (round-100), 57,240 (PDH), 57,310 (15m supply)
-nearest obstacle   57,190
-space_points       72
-space_ratio        72 / 25 = 2.88            ✓ >= 2.5
+r_points           24.9
+  r_min            max(12, 0.55 × 22) = 12.1          ✓
+  r_max            min(60, max(35, 1.40 × 22)) = 35   ✓
 
-t1  = min(57,118 + 1.5×25 = 57,155.5 ,  range top 57,168)  → 57,155.5
+obstacles above    57,190 (round-100  → WEAK, does not gate)
+                   57,240 (PDH        → STRONG, gates)
+                   57,310 (15m supply → STRONG)
+space obstacle     57,240                             ← v1 would have used 57,190
+space_points       122
+space_ratio        122 / 24.9 = 4.90                  ✓ >= 2.5
+  (v1: 72 / 25 = 2.88 — also passed here, but see spec 03 §6 for how often
+   the weak-obstacle rule turned a good trade into space_insufficient)
+
+t1  = min(57,118 + 1.5×24.9 = 57,155.4 , range top 57,168, round-100 57,190)
+    → 57,155.4          ← weak obstacles still cap T1, and should
 t2  = 57,240 (PDH)
 
-sizing: risk_budget ₹5,000, ref_delta 0.52, lot_size 15
-  premium_risk_per_lot = 25 × 0.52 × 15 = ₹195
-  lots = floor(5000 / 195) = 25 lots
+── v2 COST GATE ────────────────────────────────────────────────
+ref_delta          0.52 (measured, not assumed)
+r_premium          24.9 × 0.52 = 12.9 premium points
+observed spread    1.4 premium points        ← from the live quote, not modelled
+cost_prem          1.4 + 2.0 + 2.0 + 1.5 = 6.9
+  cost / r_premium = 6.9 / 12.9 = 0.535  >  0.25   ✗  REJECT — cost_excessive
+  r_premium / spread = 12.9 / 1.4 = 9.2  >  8.0    ✓
+
+VERDICT: Rejection("cost_excessive")
 ```
 
-Note the sizing output is large because the per-lot risk is small — this is exactly why
-`risk_per_trade_rupees` must be set consciously and why the option layer's liquidity
-check (spec 08) matters.
+**Read that last block carefully — the textbook trade from v1's own worked example
+does not survive the cost gate.** Every structural gate passed. It failed on execution
+economics: 53% of R goes to crossing the spread twice plus the stop gap, which puts the
+break-even win rate above 50%.
+
+This is the single most important thing the v2 review surfaced. It is not an argument
+that the strategy is wrong — the level read may be excellent. It is that **a 25-point
+index stop is too small a target to pay for a monthly ATM option round trip.** The two
+honest responses are to take setups with materially more room (larger R, same risk
+budget, fewer trades), or to change the vehicle. Both are decisions for P8.5, on
+measured spreads rather than the guessed numbers above.
+
+For completeness, sizing if the gate had passed (lot size **30**, not v1's 15 —
+Bank Nifty's lot size changed to 30 from the January 2026 series; verify against the
+instrument master at startup regardless):
+
+```
+premium_risk_per_lot = 24.9 × 0.52 × 30 = ₹388
+lots = floor(5000 / 388) = 12 lots
+premium outlay at ₹900 ATM monthly = 12 × 30 × 900 = ₹324,000
+```
+
+Note the last line. To risk ₹5,000 you deploy roughly ₹3.2 lakh of premium. That ratio
+is a property of buying options and it must be logged on every trade
+(`options.log_capital_deployed`), because it determines whether the account can even
+hold three concurrent-day positions and it never appears in an R-based P&L.
 
 ---
 
@@ -241,7 +505,23 @@ check (spec 08) matters.
 
 | Test | Expectation |
 |---|---|
-| `test_sl_buffer_scales_with_atr` | ATR 60 → buffer 15, not 10 |
+| `test_sl_buffer_scales_with_atr` | **v2:** ATR 25 → buffer 11.25, not 10. The ATR term must bind in the NORMAL range, not only above ATR 40 |
+| `test_r_max_scales_with_atr` | ATR 40 → r_max 56; ATR 15 → r_max 35; ATR 60 → r_max 60 (absolute cap) |
+| `test_setup_b_large_sweep_accepted` | 45-pt sweep candle at ATR 35 → R ≈ 41, **accepted** (v1 rejected it) |
+| `test_r_absolute_cap_holds` | ATR 80 → r_max 60, not 112 |
+| `test_cost_gate_rejects_wide_spread` | Spread 3.0 prem pts, r_premium 12 → `cost_excessive` |
+| `test_cost_gate_uses_observed_not_modelled_spread` | Modelled spread 1.0, quoted 4.0 → gate uses 4.0 |
+| `test_cost_gate_both_conditions` | Each condition failing alone → `cost_excessive` |
+| `test_cost_gate_favours_larger_r` | Same spread, R doubled → gate passes |
+| `test_worked_example_v1_now_rejected` | Spec §3 worked example → `cost_excessive`, not a Signal |
+| `test_space_ignores_weak_obstacles` | Round-100 at 30 pts, PDH at 122 pts, R=25 → space 122, passes |
+| `test_t1_still_respects_weak_obstacles` | 1.5R target beyond a round-100 → T1 pulled back |
+| `test_stop_evaluated_on_ticks` | Tick through `sl_index` mid-candle → exit at that tick, not at candle close |
+| `test_backstop_placed_after_fill` | Entry fill → SL-M resting at `2.0 × R_premium` beyond entry |
+| `test_backstop_cancelled_on_normal_exit` | L1 invalidation exit → backstop cancelled in the same event |
+| `test_backstop_fill_is_flagged_incident` | L3 fill → distinct exit reason, alert raised |
+| `test_watchdog_flattens_on_dead_heartbeat` | No heartbeat 91s with a position open → flatten + alert |
+| `test_capital_deployed_logged` | Every trade row carries premium outlay |
 | `test_sl_never_at_level` | `sl_index` always beyond `extreme`, never equal to `body_edge` |
 | `test_r_too_tight_rejected` | R = 9 → `r_too_tight` |
 | `test_r_too_wide_rejected` | R = 40 → `r_too_wide` |

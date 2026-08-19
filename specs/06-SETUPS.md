@@ -91,6 +91,93 @@ entry_ref = reclaim_candle.close
 extreme   = the sweep candle's LOW (the wick tip of the sweep)
 ```
 
+### ⚠ v2 — this geometry is what v1's flat R ceiling was deleting
+
+The conditions above **force** a wide stop. B3 requires the wick to be ≥55% of the
+candle's range, and B6 requires the close in the top third. So:
+
+```
+R  =  entry − SL  =  (≈0.70 × candle_range)  +  sl_buffer
+```
+
+Under v1 (`sl_buffer` a flat 10, `r_max` a flat 35), a 40-point sweep candle produced
+R = 38 → `r_too_wide`. A 50-point one produced R = 45 → rejected. On Bank Nifty in an
+active window, 40–50 point 1m candles are **what a real liquidity sweep at a defended
+level looks like.**
+
+So v1 did not filter out bad Setup B trades. It filtered out the strongest ones and
+kept only the timid sweeps — and because the ceiling was a flat number, it did this
+*more* on high-volatility days, when sweeps carry the most information. Setup B is
+described here as "best risk-reward, lowest frequency"; v1's risk engine made it
+lowest-frequency for a reason unrelated to the market.
+
+Fixed in spec 07 §1.2: `r_max = min(60, max(35, 1.40 × ATR14_1m))`. Both the old and
+new ceilings are logged on every decision so spec 09's counterfactual study can measure
+whether this was the right call rather than anyone assuming it.
+
+**Do not "fix" this by moving the stop closer than the sweep wick tip.** The wick tip is
+the whole point of the setup — it is where the stops were, and inside it you are parked
+exactly where price is drawn to. If the resulting R does not fit, the correct answer
+remains no trade.
+
+### ⚠ v2.2 — the ATR-relative ceiling was still not enough. Measured, not reasoned.
+
+The dry run put a genuine textbook sweep through the full engine
+(`prototype/FINDINGS.md`, Bug 4):
+
+```
+09:58  B_sweep_reclaim at PDL 57,455  →  REJECT: r_too_wide
+       R = 69.1        allowed 16.0 – 40.7   (ATR 29)
+
+  sweep low      57,434
+  reclaim close  57,490   ← entry
+                    56 pts apart
+  + sl_buffer    13
+  = R            69
+```
+
+v2 replaced v1's flat 35 with `max(35, 1.40 × ATR)` = 40.7 here. **The real trade still
+came in at 69.** The sweep wick ran 30 points below the level and the reclaim candle
+printed a 26-point body — both of which are *signs of a good sweep* — and together they
+put entry 56 points from the stop.
+
+So this is not a threshold that needs another nudge. **It is a genuine tension in the
+setup's own geometry:** entry at the reclaim close, stop beyond the sweep wick, means
+the better the sweep, the worse the R.
+
+### Three honest options. Pick one deliberately; do not let it be decided by accident.
+
+```yaml
+setups:
+  b_entry_mode: "pullback"          # "reclaim_close" | "pullback" | "skip_wide"
+  b_entry_max_extreme_atr_mult: 1.2 # entry must be within this × ATR of the extreme
+  b_pullback_wait_candles: 3        # how long to wait for the pullback
+```
+
+**1. `reclaim_close`** — v1/v2 behaviour. Enter at the reclaim close, accept the wide R.
+With the cost gate this is actually *fine* on cost grounds (a large R makes the fixed
+round-trip cost a small fraction of R). The problem is purely that R exceeds the ceiling
+and the position size shrinks accordingly. Raising `r_absolute_max_points` would allow
+it — but a 69-point stop on a 25-point-typical system is a different strategy, not a
+tuning change.
+
+**2. `pullback` — the recommended default.** After a valid reclaim, place a limit entry
+within `b_entry_max_extreme_atr_mult × ATR` of the sweep extreme and wait up to
+`b_pullback_wait_candles`. In the example above that is an entry near 57,469 instead of
+57,490, giving R ≈ 48 — still wide, but inside a 40–56 ceiling on an active day. If the
+pullback does not come, **the trade is missed, and that is an acceptable cost.** This is
+also what a trader actually does: `mythinking.md` §7 says *"hamesha retest par, breakout
+par nahi"* — always on the retest. v1 applied that discipline to Setups A and C and
+forgot it for B.
+
+**3. `skip_wide`** — reject anything over the ceiling. Simplest, and it means Setup B
+fires very rarely.
+
+**Whichever is chosen, log what the other two would have done.** Every Setup B decision
+should carry `entry_reclaim_close`, `entry_pullback`, and whether the pullback arrived
+within the wait window. After a few months the counterfactual study answers this with
+data instead of argument — which is the only way a question like this should be settled.
+
 ### Why a plain rejection is not allowed at ANCHOR levels
 The most-watched levels hold the most stops, so they are swept most often. Taking a
 rejection at PDH/PDL/day-high without a sweep means being on the wrong side of the

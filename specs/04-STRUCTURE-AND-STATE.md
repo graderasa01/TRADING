@@ -170,6 +170,118 @@ four, then let the 1m candles say which one.
 
 ---
 
+## 6b. The JOURNEY LADDER — v2.1. The largest idea missing from v1.
+
+The Landing Ladder answers *"a move happened — where will the pullback stop?"*
+Nothing in v1 answered the other half: **"a level just broke — where is price going?"**
+
+v1 handles a break by creating an AXIS (spec 03 §5) and then stops thinking. The axis is
+a flip line and an invalidation line. It is not a destination. So the engine breaks a
+level and forms no expectation at all about what happens next.
+
+The human's model, from `mythinking.md`:
+
+> *"jahan se aaya wahan tak to jayega hi jayega... phir wahan par jayega to kya karega
+> wo bhi pata — cluster ya swing."*
+
+Two claims, and they are different in kind:
+
+| Claim | Status |
+|---|---|
+| *Price returns to where the move came from* | **A hypothesis about market behaviour. Untested.** |
+| *What waits there is knowable — a cluster, a swing, an anchor* | **Already true in the engine.** Every destination IS a `Level` with a `kind` and a `grade`. `levels_above` / `levels_below` already carry this |
+
+The second half is built. The first half is not, and it is the one that must be handled
+carefully — because a strong intuition that has never been measured is exactly the kind
+of thing that quietly becomes a rule and then quietly loses money.
+
+**So it is built as a logged prediction, never as a gate.**
+
+```python
+@dataclass(frozen=True)
+class JourneyRung:
+    label: Literal["D1","D2","D3","D4"]
+    price: Decimal
+    basis: str                      # human-readable: which level, why
+    distance_points: Decimal
+
+@dataclass(frozen=True)
+class Journey:
+    started_at: datetime
+    origin_level: Level             # the level that broke
+    direction: Literal["up","down"]
+    break_candle: Candle
+    invalidation: Decimal           # the axis body_edge — back through = failed
+    rungs: list[JourneyRung]        # D1 nearest → D4 furthest
+    # resolved later, by the journey tracker:
+    outcome: Literal["open","D1","D2","D3","D4","stalled","failed"] | None
+    resolved_at: datetime | None
+    max_progress_points: Decimal
+```
+
+### The rungs — deliberately the mirror of the Landing Ladder
+
+For a break **upward** (mirror for down):
+
+| Rung | Price | Meaning |
+|---|---|---|
+| **D1** | nearest untested level above, **including revived dormant levels** | the first meeting |
+| **D2** | origin of the last down-move — the LAUNCH base, or the swing high the sellers came from | **"jahan se aaya"** — the human's primary target |
+| **D3** | break point + (`broken range width` × `journey_measured_move_mult`) | measured move |
+| **D4** | next ANCHOR — PDH, day high, round 500 | the structural wall |
+
+Rungs are sorted by distance and **deduplicated** — D2 and D3 frequently land on the
+same price, and when they do that agreement is itself information. Log it as
+`confluence: ["D2","D3"]`.
+
+### How it resolves
+
+The journey tracker runs on 5m closes:
+
+- price trades through a rung ± `journey_reached_tolerance` → record that rung reached
+- no progress for `journey_stall_candles_5m` (6) → `stalled`
+- body close back through `invalidation` → `failed`
+- `journey_ttl_minutes` (120) elapses → close it at whatever rung was reached
+
+### ⚠ The gate that must stay shut
+
+```yaml
+journey_gates_trades: false     # MUST remain false until P9 measures it
+```
+
+Nothing in `setups/`, `risk/` or `exits/` may read a `Journey` while this is false. Add
+a static test asserting it. The Journey is written to the journal and to the daily
+report, and that is all it does on day one.
+
+### What P9 must report about it
+
+For every journey, cut by direction, regime, time bucket and origin-level grade:
+
+```
+journeys started
+% reaching D1 · D2 · D3 · D4
+% stalled · % failed (invalidation)
+median max_progress as a fraction of the D2 distance
+median time-to-D2 in 5m candles
+hit rate when D2 and D3 agree (confluence) vs when they do not
+```
+
+**Read it honestly.** If D2 is reached 70% of the time, *"jahan se aaya wahan tak jayega"*
+is a real, measured property of this market and it should drive T2 selection — and
+possibly a bias filter. If it is reached 45% of the time, it is a comfortable story that
+feels true because the times it worked are the ones you remember.
+
+Either answer is worth having, and the second one is worth more, because it is the one
+you cannot get by trading.
+
+**Note what this does to the space check.** If D2 turns out to be real, the *nearest
+obstacle* rule (spec 07 §1.3) is still correct — you still have to get past the wall in
+between. The journey tells you where the trade is going; the space check tells you
+whether it can get out of the driveway. They answer different questions and neither
+replaces the other.
+
+---
+
 ## 7. StateBoard update order
 
 On every closed 1m candle, after the level engine has run:
@@ -223,6 +335,32 @@ def anticipation(board: StateBoard) -> str:
 Deliberately mechanical. It exists so that after a losing day you can read what the
 engine expected *before* each candle, not what it concluded after.
 
+### v2.1 — extend it to two steps, because that is how the read actually runs
+
+v1's line looks one step ahead: *"IF body close above X → next obstacle Y."* The human
+chains it further — break, then the meeting, then what happens at the meeting:
+
+> *"usko todta hai to last neeche low tak... phir wahan par jayega to kya karega wo bhi
+> pata — cluster ya swing."*
+
+The second step costs nothing, because the destination is already a `Level` whose kind,
+grade and touch count the engine knows:
+
+```
+"Price 57118. Active TURN 57100 (A, 1 touch), 18 pts above.
+ IF body close below 57100 → flips to resistance. First meeting: LAUNCH 57042
+   (B, 0 touches, 76 pts) — untested base, expect a reaction, not a stop.
+ IF that gives way → D2 57960 [origin of the 10:20 up-move], 158 pts.
+ Control: sellers. Regime: transition. Mode: ALERT."
+```
+
+Two steps, no further. Three-step chains are storytelling — each step multiplies the
+uncertainty of the last, and a template that produces a confident-sounding four-step
+narrative will be read as a forecast no matter how many disclaimers surround it.
+
+Both steps come from data already on the board. Nothing new is computed, and nothing is
+predicted — the line states what is *there*, conditionally.
+
 ---
 
 ## 9. Tests that must pass
@@ -240,3 +378,11 @@ engine expected *before* each candle, not what it concluded after.
 | `test_pullback_over_signal` | Higher-low then close above prior high → signal fires exactly once |
 | `test_board_is_deterministic` | Identical digests across two replays of the same day |
 | `test_structure_never_imports_levels` | Static check: `structure/` has no import from `levels/` |
+| `test_journey_created_on_break` | Body close through a Grade A level → a `Journey` with 4 ranked rungs |
+| `test_journey_d2_is_move_origin` | D2 equals the LAUNCH base / swing the prior move came from |
+| `test_journey_rungs_deduplicated` | D2 and D3 at the same price → one rung, `confluence: ["D2","D3"]` |
+| `test_journey_includes_revived_levels` | A dormant level inside the path appears as D1 |
+| `test_journey_resolves_stalled` | 6 flat 5m candles → outcome `stalled` |
+| `test_journey_resolves_failed` | Body close back through the axis → outcome `failed` |
+| `test_journey_never_read_by_trading_path` | **Static:** `setups/`, `risk/`, `exits/` do not import the journey module |
+| `test_anticipation_is_two_steps` | The line names the first meeting **and** what waits beyond it — and stops there |

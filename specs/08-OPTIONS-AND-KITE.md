@@ -25,15 +25,46 @@ stop can trigger while the index thesis is perfectly intact.
 def select_strike(index_price: Decimal, direction, expiry, chain) -> OptionOrder:
 ```
 
+## ⚠ v2 — THE INSTRUMENT CHANGED UNDER THIS SPEC. READ FIRST.
+
+Two facts that invalidate parts of v1 as written:
+
+**1. Bank Nifty has no weekly options.** NSE discontinued weekly Nifty Bank derivatives
+on **20 November 2024**, following the SEBI framework limiting each exchange to weekly
+contracts on a single benchmark index. NSE kept Nifty 50 weeklies. **Bank Nifty is
+monthly only, expiring the last Tuesday of the month.** v1's
+`expiry_preference: "nearest_weekly"` would resolve to nothing, or worse, to a Nifty
+contract. Every "weekly expiry day" rule in v1 (spec 05's expiry window, spec 07's
+size multiplier) now applies to **one day a month, not four.**
+
+That is mostly good news — the most hostile regime for a mechanical price-action system
+now occurs 12 times a year instead of 50. But on that one day it matters *more*, because
+a full month of open interest unwinds into it rather than a week's.
+
+**2. Lot size is 30**, revised down from 35 with effect from the January 2026 series.
+It was 15 before November 2024. v1's worked example in spec 07 used 15. **Read it from
+the instrument master at startup and assert against config — do not trust any literal
+in this repo, including this paragraph.** It has changed three times in two years.
+
+**3. The consequence that matters most.** A monthly ATM premium is 3–4× a weekly's, and
+the round-trip cost on a 25-index-point R works out to 44–64% of R. See spec 07 §1.6 —
+this is why the cost gate exists and why it is not negotiable.
+
+---
+
 ```yaml
 options:
   strike_step: 100
   moneyness: "ATM"             # ATM only at this stage
-  expiry_preference: "nearest_weekly"
+  expiry_preference: "nearest_monthly"      # v2 — weeklies do not exist
+  expiry_weekday_expected: "tuesday"        # assertion only; trust the master
+  lot_size: 30                              # v2 — VERIFY at startup
+  roll_to_next_month_days_before: 2
   min_open_interest: <set from observed data>
   max_spread_pct: 1.5          # (ask-bid)/mid × 100   HYPOTHESIS
   min_depth_lots: 20           # top-of-book must cover our size
   avoid_expiry_day_last_hours: true
+  log_capital_deployed: true   # v2
 ```
 
 Rules:
@@ -44,8 +75,13 @@ Rules:
    sizing maths in spec 07 assumes a stable, measurable delta — only ATM provides that.
 2. **BUY only.** Long CE for a long signal, long PE for a short signal. No selling, no
    spreads, no hedges (CLAUDE.md §6).
-3. **Nearest weekly expiry**, resolved from the instrument master — never a hardcoded
-   weekday. Exchange expiry schedules have changed before.
+3. **Nearest monthly expiry**, resolved from the instrument master — never a hardcoded
+   weekday. Exchange expiry schedules have changed before, and did: Bank Nifty lost
+   weeklies entirely in Nov 2024 and the monthly expiry day moved to Tuesday.
+   `expiry_weekday_expected` is an assertion that alerts on mismatch, not a rule.
+   **Stop trading the expiring series 2 days before expiry and roll to the next month**
+   — the last two days are where a monthly contract's gamma and pin behaviour distort
+   the delta the sizing depends on.
 4. **Liquidity gate before the order:** if `spread_pct > max_spread_pct` or
    `depth < min_depth_lots`, return `Rejection("chain_unavailable")`. An illiquid strike
    turns a modelled 3-point slippage into 15.
@@ -64,10 +100,18 @@ would be wrong precisely when it matters most.
 
 ## Expiry-day handling
 
+Now **one day a month** (last Tuesday), not four. Rules unchanged, importance
+concentrated:
+
 - Windows narrow to 10:00–14:00 (spec 05)
 - Size × 0.5 (spec 07)
 - Delta must be measured, never defaulted
 - After 14:00, no new positions; manage only
+- **v2:** the two days *before* monthly expiry, the engine has already rolled to the
+  next series (`roll_to_next_month_days_before: 2`), so it is trading a ~30-day option
+  on expiry day, not a 0-DTE one. This removes most of the pin risk v1 was worried
+  about — at the cost of a lower delta and a wider spread on the further contract.
+  **Measure both; do not assume the roll is free.**
 
 ---
 
@@ -109,12 +153,59 @@ class CandleBuilder:
 At `15:35` each day, fetch the official 1m historical candles for the session and diff
 them against the locally built candles.
 
+The principle is right and non-negotiable: **without this check you can paper-trade for
+a month on subtly wrong candles and never know.** Run it every single day.
+
+#### v2 — but v1's threshold would have failed every day, which is worse than no check
+
 ```
-Any OHLC mismatch > 0.05 → log LOUDLY and mark the day's paper results SUSPECT.
+v1:  Any OHLC mismatch > 0.05 → mark the day SUSPECT
 ```
 
-Without this check you can paper-trade for a month on subtly wrong candles and never
-know. Run it every single day.
+Live 1m candles are built from **websocket snapshots** — Kite streams index quotes at
+roughly one per second, not every tick. The true high or low of a minute frequently
+occurs between snapshots. On an index that can move 40 points in a minute, missing the
+extreme by more than 0.05 points is not an anomaly, it is the expected behaviour of a
+snapshot feed.
+
+So v1 would mark **every single day SUSPECT**. An alarm that always fires is an alarm
+you learn to ignore, and this is the one check that validates everything else.
+
+```yaml
+feed:
+  reconcile_tolerance_points: 0.05      # the ideal, kept for reference
+  reconcile_tolerance_atr_mult: 0.05    # effective = max(points, mult × ATR)
+  reconcile_baseline_days: 5
+  reconcile_max_mismatch_rate: 0.02     # >2% of candles mismatching → SUSPECT
+```
+
+**Calibrate before you judge.** Run 5 days measuring only — log the distribution of
+your feed's OHLC deviation versus the official candles, then set the threshold from
+that distribution (e.g. the 99th percentile). A threshold derived from your actual feed
+is a real check; a threshold picked from a round number is theatre.
+
+Judge on the **mismatch rate**, not on any single candle. One missed extreme is a
+snapshot feed doing what snapshot feeds do. Two percent of candles drifting is a
+broken builder.
+
+#### The deeper problem this exposes, which is not solved
+
+```yaml
+replay_source: "kite_historical"    # what P9 validates on
+live_source:   "tick_built"         # what actually trades
+```
+
+These are **two different data sources describing the same minute.** Design goal #1
+(spec 01 §1) is that "the paper/replay result must be achievable live." That goal is
+only as true as the gap between these two sources, and v1 never measured it.
+
+P8 must quantify it explicitly: for the same session, run the engine on tick-built
+candles and on the official historical candles, and **diff the decision streams.** Not
+the P&L — the decisions. If the two produce different signals on the same day, the P9
+number does not describe the live system, and the report must say so in the header.
+
+This is unlikely to be zero. The honest goal is to measure it, bound it, and state it —
+not to claim it away.
 
 ## 3.3 Rate limits and resilience
 
@@ -232,6 +323,33 @@ needed for automated strategies — must be confirmed directly with Zerodha and 
 current regulations. That is a prerequisite, not a formality, and it is outside what
 this spec covers.
 
+### v2 — the regulatory picture as of August 2026, to be re-confirmed with the broker
+
+SEBI's retail algo trading framework became **fully mandatory on 1 April 2026**. The
+parts that touch this design, as currently understood — **verify each with Zerodha
+before building against it, this area has moved repeatedly and deadlines were extended
+more than once**:
+
+| Requirement | What it means here |
+|---|---|
+| **10 orders/second threshold** | Below it, per exchange per calendar second, no strategy registration is required. This system places at most a handful of orders a day, so it sits far below. Design so it can never burst above — a retry loop is the realistic way to trip this accidentally. |
+| **Algo ID on every order** | Orders placed via API must carry the exchange-assigned identifier / tag. No longer optional. Plumb this through `OptionOrder` now, even in paper, so it is not retrofitted later. |
+| **Static IP whitelisting** | API access requires a static IP. Home broadband on a dynamic IP, mobile hotspots and laptop-on-café-wifi will not work. **This is a real infrastructure decision** — a small cloud VM with a static IP, in an Indian region for latency, is the usual answer. Budget for it. |
+| **OAuth only, 2FA per session, daily session expiry** | The access token cannot be kept alive across days. The runner must handle a daily login and **fail loudly at startup on a stale token** — which spec 08 §3.1 already requires. |
+| **Broker-registered strategies** | Brokers had to register API-based algo products with the exchanges. Whether *your* use case needs a plain-English strategy description filed with the compliance desk depends on the broker and on how they classify it. **Ask them directly, in writing, before P8.** |
+
+Two practical consequences for the build order:
+
+1. **The static IP requirement affects the paper phase too**, because P8 runs live Kite
+   data. Sort out the hosting before P8, not before live.
+2. **Ask the compliance question early.** The answer determines whether an automated
+   live phase is a configuration change or a months-long approval process. Finding that
+   out after P9 would be an expensive way to learn it.
+
+None of this changes a single trading rule. It changes where the code runs and what
+paperwork precedes it — which is exactly the kind of thing that stalls a project at the
+last step if it is left to the last step.
+
 ---
 
 ## 6. Tests that must pass
@@ -239,6 +357,13 @@ this spec covers.
 | Test | Expectation |
 |---|---|
 | `test_strike_is_atm` | Index 57,142 → strike 57,100 |
+| `test_expiry_is_monthly_not_weekly` | Chain resolution returns the last-Tuesday monthly contract; no weekly Bank Nifty contract is ever selected |
+| `test_lot_size_read_from_master` | Config says 30, master says 25 → **master wins**, alert raised |
+| `test_rolls_two_days_before_expiry` | 2 days before monthly expiry → next series selected |
+| `test_reconcile_tolerance_is_atr_relative` | ATR 40, deviation 1.5 pts → PASS; deviation 4 pts → mismatch |
+| `test_reconcile_judges_on_rate_not_single_candle` | 3 mismatches in 375 candles → PASS; 12 → SUSPECT |
+| `test_algo_id_present_on_every_order` | Every `OptionOrder` carries a non-empty tag/algo_id field |
+| `test_order_rate_below_threshold` | No code path can emit >10 orders in one second, including retries |
 | `test_buy_only` | No code path produces a SELL entry |
 | `test_illiquid_strike_rejected` | Spread 3% → `chain_unavailable` |
 | `test_delta_measured_not_assumed` | Fallback to 0.5 sets a journal flag |

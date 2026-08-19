@@ -233,10 +233,28 @@ no_setup             setup_stale           bias_conflict
 r_too_tight          r_too_wide            space_insufficient
 size_zero            chain_unavailable     duplicate_setup
 htf_close_proximity  position_open
+
+── v2 additions ──
+cost_excessive       event_blackout        gap_regime
+stale_cost_model     r_model_broken
 ```
 
 A fixed vocabulary is what makes the rejection log analysable. Never invent a new
 gate string ad hoc — add it to this list first.
+
+### The v2 gates, and why each exists
+
+| Gate | Fires when | Why it was added |
+|---|---|---|
+| `cost_excessive` | modelled round-trip cost > 25% of `R_premium`, **or** `R_premium < 8 ×` observed spread | Bank Nifty has monthly options only since Nov 2024. Round-trip cost on a 25-index-point R is 44–64% of R, which pushes break-even win rate to ~50%. Cost has to be checked against the live quote *before* the order, not reported after. |
+| `event_blackout` | today is in `config/events.yaml` | ~75% of the index is five stocks. On their results days, and on RBI policy days, the level structure does not hold. This is a calendar lookup, not news interpretation. |
+| `gap_regime` | open gapped > 0.40% and it is before 10:00 | Every carried 1m/5m level assumes price continuity. After a gap those levels describe a market that no longer exists. Only PDH/PDL/PDC and the opening range survive. |
+| `stale_cost_model` | `costs.yaml last_verified` is null or > 90 days old | A stale cost model produces a profitable-looking backtest and an unprofitable account. Refusing to start is the correct response. |
+| `r_model_broken` | median realised loss > 1.2R over the last 10 losing trades | `risk_rupees` is computed from a *modelled* delta. If real losses systematically exceed 1.0R — IV crush, gamma, spread on the way out — then the −2R daily cap is not capping at −2R and every R number in the journal is wrong. Latches for the day. |
+
+`r_model_broken` deserves emphasis: it is the check that tells you the difference
+between "the strategy lost" and "the arithmetic underneath the strategy is wrong."
+Without it those two look identical in the P&L.
 
 ---
 

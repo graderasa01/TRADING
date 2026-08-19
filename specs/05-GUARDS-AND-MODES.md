@@ -9,20 +9,88 @@ fully-logged outcome.
 ## 1. Guard order (fail fast, first failure wins)
 
 ```
-1. warmup            — need 14 candles for ATR, plus 5m/15m alignment
-2. feed_gap          — ≥2 missing minutes recently
-3. time_window       — inside an allowed trading window
-4. htf_close_proximity — not in the last 3 min of a 15m candle
-5. volatility_floor  — ATR14(1m) >= min
-6. volatility_ceiling— ATR14(1m) <= max
-7. session_max_trades
-8. session_consec_loss
-9. session_max_loss
-10. position_open    — one position at a time
+0. stale_cost_model  — costs.yaml unverified or >90 days old  ── REFUSE TO START
+1. event_blackout    — today is in config/events.yaml          ← v2
+2. gap_regime        — gapped >0.40% and before 10:00          ← v2
+3. warmup            — need 14 candles for ATR, plus 5m/15m alignment
+4. feed_gap          — ≥2 missing minutes recently
+5. time_window       — inside an allowed trading window
+6. htf_close_proximity — not in the last 3 min of a 15m candle  **(v2.2: Setup B exempt — see §3b)**
+7. volatility_floor  — ATR14(1m) >= min
+8. volatility_ceiling— ATR14(1m) <= max
+9. session_max_trades
+10. session_consec_loss
+11. session_max_loss
+12. r_model_broken   — realised losses exceeding modelled R    ← v2
+13. position_open    — one position at a time
 ```
 
-Guards 7–9 are **latching**: once tripped, the session stays `BLOCKED` for new entries
+Guards 9–12 are **latching**: once tripped, the session stays `BLOCKED` for new entries
 until the next trading day. An open position is still managed to exit normally.
+
+Guard 0 is not a rejection, it is a **startup refusal**. The engine will not run with
+an unverified cost model, because on this instrument the cost model decides whether
+any trade can be positive-expectancy (spec 07 §1.6).
+
+---
+
+## 1b. Event blackout (`event_blackout`) — v2
+
+The prohibition on news input stands: the engine never reads, parses or reacts to
+news. This guard is a **date lookup in a file written in advance**. No forecast, no
+interpretation, no curve-fitting risk — RBI MPC dates are published for the full
+financial year and results dates weeks ahead.
+
+**Why it is needed.** Roughly 75% of the Bank Nifty index sits in five stocks —
+HDFC Bank, ICICI Bank, SBI, Axis, Kotak. On their results days the index does not
+respect the level structure the engine spent the morning building; it repriced on
+information, not on order flow at a level. The volatility ceiling catches this *after*
+the move has happened. The calendar catches it before.
+
+```
+full-day blackout       : rbi_mpc, union_budget, unscheduled RBI action
+blocked until 11:15     : heavyweight bank results
+blocked until 10:00     : the Indian session following a US FOMC decision
+tagged but not blocked  : monthly expiry, US CPI, index rebalance
+```
+
+**Fail closed.** Missing calendar file, or `last_updated` older than 30 days → refuse
+to start. A stale calendar is worse than none: it produces confidence that the check
+is running when it is not.
+
+The `tagged_only` list matters as much as the blackout list. Those days are traded
+normally but tagged into the journal `context` block, so the weekly review can cut
+performance by them. If the data later shows one is bad, promote it. **Do not promote
+on a hunch, and do not add anything to the blackout list after seeing a bad day** —
+that is curve-fitting with extra steps.
+
+---
+
+## 1c. Gap regime (`gap_regime`) — v2
+
+Every carried 1m and 5m level encodes "price traded here, and someone defended it."
+After a large gap, price never traded through the intervening range at all — those
+levels describe a market that no longer exists. v1 would happily detect a "flip
+retest" of a level price gapped straight over.
+
+```yaml
+gap_regime:
+  gap_pct_threshold: 0.40      # |open − prev_close| ÷ prev_close × 100
+  action: "anchors_only"
+  no_entries_until: "10:00"
+```
+
+On a gap day:
+- **Kill** every carried level of kind TURN, LAUNCH and BREAK. `death_reason = "gapped_over"`.
+- **Keep** PDH, PDL, PDC and (from 09:30) the opening range. These survive because a
+  gap does not erase yesterday's decision points — it just means we arrived at them
+  from a different direction.
+- **No entries before 10:00**, regardless of the normal window.
+- The day is tagged `gap_up` / `gap_down` in the journal context block.
+
+Rebuild the level book from the current session's candles only. The engine is
+effectively starting fresh with three anchors, which is the honest description of what
+it knows.
 
 ---
 
@@ -79,6 +147,74 @@ path — it is the beginning of the end of a rules system.
 
 ---
 
+## 3b. ⚠ v2.2 — `htf_close_proximity` must exempt Setup B. This was the worst bug found.
+
+The dry run (`prototype/FINDINGS.md`, Bug 3) planted a textbook sweep-reclaim at PDL and
+then checked every Setup B condition at the reclaim candle, 09:58:
+
+```
+B1 level Grade A?              A       PASS
+B1 level alive?                alive   PASS
+B2 pierce 21 ≥ 12?                     PASS
+B3 lower wick 83% ≥ 55%?               PASS
+B5 reclaim 35 ≥ 7?                     PASS
+B6 close in top third?  (top)          PASS
+Mode: PDL 35 pts away, alert distance 44   PASS
+```
+
+**Six of six conditions passed, and nothing happened.**
+
+09:58 is minute 43 of the session. The 15m candle 09:45–10:00 was at position 13 of 15,
+so `htf_close_proximity` fired, the mode was `BLOCKED` rather than `ALERT`, and **the
+setup detector never ran.** The engine did not reject that trade. It never saw it.
+
+### Why this is structural, not a coincidence
+
+From `mythinking.md` §6, the trader's own observation:
+
+> *"15m candle band hone se 3-4 min pehle — **wick yahin banti hai.** Naya trade nahi
+> kholta, **2 min rukta hu.**"*
+
+He says the wick forms there, so he **waits two minutes and then acts.** v1 translated
+that into *"entries are blocked for three minutes."* Those are different rules.
+
+Now combine it with Setup B's staleness rule (spec 06, B7): *"candles between sweep and
+reclaim ≤ 2; candle 3+ → `setup_stale`."*
+
+```
+sweeps form in the last 3 minutes of a 15m candle   (the trader's own observation)
+entries are blocked for exactly those 3 minutes
+by the time the block lifts, the reclaim is 3+ candles old → setup_stale
+```
+
+**Setup B is structurally unable to trade at the time Setup B most often forms.** Two
+rules, each individually sensible, that together delete the setup with the best
+risk-reward in the system.
+
+### The fix
+
+The guard's stated reason is that *"HTF candles reverse their shape in their final
+minutes; entering there means entering just before the wick."* That reasoning applies to
+**continuation** entries. Setup B is not a continuation entry — **it is the trade that
+profits from exactly that reversal.** The wick the guard warns about is the sweep Setup B
+is built to catch.
+
+```yaml
+htf_close_buffer_minutes: 3
+htf_close_exempt_setups: ["B_sweep_reclaim"]     # v2.2
+```
+
+- **Setups A and C** (flip retest, range break retest) remain blocked in the tail. They
+  are continuation trades and the original reasoning holds for them exactly.
+- **Setup B** may fire in the tail, but only at a Grade A level with all of B1–B7
+  satisfied. It is already the most heavily gated setup in the system.
+- Journal a `htf_tail_entry: true` flag on any trade taken in the tail, so spec 09's
+  weekly review can cut performance by it. **If tail entries underperform, this exemption
+  gets reversed on evidence** — but it must not be left in place unmeasured, and it must
+  not have been an accident in the first place.
+
+---
+
 ## 4. Session limits
 
 ```yaml
@@ -91,10 +227,14 @@ session:
 
 ```python
 class SessionState:
+    trading_date: date
     trades_taken: int
     consecutive_losses: int
     cumulative_r: Decimal
-    blocked_reason: str | None    # latches for the day
+    blocked_reason: str | None          # latches for the day
+    cooldown_until_candle: int | None
+    attempted_levels: set[tuple[str, str]]   # (level_id, setup) — duplicate registry
+    realised_r_history: list[Decimal]        # for the r_model_broken check
 ```
 
 A trade counts against `trades_taken` **on fill**, not on signal. A cancelled entry does
@@ -103,6 +243,68 @@ not consume a slot but is journalled.
 `risk_per_trade_rupees` has **no default value on purpose.** The engine refuses to start
 without it being set explicitly in config. Forcing that decision to be conscious is the
 point.
+
+### v2 — this state must be persisted, or the limits are decorative
+
+Everything above lives **only in memory** in v1. Consider the sequence the limits exist
+to prevent:
+
+```
+09:47  trade 1 fills, loses          → consecutive_losses = 1
+10:31  trade 2 fills, loses          → consecutive_losses = 2 → BLOCKED for the day
+10:58  unhandled exception, process dies
+11:02  supervisor restarts the engine
+       → trades_taken = 0, consecutive_losses = 0, BLOCKED cleared
+11:20  trade 3 fills, loses
+12:05  trade 4 fills, loses          → "2 consecutive losses" → BLOCKED again
+```
+
+Four losses on a day capped at two. The kill switch was defeated by a restart, which is
+precisely the condition under which you most want it working. Note also that spec 01 §9
+*mandates* a restart-adjacent path — "any unhandled exception in `on_candle` → snapshot
+state, set BLOCKED" — so this is a designed-in code path, not a hypothetical.
+
+```yaml
+session:
+  state_file: "state/session_state.json"
+  on_restart: "resume"        # resume | refuse
+```
+
+Requirements:
+
+1. **Write on every change**, synchronously, before the next candle is processed. Not
+   at end of day, not on a timer.
+2. **On startup**, load the file. If `trading_date == today`, resume from it and log
+   loudly what was resumed.
+3. **Starting fresh requires `--force-fresh-session`** plus a loud log line. Silent
+   reset is forbidden. There must be no code path that quietly zeroes these counters.
+4. **The board is rebuilt from candles; session state is loaded from disk.** Keep these
+   two mechanisms separate and do not try to infer session state from the journal — the
+   journal is append-only and may be mid-write when the process died.
+5. On the first candle after a resume, **reconcile against the broker**: if the engine
+   thinks it is flat but the broker reports a position, alert and do not trade.
+
+---
+
+## 4b. `r_model_broken` — v2
+
+`risk_rupees` is computed as `r_points × ref_delta × lot_size`. That is a *model*. On
+an option the realised loss also absorbs IV movement, gamma, and the spread on the way
+out — and on a stop-out, all three move against you at once.
+
+If real losses are systematically 1.3R when the model says 1.0R, then:
+- the `−2R` daily cap is actually a `−2.6R` cap,
+- every `r_realised` in the journal is wrong,
+- and the P9 report will conclude the strategy failed when the arithmetic underneath it
+  failed.
+
+```python
+if len(losses) >= 10 and median(abs(r) for r in recent_losses) > 1.2:
+    block("r_model_broken")
+```
+
+Latches for the day and raises an alert. The correct response is to recalibrate delta
+measurement and slippage — **not** to widen the risk budget so the numbers match.
 
 ---
 
@@ -168,11 +370,63 @@ entire location discipline collapses.
 **Setup detection does not run in IN.** One position at a time, no reversals on the same
 candle, no pyramiding.
 
-### Expected time distribution
-Roughly 70% WATCH / 25% ALERT / 5% IN. The daily report prints the actual split. If
-ALERT exceeds ~40% of the session for several days, the level book is too crowded —
-check the 8-level cap and the grading, because the system is about to start
-over-trading.
+### Expected time distribution — v2.2, restated on the correct baseline
+
+v1 said *"roughly 70% WATCH / 25% ALERT / 5% IN"* — a target that leaves out `BLOCKED`
+entirely, and `BLOCKED` is always the largest bucket. The dry run measured:
+
+```
+BLOCKED  52%      ← time windows alone block 182 of 375 candles
+WATCH    28%
+ALERT    20%
+IN        0%
+```
+
+The v1 target was unreachable by construction, and worse, the accompanying warning
+(*"if ALERT exceeds ~40% the system is about to over-trade"*) was calibrated against a
+baseline that does not exist. Measured against the whole session, ALERT would never
+approach 40%, so the alarm could never fire.
+
+**Measure the split over non-BLOCKED candles only:**
+
+```
+of the candles the engine is allowed to act on:
+    WATCH ~60%   ALERT ~35%   IN ~5%
+
+warning threshold: ALERT > 60% of non-BLOCKED candles for several days
+                   → the level book is too crowded; check the 8-cap and grading
+```
+
+Print **both** numbers in the daily report — the whole-session split shows how much of
+the day the guards remove, and the non-BLOCKED split shows whether the level book is
+sane. They answer different questions and v1 conflated them.
+
+**v2 — v1 could not have hit this distribution.** With round numbers eligible to
+trigger ALERT on a 100-point grid and `alert_distance = 20`, price is within 20 points
+of *some* 100-mark for 40% of the session by construction — before a single real level
+is added. The target of 25% ALERT was unreachable and the "system is about to start
+over-trading" warning would have been permanently true. Fixed by
+`round_numbers_can_trigger_alert: false` (spec 03 §6).
+
+### v2 — how much time is actually tradeable, counted honestly
+
+Worth writing down, because it is smaller than it feels and it drives the sample-size
+problem in spec 09:
+
+```
+session                                   375 min
+− outside the two windows (0915-0930,
+  1115-1330, 1445-1530)                  −195 min
+= inside windows                          180 min
+− last 3 min of each 15m candle (~20%)    −36 min
+= eligible entry minutes                 ~144 min/day
+```
+
+Of those ~144 minutes the engine must also be in ALERT (~25%), which leaves roughly
+**35 minutes a day** in which a signal can occur at all. Three trades a day is a cap
+that will rarely bind; the realistic outcome remains most days at zero trades. This is
+the design working as intended — but it is also why six months of single-instrument
+data cannot validate anything (CLAUDE.md §8).
 
 ---
 
@@ -224,3 +478,16 @@ setups:
 | `test_cooldown_after_exit` | Entry attempt 2 candles after an exit → rejected |
 | `test_bias_conflict_open_space` | Long setup in a 5m downtrend at a Grade B level → `bias_conflict` |
 | `test_mode_distribution_sane` | Full fixture day → WATCH share ≥ 50% |
+| `test_event_blackout_full_day` | RBI MPC date in events.yaml → every candle rejects `event_blackout` |
+| `test_event_blackout_partial` | Bank results date, 10:40 → blocked; 11:30 → allowed |
+| `test_missing_calendar_refuses_start` | events.yaml absent → engine refuses to start |
+| `test_stale_calendar_refuses_start` | `last_updated` 45 days old → refuses to start |
+| `test_gap_kills_carried_levels` | 0.6% gap → all TURN/LAUNCH/BREAK dead, PDH/PDL/PDC alive |
+| `test_gap_blocks_until_1000` | Gap day 09:45 → `gap_regime`; 10:15 → allowed |
+| `test_small_gap_no_regime_change` | 0.2% gap → levels survive, normal windows |
+| `test_session_state_survives_restart` | 2 fills → kill process → restart → `trades_taken == 2` |
+| `test_fresh_session_requires_flag` | State file for today exists, no flag → refuses to start |
+| `test_no_silent_counter_reset` | Static check: no assignment of `trades_taken = 0` outside the explicit fresh-session path |
+| `test_broker_position_reconcile_on_resume` | Engine flat, broker holds a position → alert, no trading |
+| `test_r_model_broken_latches` | 10 losses with median 1.35R → `r_model_broken`, latched |
+| `test_stale_cost_model_refuses_start` | `costs.yaml last_verified: null` → refuses to start |

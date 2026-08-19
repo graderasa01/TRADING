@@ -3,6 +3,27 @@
 A rules-based, indicator-free price action engine for Bank Nifty.
 **Current stage: paper trading** — live Kite data in, simulated fills out, no real orders.
 
+> ### 📍 Start with `REVIEW-v2.md`
+> The specs were reviewed against live Indian market conditions on 11 Aug 2026 and
+> several things changed. Four of them were load-bearing:
+>
+> 1. **Bank Nifty has no weekly options** (discontinued 20 Nov 2024). Monthly only,
+>    last Tuesday. Lot size 30. v1's expiry logic targeted an instrument that no
+>    longer exists.
+> 2. **Cost is now a pre-trade gate.** On a monthly ATM option, the round-trip cost of
+>    a 25-index-point R is 44–64% of R, which puts the break-even win rate near 50%.
+>    Spec 07's own worked example fails this gate.
+> 3. **"Hard SL always resting in the system" was not buildable.** An index stop cannot
+>    rest at a broker against an option leg. Replaced with three explicit layers.
+> 4. **Session limits did not survive a restart.** They lived in memory only, so a
+>    crash reset the daily loss cap.
+>
+> Every threshold is now ATR-normalised rather than a fixed number of points — without
+> that, a multi-year or cross-instrument backtest silently tests a different system at
+> each end of the sample.
+>
+> v1 is preserved in git (`v1 specs as written, before live-reality review`).
+
 ---
 
 ## What it does
@@ -54,6 +75,7 @@ that log is the most valuable thing this system produces.
 
 | File | Covers |
 |---|---|
+| `REVIEW-v2.md` | **read first** — what broke, why, and what changed |
 | `specs/01-ARCHITECTURE.md` | pipeline, time model, module boundaries, failure policy |
 | `specs/02-DATA-CONTRACT.md` | every dataclass, the canonical rejection-gate vocabulary |
 | `specs/03-LEVEL-ENGINE.md` | TURN / LAUNCH / BREAK / ANCHOR, zones, grading, pruning |
@@ -67,10 +89,18 @@ that log is the most valuable thing this system produces.
 ### Build phases
 
 `P0` models + feed + aggregator → `P1` levels + structure + board → `P2` guards + modes
-→ `P3` setups → `P4` risk → `P5` options + paper broker → `P6` exits → `P7` journal
-→ `P8` live Kite feed (still paper fills) → `P9` six-month replay validation
++ **session persistence** → `P3` setups → `P4` risk → `P5` options + paper broker +
+**cost gate** → `P6` exits + **backstop + watchdog** → `P7` journal → `P8` live Kite
+feed (still paper fills) + **quote logging** → **`P8.5` cost verification** →
+`P9` three-year, four-instrument replay validation
 
 Each phase needs green tests before the next begins.
+
+**P8.5 is the cheap gate that protects the expensive one.** Fill in `costs.yaml` from
+the broker's published rates, replace the guessed slippage with two weeks of measured
+bid/ask, and re-run the cost gate over every signal P8 produced. If most of them now
+reject, stop and reconsider the vehicle *before* spending a month on P9. P8.5 is two
+days of work; P9 is not.
 
 ---
 

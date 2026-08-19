@@ -1,0 +1,58 @@
+# TEACHING ANNOTATION — spec 12
+#
+# Ye file tumhari raay hai, engine ke output par. Claude Code isko padh kar
+# arithmetic me badalta hai.
+#
+# DO NIYAM, dono zaroori:
+#   1. missed          — jo line honi chahiye thi par engine ne nahi khinchi
+#   2. false_positive  — jo line engine ne khinchi par honi nahi chahiye thi
+#
+# Sirf `missed` bharoge to har session engine ko zyada lines banane ki taraf
+# dhakelegi — aur zyada lines = zyada ALERT = zyada trades. `false_positive`
+# hi wo balance hai jo isko bias-encoding banne se rokta hai.
+
+session: "2026-08-11"
+annotator: "devesh"
+engine_run: "run_20260811_a91f"        # chart ke header se
+chart_window: [20, 110]
+
+# ── Jo line HONI CHAHIYE THI ─────────────────────────────────────────────
+missed:
+  - price: 57698
+    candles: [75, 79]                  # chart ke x-axis se index
+    kind: "launch"                     # turn | launch | break | anchor | naya
+    should_have: "grade_a"             # exist | grade_a | alert | setup
+
+    # Apne shabdon me — jaise tum kisi ko samjhate ho
+    why: |
+      Candle 77 aur 78 bilkul chup thi, aur phir 79 pe ek badi candle nikal
+      gayi. Price wahan thodi der rukhi aur phir bhaag gayi. Jab wapas aayegi
+      to yahi jagah defend hogi.
+
+    # ⚠ SABSE ZAROORI FIELD. "Kis NUMBER se pata chala?"
+    # Agar ye nahi bhar sakte, to shayad ye ek asli rule nahi hai —
+    # ek yaad hai. Khaali chhod do, Claude Code khud nikalne ki koshish karega.
+    measurable: |
+      Do lagataar candles jinki range < 0.3 x ATR thi (5 aur 7 pts vs ATR 25),
+      turant baad ek candle jiski range > 2.5 x ATR (69 pts).
+
+    confidence: "high"                 # high | medium | low
+
+# ── Jo line NAHI HONI CHAHIYE THI — utni hi zaroori ──────────────────────
+false_positive:
+  - price: 57833
+    candle: 210
+    engine_said: "TURN grade C"
+    why: |
+      Ye sirf ek 1m swing hai jise kisi ne defend nahi kiya. Price wahan ruki
+      nahi — bas mudi aur chali gayi. Main ye line chart pe nahi khinchta.
+    measurable: |
+      Departure ke baad price 20 candles me wapas aa gayi aur bina ruke paar
+      kar gayi. Ek asli level par kam se kam ek pause hota hai.
+
+# ── Jo engine ne SAHI kiya — ye bhi likho ────────────────────────────────
+# Isse pata chalta hai ki kya nahi todna hai. Jab Claude Code koi rule badle,
+# ye levels bache rehne chahiye.
+confirmed_good:
+  - price: 57455
+    note: "PDL. Sahi pakda, sahi grade, sweep bhi pehchana. Isko mat todna."

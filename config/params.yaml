@@ -1,4 +1,4 @@
-# BANK NIFTY CO-PILOT — PARAMETERS
+# BANK NIFTY CO-PILOT — PARAMETERS  (v2 — live-reality corrected)
 #
 # ⚠  EVERY VALUE HERE IS AN UNVALIDATED HYPOTHESIS.
 #    They were reasoned from market structure, not measured from data.
@@ -6,20 +6,86 @@
 #    Do not treat any number below as established fact.
 #
 # Rule: no numeric literal may appear in a logic file. Everything lives here.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# WHAT CHANGED IN v2 AND WHY  (full reasoning in REVIEW-v2.md at repo root)
+#
+#  1. THRESHOLDS ARE NOW ATR-NORMALISED, NOT ABSOLUTE POINTS.
+#     Bank Nifty was ~35,000 in 2022 and ~57,700 in Aug 2026. A flat "8 point
+#     pierce" is a different rule at each index level, so a multi-year backtest
+#     silently tests a different system at each end of the sample.
+#     Every threshold below now has the form:  effective = max(floor_points,
+#     atr_mult × ATR14_1m).  The floor is a sanity guard against a dead market,
+#     NOT the operating value.
+#
+#  2. BANK NIFTY HAS NO WEEKLY OPTIONS. Discontinued 20 Nov 2024. Monthly only,
+#     expiring the LAST TUESDAY of the month. v1's "nearest_weekly" would have
+#     resolved to nothing or to the wrong instrument.
+#
+#  3. LOT SIZE IS 30 (from Jan 2026 series; was 35). v1 spec 07's worked
+#     example used 15. Verify against the instrument master at startup anyway —
+#     do not trust this number, it has changed three times in two years.
+#
+#  4. A COST GATE NOW EXISTS. On monthly ATM options the round-trip spread and
+#     slippage is 44–64% of a 25-index-point R. That moves the break-even win
+#     rate from ~37% to ~50% for a setup that realistically wins 35–45%.
+#     Cost is therefore a PRE-TRADE GATE, not a post-trade report line.
+#
+#  5. ROUND NUMBERS ARE NO LONGER FULL OBSTACLES. With a 100-point grid and a
+#     2.5× space requirement, a 25-point R needs 62.5 points of clear air while
+#     the mean gap to the next 100-mark is 50. The gate was rejecting on the
+#     last two digits of the entry price. Obstacles now carry a strength.
+# ─────────────────────────────────────────────────────────────
 
 meta:
-  version: 1
+  version: 2
   validated: false          # set true only after a P9 run justifies it
   last_tuned: null
+  instrument: "NIFTY BANK"
+  # Threshold mode. "atr" = every gate uses max(floor, mult × ATR14_1m).
+  # "points" reproduces v1 behaviour exactly — kept ONLY so the v1 vs v2
+  # difference can be measured in replay. Never run "points" live.
+  threshold_mode: "atr"
 
 # ─────────────────────────────────────────────────────────────
 levels:
   # TURN
   swing_lookback_bars_1m: 3
   swing_lookback_bars_5m: 2
+  # v2.1: 15m was MISSING. mythinking.md §1 says the 15m is where the level map
+  # comes from ("15-min: Levels + bias. Map."), and spec 03 §7 awards a grading
+  # point for "HTF confirmed — detectable on 5m or 15m" — but no 15m swing rule
+  # existed, so that point could never be earned honestly.
+  swing_lookback_bars_15m: 2
   wick_cluster_min_touches: 2
   wick_cluster_tolerance_points: 5
+  wick_cluster_tolerance_atr_mult: 0.20
   wick_cluster_window_candles: 30
+
+  # ── v2.1: LEVEL MEMORY — dormant pool instead of death by distance ────────
+  # v1 killed any level further than relevance_atr_mult × ATR with
+  # death_reason "irrelevant", and dead levels are removed from the active book
+  # and from the obstacle list. So the engine deleted a level precisely because
+  # price had travelled away from it — and had nothing left when price came
+  # back to meet it.
+  #
+  # A human does the opposite. mythinking.md: "iske levels ko yaad rakhunga
+  # recent me daal kar, jab upar aaya to mujhe yaad rahega meri mulakat kisse
+  # ho sakti hai." Distance is the reason to REMEMBER a level, not to forget it.
+  dormant_pool_enabled: true
+  dormancy_distance_atr_mult: 25     # beyond this → dormant (was: dead)
+  revival_distance_atr_mult: 15      # price returns within this → revived
+  dormant_min_grade_at_sleep: "B"    # C-grade levels are allowed to die properly
+  dormant_max_age_minutes: 375       # one session. Overnight, only ANCHORs survive
+  dormant_pool_max: 40               # memory, not a hoard
+  # A revived level keeps born_at, touches and its grade at dormancy. It does
+  # NOT reset to untested — it has a history and the grading must reflect it.
+
+  # ── v2.1: chart rendering, for the P1 acceptance gate ────────────────────
+  # The level engine has never been compared against a human's chart. Until it
+  # is, every phase after P1 is built on an unverified foundation.
+  render_levels_chart: true
+  render_output_dir: "reports/charts"
 
   # LAUNCH  (the 1m level invisible on 5m — spec 03 §3)
   launch_impulse_atr_mult: 2.0      # impulse candle range >= this × ATR20_1m
@@ -30,7 +96,21 @@ levels:
 
   # lifecycle
   max_touches: 3                    # 3rd touch kills the level
+  # v2.2: a touch is an EVENT, not a minute. Without separation, price hovering
+  # near a zero-pocket level (PDH/PDL/round numbers) counted 3 touches in 3
+  # minutes and killed it. In the dry run PDL died 2 minutes before its own
+  # sweep — the flagship trade of the day, removed by the clock.
+  touch_separation_points: 8
+  touch_separation_atr_mult: 0.6    # price must LEAVE by this before a new touch
   acceptance_candles: 5             # bodies beyond → accepted_through
+  # v2.2: a Grade C level breaking is not news. Without this, 28 breaks in one
+  # session filled 6 of the 8 level slots with grade-C axes.
+  axis_min_broken_grade: "B"
+  # v2.2: departure_speed is computed for EVERY level kind, not only LAUNCH.
+  # v1 defined it inside the LAUNCH section only, so TURN and ANCHOR defaulted
+  # to 0, could never score 3, and could never be Grade A. Result: ALERT mode
+  # was 0% of the session and the engine could not trade at all.
+  departure_lookahead_candles: 3
   micro_level_ttl_minutes: 90       # 1m-born levels
   axis_ttl_minutes: 120             # BREAK axis
   relevance_atr_mult: 25            # further than this × ATR20_1m → irrelevant
@@ -42,8 +122,67 @@ levels:
   clean_formation_min_candles: 10
   clean_formation_fast_mult: 1.5
 
+  # ── v2: OBSTACLE STRENGTH MODEL ────────────────────────────
+  # v1 treated every round number as a wall equal to an untested 15m supply
+  # zone. On a 100-point grid that made the space gate a coin flip on the last
+  # two digits of the entry price (see header note 5).
+  #
+  #   strong  → gates the space check AND caps T1
+  #   medium  → gates the space check AND caps T1
+  #   weak    → caps T1 only. Never blocks a trade.
+  obstacle_strength:
+    grade_a_level:      "strong"
+    pdh_pdl:            "strong"
+    day_high_low:       "strong"
+    opening_range:      "strong"
+    grade_b_level:      "medium"
+    round_500:          "medium"    # 57,500 / 58,000 — genuinely watched
+    far_side_of_range:  "medium"
+    grade_c_level:      "weak"
+    round_100:          "weak"      # 57,100 / 57,200 — noise on this timeframe
+    twice_rejected_1m:  "weak"
+  space_gate_min_strength: "medium"  # weak obstacles cannot cause a rejection
+
+  # ── v2: round numbers can never be a TRIGGER level ─────────
+  # A 100-mark has no order-flow history behind it. v1's grading could push it
+  # to Grade A via the "HTF confirmed / anchor" point, which would let a setup
+  # fire on a number rather than on a level. Hard cap it.
+  round_number_max_grade: "B"
+  round_number_grid: 100
+  round_number_major_grid: 500
+  # Round numbers are excluded from max_active_levels and from ALERT triggering.
+  # Without this, price sits within 20 pts of SOME 100-mark 40% of the session,
+  # so ALERT never switches off and the location discipline collapses.
+  round_numbers_can_trigger_alert: false
+  round_numbers_count_against_cap: false
+
 # ─────────────────────────────────────────────────────────────
 structure:
+  # ── v2.1: JOURNEY LADDER — "jahan se aaya, wahan tak jayega" ─────────────
+  # The single largest missing idea in v1. When a level breaks, v1 creates an
+  # AXIS (the flip line) and stops thinking. It never forms an expectation of
+  # WHERE price is now going.
+  #
+  # The human's model, from mythinking.md: price leaves a level, and it travels
+  # to the place it came from — the origin of the previous move — meeting the
+  # levels in between on the way. That is a claim about market behaviour, and
+  # it is untested.
+  #
+  # So it is built as a LOGGED PREDICTION, not as a gate. Every break emits a
+  # Journey with a ranked destination ladder, timestamped before it resolves.
+  # Spec 09 then measures the hit rate per rung. Only if the data supports it
+  # does any rung earn the right to drive T2 or a bias filter.
+  #
+  # Read the ordering carefully: this is deliberately the mirror of the
+  # existing Landing Ladder (spec 04 §6), which maps where a PULLBACK stops.
+  journey_enabled: true
+  journey_gates_trades: false        # ⚠ MUST stay false until P9 measures it
+  journey_ttl_minutes: 120
+  journey_stall_candles_5m: 6        # no progress in 6 5m candles → "stalled"
+  journey_reached_tolerance_atr_mult: 0.5
+  # D3 measured-move projection: broken range width × this
+  journey_measured_move_mult: 1.0
+
   regime_lookback_5m: 20
   htf_last_third: 0.66
   htf_close_buffer_minutes: 3       # no new entries in the final 3 min of a 15m candle
@@ -52,9 +191,20 @@ structure:
 
 # ─────────────────────────────────────────────────────────────
 time:
+  # v2.2: the guard's reason is "HTF candles reverse shape in their final
+  # minutes." Setup B is the trade that PROFITS from that reversal — the wick
+  # the guard warns about IS the sweep. In the dry run this guard silently
+  # deleted a perfect sweep-reclaim: 6 of 6 conditions passed and the detector
+  # never ran, because the mode was BLOCKED. Combined with B7 (reclaim within
+  # 2 candles), Setup B could not trade at the time it most often forms.
+  htf_close_exempt_setups: ["B_sweep_reclaim"]
   windows_normal:
     - ["09:30", "11:15"]
     - ["13:30", "14:45"]
+  # v2: Bank Nifty expiry is MONTHLY (last Tuesday), not weekly. This regime
+  # now applies ~1 day a month instead of 4, so it is far less important than
+  # v1 assumed — but on that one day it matters more, because a month of open
+  # interest unwinds into it.
   windows_expiry:
     - ["10:00", "14:00"]
   opening_range_end: "09:30"
@@ -66,8 +216,13 @@ time:
 volatility:
   atr_period: 14
   atr_tf: "1m"
+  # v2: these are still absolute points because ATR is what we are measuring —
+  # it cannot normalise itself. But they MUST be re-derived from data in P9 as
+  # percentiles of the trailing 60-day ATR distribution, not held as constants.
   atr_min_points: 12                # below → dead market, no trades
   atr_max_points: 60                # above → event vol, no trades
+  atr_min_percentile: null          # ← P9 fills this in; then it supersedes the points
+  atr_max_percentile: null
   high_vol_slippage_threshold: 40   # slippage multiplier kicks in above this
 
 # ─────────────────────────────────────────────────────────────
@@ -77,6 +232,17 @@ session:
   max_loss_r: 2.0
   risk_per_trade_rupees: null       # ⚠ REQUIRED. Engine refuses to start if null.
                                     #   No default on purpose — make this decision consciously.
+
+  # ── v2: SESSION STATE MUST SURVIVE A RESTART ───────────────
+  # v1 held trades_taken / consecutive_losses / cooldown / duplicate-attempt
+  # registry in memory only. A crash at 11:00 after two losses would restart
+  # the engine with a clean slate and let it lose the day twice. The board is
+  # reconstructible from candles; session state is not.
+  state_file: "state/session_state.json"
+  on_restart: "resume"              # resume | refuse
+  # If a state file exists for today and on_restart == "refuse", the engine
+  # will not start without --force-fresh-session. Never make "reset" the
+  # silent default.
 
 modes:
   alert_distance_points: 20
@@ -101,46 +267,162 @@ setups:
   b_reclaim_min_points: 5
   b_reclaim_min_atr_mult: 0.25
   b_reclaim_max_candles: 2          # candle 3+ → stale
+  # v2.2: measured, not reasoned. A genuine textbook sweep in the dry run gave
+  # R = 69 against a v2 ceiling of 40.7 — the better the sweep, the worse the R,
+  # because entry sits at the reclaim close and the stop beyond the sweep wick.
+  # "pullback" applies the system's own retest discipline (mythinking.md §7,
+  # "hamesha retest par") to Setup B, which v1 applied to A and C but not to B.
+  b_entry_mode: "pullback"          # reclaim_close | pullback | skip_wide
+  # ⚠ REACHABILITY CONSTRAINT — spec 10 §3.3 enforces this at startup:
+  #      R = (b_entry_max_extreme_atr_mult + sl_buffer_atr_mult) × ATR
+  #      r_max = r_max_atr_mult × ATR
+  #   so this value MUST satisfy:  cap + sl_buffer_atr_mult <= r_max_atr_mult
+  #                                cap + 0.45               <= 1.40
+  #                                cap                      <= 0.95
+  # This was first set to 1.2, which gives 1.65 — a Setup B entry that could
+  # never pass the R ceiling at ANY volatility. Caught by the assertion, not
+  # by reading. Change r_max_atr_mult and this together, never alone.
+  b_entry_max_extreme_atr_mult: 0.85
+  b_pullback_wait_candles: 3
+  # Always log what the other two modes would have done — the counterfactual
+  # study settles this with data, not argument.
+  b_log_alternate_entries: true
 
   # C — range break retest
   c_range_min_candles: 20
   c_range_min_width_points: 25
+  c_range_min_width_atr_mult: 1.2
   c_range_max_width_points: 120
+  c_range_max_width_atr_mult: 5.0
   c_range_touch_tolerance_points: 5
+  c_range_touch_tolerance_atr_mult: 0.2
   c_compression_ratio: 0.7          # last third ÷ first third
   c_acceptance_candles: 2
 
 # ─────────────────────────────────────────────────────────────
 risk:
-  sl_buffer_min_points: 10
-  sl_buffer_atr_mult: 0.25          # effective = max(min_points, mult × ATR14_1m)
-  r_min_points: 12                  # tighter → noise will hit it
-  r_max_points: 35                  # wider → R:R cannot fit the space
-  min_space_ratio: 2.5              # space to NEAREST obstacle ÷ R
+  # v2: the ATR term in v1 was dead. max(10, 0.25 × ATR) only exceeds 10 when
+  # ATR > 40, which is rare. So spec 07's claim that "the buffer scales with
+  # volatility" was false for ~95% of candles. Raised the multiplier and
+  # dropped the floor so the ATR term actually binds in the normal range.
+  sl_buffer_min_points: 6
+  sl_buffer_atr_mult: 0.45          # effective = max(min_points, mult × ATR14_1m)
+
+  # ── v2: R BOUNDS ARE ATR-RELATIVE ──────────────────────────
+  # v1's flat r_max_points: 35 systematically rejected the BEST Setup B
+  # candidates. A qualifying sweep candle has a wick ≥55% of its range and
+  # closes in the top third, so R ≈ 0.70 × candle_range + buffer. On a normal
+  # Bank Nifty minute (range 40–50 pts) that is R = 38–45 → always rejected.
+  # The filter was removing exactly the trades the setup exists to catch.
+  r_min_points: 12                  # absolute floor — tighter is inside the noise
+  r_min_atr_mult: 0.55
+  r_max_points: 35                  # floor for the ceiling on quiet days
+  r_max_atr_mult: 1.40              # effective ceiling = max(35, 1.40 × ATR14_1m)
+  r_absolute_max_points: 60         # hard stop regardless of ATR — never exceed
+
+  min_space_ratio: 2.5              # space to nearest STRONG/MEDIUM obstacle ÷ R
   t1_r_multiple: 1.5
   t1_book_fraction: 0.5
   expiry_size_multiplier: 0.5
+
+  # ── v2: THE COST GATE — new, and the most important addition ──
+  # Reason: R is 25 index points ≈ 12.5 premium points at ATM delta 0.5. A
+  # round trip on a monthly ATM Bank Nifty option costs 5.5–13 premium points
+  # once you cross the spread twice and add the stop gap. That is 44–104% of R
+  # BEFORE brokerage. At 0.5R of cost the break-even win rate is 50%; this
+  # style of setup realistically wins 35–45%. Cost is therefore not a reporting
+  # detail — it decides whether the trade can be positive-expectancy at all.
+  #
+  # Gate: reject when the modelled round-trip cost exceeds this share of R.
+  max_cost_as_fraction_of_r: 0.25
+  # Equivalent, and easier to check against a live quote:
+  min_r_premium_to_spread_ratio: 8.0   # R_premium must be ≥ 8 × observed spread
+  # Both are checked. Either failing → Rejection("cost_excessive").
+  # Expect this gate to fire often. That is the gate working, not a bug.
 
 exits:
   time_stop_candles_5m: 5
   progress_threshold_r: 0.3
   trail_tf: "5m"                    # NOT 1m — 1m trailing kills every runner
 
+  # ── v2: THREE-LAYER STOP (see spec 07 §2 and CLAUDE.md §1.6) ──
+  # v1's constitution said "Hard SL — always resting in the system. Never
+  # mental." That is not implementable as written: the stop is an INDEX level
+  # but the position is an OPTION, and no broker accepts an index-triggered
+  # stop on an option leg. v1's hard SL was therefore a software stop that
+  # dies with the process, while the document claimed otherwise.
+  stop_eval_on_ticks: true          # L1: evaluate the index stop on ticks, not
+                                    #     only on 1m closes. A 1m close-only
+                                    #     stop gives away up to 59 seconds.
+  premium_backstop_enabled: true    # L2: a real broker-side SL-M on the option
+  premium_backstop_r_multiple: 2.0  #     placed at 2.0 × R_premium beyond entry
+                                    #     — a disaster stop for process death or
+                                    #     disconnect, NOT the trading stop. It
+                                    #     should essentially never fill.
+  heartbeat_timeout_seconds: 90     # L3: external watchdog. No heartbeat →
+                                    #     flatten and alert.
+
 # ─────────────────────────────────────────────────────────────
 options:
   strike_step: 100
   moneyness: "ATM"                  # ATM only — delta must be stable for sizing
-  expiry_preference: "nearest_weekly"
+  # v2: Bank Nifty weekly contracts were discontinued 20 Nov 2024. Monthly
+  # only, last Tuesday of the month. Resolve from the instrument master; never
+  # hardcode the weekday, the exchange has moved it before.
+  expiry_preference: "nearest_monthly"
+  expiry_weekday_expected: "tuesday"   # assertion only — if the master
+                                       # disagrees, trust the master and alert
+  lot_size: 30                      # Jan 2026 series onward. VERIFY at startup
+                                    # against the instrument master; do not
+                                    # trust this literal.
+  roll_to_next_month_days_before: 2 # stop trading the expiring series 2 days out
   max_spread_pct: 1.5
   min_depth_lots: 20
   delta_measure_window_minutes: 30
   delta_fallback_atm: 0.5           # using this sets a journal flag — never silent
+  # v2: a monthly ATM option's delta drifts far less than a weekly's, which
+  # helps sizing — but its premium is 3–4× larger, so the same rupee risk
+  # deploys 3–4× the capital. Log capital deployed on every trade.
+  log_capital_deployed: true
 
 slippage:                            # premium points — CALIBRATE from observed quotes
+  # v2: these remain v1's guesses, and they are almost certainly optimistic for
+  # a MONTHLY ATM contract. Two weeks of logged bid/ask must replace them
+  # before any P&L number is quoted. Until then every result carries a large
+  # error bar and must be described that way.
   entry_points: 2.0
   exit_points: 2.0
   stop_gap_extra: 1.5
   high_vol_multiplier: 2.0
+  measured_from_quotes: false       # flips true once calibration is done
+  calibration_sample_size: 0
+
+# ─────────────────────────────────────────────────────────────
+# v2: EVENT BLACKOUT — new
+# The system takes no news input by design, and that discipline stays. But
+# ~75% of the Bank Nifty index sits in five stocks, so five results days a
+# quarter break the structure the levels are built on. RBI MPC dates and the
+# Budget are published a year ahead. Blocking a known date is a calendar
+# lookup, not a forecast, so it carries no curve-fitting risk.
+events:
+  calendar_file: "config/events.yaml"
+  blackout_full_day: ["rbi_mpc", "union_budget", "monetary_policy_unscheduled"]
+  blackout_until: {"heavyweight_bank_results": "11:15", "fomc_overnight": "10:00"}
+  # Fail closed: if the calendar file is missing or older than 30 days, the
+  # engine refuses to start. A stale calendar is worse than none, because it
+  # produces false confidence.
+  max_calendar_age_days: 30
+  missing_calendar_action: "refuse_start"
+
+# v2: GAP-DAY REGIME — new
+# Every 1m and 5m level from yesterday assumes price continuity. After a large
+# gap, those levels reference a market that no longer exists, but v1 would
+# happily trade a "retest" of one.
+gap_regime:
+  gap_pct_threshold: 0.40           # |open − prev_close| ÷ prev_close × 100
+  action: "anchors_only"            # kill all sub-daily carried levels
+  no_entries_until: "10:00"
+  # PDH / PDL / PDC and the opening range survive a gap. Nothing else does.
 
 # ─────────────────────────────────────────────────────────────
 feed:
@@ -148,3 +430,53 @@ feed:
   candle_emit_timeout_seconds: 2
   reconnect_clean_candles_required: 2
   block_minutes_after_gap: 15
+
+  # ── v2: RECONCILIATION THRESHOLD WAS UNACHIEVABLE ──────────
+  # v1: "Any OHLC mismatch > 0.05 → mark the day SUSPECT."
+  # Live 1m candles are built from websocket SNAPSHOTS (roughly 1/sec for an
+  # index), not from every trade. The true 1m high/low will regularly be missed
+  # by more than 0.05 points. v1 would have marked every single day SUSPECT,
+  # which trains you to ignore the alarm — the worst possible outcome for a
+  # check this important.
+  reconcile_tolerance_points: 0.05      # kept as the IDEAL
+  reconcile_tolerance_atr_mult: 0.05    # effective = max(points, mult × ATR)
+  reconcile_baseline_days: 5            # measure your own feed's typical
+                                        # deviation for 5 days FIRST, then set
+                                        # the threshold from that distribution
+  reconcile_max_mismatch_rate: 0.02     # >2% of candles mismatching → SUSPECT
+  # Deeper issue, flagged not solved: replay uses Kite HISTORICAL candles while
+  # live uses TICK-BUILT candles. These are different data sources for the same
+  # minute. Design goal #1 ("the paper result must be achievable live") is only
+  # as true as the gap between them. P8 must quantify that gap explicitly and
+  # the P9 report must state it.
+  replay_source: "kite_historical"
+  live_source: "tick_built"
+  quantify_source_divergence: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# decide — the Trader Decision Layer (Phase E, src/livemap/decide.py)
+#
+# ⚠  EVERY VALUE IN THIS SECTION IS `null` ON PURPOSE, AND THAT IS THE DESIGN.
+#
+# A null bound means the gate is MEASUREMENT-ONLY: it records its inputs for every
+# candidate and rejects nothing. The first teach-only replay therefore reports the
+# DISTRIBUTION of each input over an unfiltered population, which is the only honest
+# basis for choosing a number. Filling one of these in is a separate, reviewed step
+# with the measurement attached — never a guess typed here first.
+#
+# livemap/trader.py already committed to this: "Space is reported, not gated... a
+# threshold picked now would be fitted to the handful of examples that suggested it.
+# Replay decides."
+decide:
+  freshness:
+    # How many candles after the accepted break a retest may still be acted on.
+    max_bars_since_break: null        # HYPOTHESIS — unmeasured, gate inactive
+
+  # ── room ahead. THREE numbers, never one ──────────────────────────────────
+  # route.py distinguishes free_to_near / zone_depth / free_to_far because a thin gap
+  # in front of a deep zone and a thin gap in front of open air are different events.
+  # No bound may be set on one of these alone.
+  space:
+    min_free_to_near_atr: null        # HYPOTHESIS — unmeasured, gate inactive
+    min_zone_depth_atr: null          # HYPOTHESIS — unmeasured, gate inactive
+    min_free_to_far_atr: null         # HYPOTHESIS — unmeasured, gate inactive

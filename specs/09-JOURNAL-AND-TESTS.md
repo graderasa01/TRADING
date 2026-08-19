@@ -69,9 +69,49 @@ be able to see that.
   "rule_violations": [],
 
   "context": {"regime": "trending", "time_bucket": "0930-1115",
-              "is_expiry": false, "atr_bucket": "20-30", "control": "buyers"}
+              "is_expiry": false, "atr_bucket": "20-30", "control": "buyers",
+
+              "_v2_": "──────────────────────────────",
+              "instrument": "BANKNIFTY", "gap_day": false, "gap_pct": 0.08,
+              "event_tag": null, "days_to_expiry": 19,
+              "atr_at_entry": 22.4, "index_level_bucket": "57000-58000"},
+
+  "v2_execution": {
+    "observed_spread_at_signal": 1.4,
+    "cost_as_fraction_of_r": 0.18,
+    "capital_deployed": 324000.0,
+    "ref_delta_measured": true,
+    "r_realised_vs_planned": 0.97,
+    "backstop_placed": true, "backstop_filled": false,
+    "stop_eval": "tick"
+  },
+
+  "v2_counterfactual": {
+    "space_v2": 122.0, "space_v1_all_obstacles": 72.0,
+    "r_max_v2": 35.0,  "r_max_v1": 35.0,
+    "would_v1_have_taken_this": true
+  }
 }
 ```
+
+### v2 — the three fields that matter most in this block
+
+**`r_realised_vs_planned`.** `risk_rupees` is a *model*: `r_points × ref_delta ×
+lot_size`. The realised loss also absorbs IV movement, gamma and the exit spread — and
+on a stop-out all three move against you together. If this number is systematically
+above 1.0 on losers, the `−2R` daily cap is not capping at −2R, and every R in this
+journal is wrong. That triggers `r_model_broken` (spec 05 §4b). Without this field,
+"the strategy lost" and "the arithmetic underneath the strategy is wrong" look
+identical in the P&L.
+
+**`capital_deployed`.** To risk ₹5,000 on a 25-point stop you deploy ~₹3.2 lakh of
+monthly ATM premium. That ratio never appears in an R-based report, but it decides
+whether the account can hold the position at all.
+
+**`index_level_bucket`.** Bank Nifty was ~35,000 in 2022 and ~57,700 in Aug 2026. Cut
+every result by this bucket. If performance correlates with the index level rather than
+with the regime, some absolute threshold is still hiding in the logic — v2 normalised
+the ones that were found, and this cut is how you find the rest.
 
 ### `rules_followed` is computed, never self-reported
 
@@ -154,6 +194,92 @@ gate is destroying value rather than protecting it. If they lose more, the gate 
 This is the only honest way to tune a threshold, and it requires the rejection log —
 which is why every rejection is written in full.
 
+#### v2 — make it a scored table for every gate, not a study of two
+
+```
+gate_value(g) = mean_R(trades taken) − mean_R(trades g rejected, replayed forward)
+```
+
+| Reading | Meaning | Action |
+|---|---|---|
+| strongly positive | the gate removes losers | keep |
+| ≈ zero | the gate removes a random sample | **delete it** — it costs sample size and buys nothing |
+| negative | the gate removes winners | delete it, and find out why the reasoning was backwards |
+
+A gate scoring ≈ 0 is not harmless. It shrinks an already-tiny sample, and every
+deleted gate is one less parameter to overfit. The bias should be toward deletion.
+
+Run this specifically for the v2 changes, where both the old and new values are logged
+on every decision (spec 03 §6b, spec 07 §1.2):
+
+| Comparison | Question |
+|---|---|
+| `space_v2` vs `space_v1_all_obstacles` | Did demoting round numbers to weak add winners or just add trades? |
+| `r_max_v2` vs `r_max_v1` | Are the large-R Setup B sweeps that v1 rejected actually good? |
+| `cost_excessive` rejections | Replayed forward and **net of the real spread** — would they have paid? |
+
+The last one is the whole ballgame. If the cost-rejected trades would have been
+profitable *after* their actual costs, the gate is too tight. If they would not, the
+gate has just told you the vehicle is wrong.
+
+---
+
+### v2 — cross-instrument validation: the strongest test available, and it is free
+
+Six months of Bank Nifty at ~3 trades/week is ~70 trades. At a 40% win rate the 95%
+confidence interval on that win rate spans roughly ±12 percentage points. That is not a
+test; it is a number you will over-interpret in whichever direction it lands.
+
+**Run the identical, unchanged ruleset on Nifty 50, FinNifty and Sensex, over 3 years.**
+
+- Four instruments × three years ≈ **800–1000 trades**.
+- No parameter may be re-tuned per instrument. Same `params.yaml`, same everything. If
+  a rule needs different numbers on Nifty, it was fitted to Bank Nifty.
+- ATR-normalised thresholds (v2) are what makes this possible at all — v1's absolute
+  point thresholds are meaningless on an index trading at a different level, which is
+  the same reason they were meaningless across a 3-year Bank Nifty sample.
+
+| Outcome | Reading |
+|---|---|
+| Works on all four | The rules describe something real about how these markets move |
+| Works on Bank Nifty only | Fitted to one instrument in one window. The honest conclusion is no edge |
+| Works on none | Clear, cheap, early answer. This is a good outcome — you found out for free |
+
+This is **validation only.** The prohibition on multi-instrument scanning while trading
+(spec 01 §10) stands: one instrument, traded properly.
+
+---
+
+### v2 — pre-registered sensitivity grid, instead of one point estimate
+
+A single P9 run gives one number at one parameter combination. That tells you nothing
+about whether the result is a plateau or a spike.
+
+**Before running P9**, write down the grid — commit it to the repo, dated. Then run
+every combination and look at the *surface*, not the peak:
+
+```yaml
+# tests/p9_grid.yaml — WRITTEN AND COMMITTED BEFORE THE FIRST P9 RUN
+sweep_wick_ratio:   [0.45, 0.55, 0.65]
+min_space_ratio:    [2.0, 2.5, 3.0]
+r_max_atr_mult:     [1.2, 1.4, 1.6]
+t1_r_multiple:      [1.2, 1.5, 2.0]
+```
+
+| Surface shape | Meaning |
+|---|---|
+| Broad plateau — neighbours all positive | Plausibly real. Take the **centre**, never the peak |
+| Single spike surrounded by losses | Noise. There is no edge, only one lucky cell |
+| Monotonic toward an edge of the grid | The grid is wrong, or the parameter should not exist |
+
+Pre-registration is what separates this from curve-fitting. Choosing the grid after
+seeing results, or extending it toward whatever looked good, is fitting with extra
+steps. Spec 01 §8's rule — never tune more than 2 parameters at once — applies to
+*tuning*. This is measuring stability, and it is judged on the shape, not the maximum.
+
+**If the plateau is not broad, the correct conclusion is that the system has no
+demonstrated edge.** Not "try a fifth parameter."
+
 ---
 
 # PART 3 — TEST PLAN
@@ -181,6 +307,14 @@ Required fixtures:
 | `lunch_perfect_setup.csv` | Textbook setup at 12:10 → must be rejected on time |
 | `expiry_day.csv` | Expiry windows, halved size, measured delta |
 | `full_session.csv` | One complete 375-candle day for integration + determinism |
+| `sweep_large_candle.csv` | **v2:** 45-pt sweep candle at ATR 35 → R ≈ 41, must be **accepted** (v1 rejected it as `r_too_wide`) |
+| `wide_spread_signal.csv` | **v2:** perfect setup, quoted spread 3.0 prem pts → `cost_excessive` |
+| `round_number_trap.csv` | **v2:** valid setup with a round-100 at 30 pts and PDH at 122 pts → must **pass** the space gate |
+| `round_number_alert.csv` | **v2:** price hovering near a 100-mark with no real level → mode stays WATCH for the whole fixture |
+| `gap_day_open.csv` | **v2:** 0.6% gap → carried levels dead, no entries before 10:00 |
+| `event_blackout_day.csv` | **v2:** date present in events.yaml → every candle rejects |
+| `restart_midsession/` | **v2:** two-part fixture — run, kill after 2 fills, resume, assert `trades_taken == 2` |
+| `nifty_full_session.csv` | **v2:** same engine, different instrument and index level — used for the cross-instrument check |
 
 ## 3.2 Test layers
 
@@ -210,7 +344,125 @@ test_no_magic_numbers_in_logic     # regex for numeric literals outside config
 test_no_datetime_now_in_engine
 test_no_float_in_money_paths
 test_gross_never_in_output
+
+# ── v2 ──
+test_no_silent_session_counter_reset   # no `trades_taken = 0` outside the fresh path
+test_no_sl_widening_path               # sl_index never reassigned outward
+test_every_threshold_has_atr_form      # every points threshold has an atr_mult sibling
+test_algo_id_on_every_order            # SEBI: orders carry the exchange tag
+test_engine_refuses_stale_cost_model   # costs.yaml unverified → startup refusal
+test_engine_refuses_stale_event_file   # events.yaml >30 days → startup refusal
 ```
+
+**v2 — the index-level drift test.** The most important new static-ish test, because it
+catches the whole class of bug that v1's absolute thresholds represent:
+
+```python
+def test_thresholds_are_index_level_invariant():
+    """
+    Take full_session.csv. Produce a second copy with every price shifted
+    +20,000 points and every range scaled proportionally.
+    The decision STREAM (gates fired, setups detected, entries taken) must be
+    IDENTICAL — only the absolute prices differ.
+
+    If it is not identical, an absolute point threshold is still hiding in the
+    logic, and any multi-year or cross-instrument backtest is silently testing
+    a different system at each end of the sample.
+    """
+```
+
+## 3.2b THE LEVEL-OVERLAP TEST — v2.1. Run this before anything else.
+
+**The problem it solves.** Every phase from P2 onward assumes the level book is
+approximately right. Nobody has ever checked. Swing lookback 3, wick-cluster tolerance
+5 points, launch impulse 2.0 × ATR, departure speed 1.0 — all guesses. The engine will
+confidently draw eight lines every day, and whether they are the *right* eight lines is
+completely unknown.
+
+If the level engine is wrong, **nothing downstream can be right.** A perfect risk engine
+sizing a perfect setup at the wrong level is a perfect way to lose money. This is the
+cheapest possible test of the foundation and it costs half a day.
+
+### Protocol
+
+1. Pick **10 real Bank Nifty sessions** across different regimes — 3 trending, 3
+   ranging, 2 gap days, 1 monthly expiry, 1 high-volatility.
+2. **The trader marks their levels first, on a clean chart, without seeing the engine's
+   output.** This ordering is the whole test. Reverse it and you are measuring
+   agreeableness, not agreement.
+3. Run P1 over the same sessions. Render the engine's active book with
+   `render_levels_chart: true` → `reports/charts/`.
+4. Score each session:
+
+```
+matched   : engine line within  max(10 pts, 0.4 × ATR20_1m)  of a human line
+missed    : human drew it, engine has nothing there          ← the dangerous one
+invented  : engine drew it, human sees nothing there
+
+overlap = matched / (matched + missed)
+noise   = invented / total_engine_lines
+```
+
+Score the **Grade A book only** — Grade B and C are context, and the human does not
+draw context.
+
+### How to read the score
+
+| Overlap | Reading | Action |
+|---|---|---|
+| **≥ 75%** | The arithmetic reproduces the eye | Proceed to P2 |
+| **60–75%** | Broadly right, tuning needed | Look at the *misses*, not the score. Proceed with the gaps documented |
+| **40–60%** | The engine finds different levels than the human | **Stop.** Diagnose before P2 |
+| **< 40%** | The foundation is not the strategy in the specs | **Stop.** Everything downstream is moot |
+
+**The `missed` bucket is the valuable output, not the score.** Every miss is a level the
+human's eye found and no rule describes. For each one, the question is always the same:
+*"kis number se pata chala?"* — what measurable property made that a level? The answer
+becomes a new detection rule, or a changed threshold.
+
+Expect the first run to be noisy in a specific way: the raw detectors are far chattier
+than the eye. On a 27-candle sample the wick-cluster rule alone can produce 8 candidate
+clusters where a human would draw 2. The human eye filters automatically; the engine
+needs the filter written down. That is what grading and the 8-level cap are for — **so
+score after the cap, never before it.**
+
+### Deliverable
+
+`reports/level_overlap.md` — per session: the rendered chart with both sets of lines,
+the three counts, and a table of every miss with the trader's one-line reason.
+
+Re-run it after any change to `levels:` params. It is the regression test for the
+foundation.
+
+---
+
+## 3.2c The Journey hit-rate report — v2.1
+
+The Journey Ladder (spec 04 §6b) writes a prediction on every level break and never acts
+on it. This is where those predictions get scored.
+
+```
+journeys started (by direction, regime, time bucket, origin grade)
+% reaching D1 / D2 / D3 / D4
+% stalled  ·  % failed on invalidation
+median max_progress ÷ distance to D2
+median 5m candles to reach D2
+hit rate when D2 and D3 agree (confluence) vs when they do not
+```
+
+**D2 is the one that matters** — it is the rung that encodes *"jahan se aaya wahan tak
+jayega."* That claim is the trader's core belief about this market and it has never been
+measured.
+
+Report it plainly and without cushioning. If D2 hits 70%, it has earned the right to
+drive T2 selection and `journey_gates_trades` becomes a real decision. If it hits 45%,
+the honest conclusion is that price reaching its origin was a memorable pattern rather
+than a reliable one — and knowing that is worth more than a year of feeling it.
+
+Run this from P7 onward, on paper data, long before P9. It needs no capital and no
+edge — only breaks, which happen every day.
+
+---
 
 ## 3.3 No-look-ahead — the test that protects everything
 
@@ -232,15 +484,16 @@ else in the report means anything. Run it in CI on every commit.
 | Phase | Cannot proceed until |
 |---|---|
 | P0 | Aggregator exact on `full_session.csv`; no-look-ahead test green |
-| P1 | Level book on `full_session.csv` matches the hand-computed `expected.yaml` |
+| P1 | Level book matches `expected.yaml` **AND the level-overlap test below scores ≥60%** |
 | P2 | Mode split within ±5% of hand-count; limits latch correctly |
 | P3 | All golden fixtures fire; all near-miss fixtures silent |
 | P4 | Every risk boundary rejects at the right value |
-| P5 | Charges verified by hand against the broker's published rates for 3 sample trades |
-| P6 | All six exit reasons reproduced on fixtures |
+| P5 | Charges verified by hand against the broker's published rates for 3 sample trades; **cost gate rejects `wide_spread_signal.csv`** |
+| P6 | All six exit reasons reproduced on fixtures; **process killed with a position open → backstop found resting at the broker** |
 | P7 | Daily report generated; rule audit clean |
-| P8 | Five consecutive live sessions with reconciliation PASS and zero crashes |
-| P9 | ≥6 months replay, reported by every context cut, **net of costs** |
+| P8 | Five consecutive live sessions with reconciliation PASS and zero crashes; **≥2 weeks of bid/ask logged; tick-built vs historical decision-stream divergence measured and stated** |
+| P8.5 | **`costs.yaml` verified and `last_verified` set; measured spread replaces guessed slippage; cost gate re-run over all P8 signals.** If most now reject, stop and reconsider the vehicle before spending time on P9 |
+| P9 | **≥3 years, four instruments** (BankNifty, Nifty, FinNifty, Sensex), identical params, reported by every context cut, **net of measured costs**, plus the pre-registered sensitivity grid |
 
 ## 3.5 What P9 must report — and how to read it honestly
 

@@ -1,0 +1,60 @@
+id: coil-expansion
+stated: 'Spec 11 §5 ka pehla loop run: 8 me se sirf EK miss aisa tha jahan koi detector
+  hi
+
+  nahi tha — 10:34 wala move, jiska origin `pre-ranges [5.3, 7.0, 69.0]` dikhata hai
+
+  ATR 24.9 ke against. Do bilkul chup candles, phir 69-point expansion.
+
+  Dawa: jab ek chhota group apne se pehle ke shor se saaf compress ho jaata hai, to
+
+  agla stretch pehle se ZYADA loud hota hai.
+
+  '
+mechanism: 'Compression means participants have stopped disagreeing about price; the
+  range
+
+  narrows because nobody will pay up and nobody will hit the bid. That state is
+
+  unstable — the first participant willing to disagree finds no resting orders in
+  the
+
+  way, so the move that follows is larger than the one that preceded the quiet.
+
+  '
+clauses:
+- capability: span_compression
+  op: <=
+  value: '0.5'
+span_len: 4
+outcome: expansion
+horizon: 10
+k: '1.2'
+predicted_rate: 40% — spec 11 §D3 warns a compression detector fires on everything,
+  so I expect this to be near the base rate, not above it.
+author: claude (spec 11 §5, NOT the trader)
+registered_at: '2026-08-12T09:09:02+05:30'
+registered_digest: 8aaad613f9bd3df1
+notes: 'Registered as a WORKED EXAMPLE of the pipeline, and because spec 11 §5 named
+  this as
+
+  the one miss where a new detector might be justified. It is not the trader''s claim.
+
+  It consumes a slot in the multiple-comparison budget and that is correct — the budget
+
+  is meant to count every question asked of this data, including mine.
+
+  '
+status: measured
+results:
+  teach:
+    sessions: 543
+    spans: 185706
+    events: 1093
+    hits: 45
+    rate_pct: 4.12
+    base_rate_pct: 16.55
+    edge_pp: -12.43
+    p: 0.0
+    verdict: CONTRADICTED
+    measured_at: '2026-08-12T09:12:23+05:30'

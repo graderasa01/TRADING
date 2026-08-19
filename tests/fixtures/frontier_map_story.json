@@ -1,0 +1,4407 @@
+{
+ "double return": {
+  "finalised": [],
+  "readings": [
+   {
+    "band": null,
+    "dn": null,
+    "i": 90,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 91,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 92,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 93,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 94,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 95,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 96,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 97,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 98,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 99,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 100,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 101,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 102,
+    "interaction": "REVISIT",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 103,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 104,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 105,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 106,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 107,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 108,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 109,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 110,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 111,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 112,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 113,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 114,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 115,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 116,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 117,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 118,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 119,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 120,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 121,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 122,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 123,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 124,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 125,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 126,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 127,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 128,
+    "interaction": "ACCEPTED_ABOVE",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 129,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 130,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 131,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 132,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 133,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 134,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 135,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 136,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 137,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 138,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 139,
+    "interaction": "REVISIT",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 140,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 141,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 142,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 143,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 144,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 145,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 146,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 147,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 148,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 149,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 150,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 151,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 152,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 153,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 154,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 155,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 156,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 157,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 158,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 159,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 160,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 161,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 162,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 163,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   }
+  ]
+ },
+ "one-way walk": {
+  "finalised": [],
+  "readings": [
+   {
+    "band": null,
+    "dn": null,
+    "i": 90,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 91,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 92,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 93,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 94,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 95,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 96,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 97,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 98,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 99,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 100,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 101,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 102,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 103,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 104,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 105,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 106,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 107,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 108,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 109,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 110,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 111,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 112,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 113,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 114,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 115,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 116,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 117,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 118,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 119,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 120,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 121,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 122,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 123,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 124,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 125,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 126,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 127,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 128,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 129,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 130,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 131,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 132,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 133,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 134,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 135,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 136,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 137,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 138,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 139,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 140,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 141,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 142,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 143,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 144,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 145,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 146,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 147,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 148,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 149,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   }
+  ]
+ },
+ "rest-break-rest": {
+  "finalised": [],
+  "readings": [
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 90,
+    "interaction": "REVISIT",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 91,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 92,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 93,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 94,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 95,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 96,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 97,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 98,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 99,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 100,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 101,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 102,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 103,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 104,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 105,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 106,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 107,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 108,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 109,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 110,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 111,
+    "interaction": "ACCEPTED_ABOVE",
+    "node_id": null,
+    "state": "LEAVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 112,
+    "interaction": "LEAVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 113,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 114,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 115,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 116,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 117,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 118,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 119,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 120,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 121,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 122,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 123,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 124,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 125,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 126,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 127,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 128,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 129,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 130,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 131,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 132,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 133,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 134,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 135,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 136,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 137,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 138,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 139,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 140,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 141,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 142,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 143,
+    "interaction": "NEW_CLUSTER",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 144,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 145,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 146,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 147,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 148,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 149,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 150,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 151,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 152,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 153,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 154,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 155,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 156,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 157,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 158,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 159,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 160,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 161,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 162,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 163,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 164,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 165,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 166,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 167,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 168,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   },
+   {
+    "band": [
+     "22565.01733333333332",
+     "22573.36266666666658"
+    ],
+    "dn": "22565.01733333333332",
+    "i": 169,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22573.36266666666658"
+   }
+  ]
+ },
+ "there and back": {
+  "finalised": [],
+  "readings": [
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 90,
+    "interaction": "REVISIT",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 91,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 92,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 93,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 94,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 95,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 96,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 97,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 98,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 99,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 100,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 101,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 102,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 103,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 104,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 105,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 106,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 107,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 108,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 109,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 110,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 111,
+    "interaction": "ACCEPTED_ABOVE",
+    "node_id": null,
+    "state": "LEAVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 112,
+    "interaction": "LEAVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 113,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 114,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 115,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 116,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 117,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 118,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 119,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 120,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 121,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 122,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 123,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 124,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 125,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 126,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 127,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 128,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 129,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 130,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 131,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 132,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 133,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 134,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 135,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 136,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 137,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 138,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 139,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 140,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 141,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 142,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 143,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 144,
+    "interaction": "REVISIT",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 145,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 146,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 147,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 148,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 149,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 150,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 151,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 152,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 153,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 154,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 155,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 156,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 157,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 158,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 159,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 160,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 161,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 162,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 163,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 164,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 165,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 166,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 167,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 168,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 169,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   }
+  ]
+ },
+ "walkthrough": {
+  "finalised": [
+   {
+    "end": 187,
+    "high": "22563.14413333333342",
+    "kind": "cluster",
+    "low": "22556.49480000000002",
+    "start": 145,
+    "window": 8
+   }
+  ],
+  "readings": [
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 90,
+    "interaction": "REVISIT",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 91,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 92,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 93,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 94,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 95,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 96,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 97,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 98,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 99,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 100,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 101,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 102,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 103,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 104,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 105,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 106,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 107,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 108,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 109,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 110,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 111,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 112,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 113,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 114,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 115,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 116,
+    "interaction": "RE_ENTRY",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 117,
+    "interaction": "INSIDE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 118,
+    "interaction": "AT_UPPER_EDGE",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": [
+     "22459.800000000000",
+     "22475.400000000000"
+    ],
+    "dn": "22459.800000000000",
+    "i": 119,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "C01",
+    "state": "CONFIRMED",
+    "up": "22475.400000000000"
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 120,
+    "interaction": "ACCEPTED_ABOVE",
+    "node_id": null,
+    "state": "LEAVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 121,
+    "interaction": "LEAVING",
+    "node_id": null,
+    "state": "LEAVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 122,
+    "interaction": "LEAVING",
+    "node_id": null,
+    "state": "LEAVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 123,
+    "interaction": "LEAVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 124,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 125,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 126,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 127,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 128,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 129,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 130,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 131,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 132,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 133,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 134,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 135,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 136,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 137,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 138,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 139,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 140,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 141,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 142,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 143,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 144,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 145,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 146,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 147,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 148,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 149,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 150,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 151,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 152,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 153,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 154,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 155,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 156,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 157,
+    "interaction": "FORMING",
+    "node_id": null,
+    "state": "STRUCTURE_CANDIDATE",
+    "up": null
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 158,
+    "interaction": "NEW_CLUSTER",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 159,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 160,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 161,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 162,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 163,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 164,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 165,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 166,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 167,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 168,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 169,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 170,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 171,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 172,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 173,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 174,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 175,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 176,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 177,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 178,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 179,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 180,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 181,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 182,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 183,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 184,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 185,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 186,
+    "interaction": "RE_ENTRY",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 187,
+    "interaction": "INSIDE",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 188,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 189,
+    "interaction": "BREAK_ATTEMPT_DOWN",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": [
+     "22556.49480000000002",
+     "22563.14413333333342"
+    ],
+    "dn": "22556.49480000000002",
+    "i": 190,
+    "interaction": "BREAK_ATTEMPT_UP",
+    "node_id": "L01",
+    "state": "CONFIRMED",
+    "up": "22563.14413333333342"
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 191,
+    "interaction": "ACCEPTED_ABOVE",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 192,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 193,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 194,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 195,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 196,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 197,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 198,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 199,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 200,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 201,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 202,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 203,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 204,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 205,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 206,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 207,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 208,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 209,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 210,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   },
+   {
+    "band": null,
+    "dn": null,
+    "i": 211,
+    "interaction": "MOVING",
+    "node_id": null,
+    "state": "MOVING",
+    "up": null
+   }
+  ]
+ }
+}

@@ -1,0 +1,35 @@
+# market data — never committed. The manifest and the report are.
+data/**/*.parquet
+data/**/*.csv
+data/fetch_log.jsonl
+!data/manifest.json
+!data/DATA-REPORT.md
+
+# secrets. The real defence is that nothing secret is written inside the repo at
+# all (DECISIONS.md D-015, D-017) and that tools/check_no_secrets.py scans content.
+# This list is the second lock, and it is deliberately narrow.
+#
+# It used to contain `**/*secret*` and `**/*credential*`. Those matched on FILENAME,
+# which buys nothing — a key pasted into notes.md is not called "secret" — and they
+# silently ignored `tools/check_no_secrets.py`, so the scanner would never have been
+# committed and nobody would have noticed. Content scanning is the real check.
+.env
+.env.*
+*.env
+!.env.example
+**/kite_token.json
+access_token*
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+*.egg-info/
+
+# session state and generated reports
+state/
+reports/

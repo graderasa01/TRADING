@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reactive Trader Observatory</title>
+<link rel="stylesheet" href="/static/app.css">
+<body>
+<div class="app">
+
+  <div class="bar">
+    <b style="color:var(--hi)" id="title">Reactive Trader Observatory</b>
+    <span class="sep"></span>
+    <select id="session"></select>
+    <button id="paper" title="Open PAPER research positions on this session's candidates">PAPER off</button>
+    <button id="load">Load</button>
+    <span class="sep"></span>
+    <button id="play">▶ Play</button>
+    <button id="back">◂</button>
+    <button id="step">Reveal next candle ▸</button>
+    <select id="speed">
+      <option value="1000">1×</option><option value="500">2×</option>
+      <option value="200" selected>5×</option><option value="50">20×</option>
+    </select>
+    <span class="sep"></span>
+    <span class="hint">Mode</span>
+    <button class="mode" data-m="BLIND" title="Future hidden AND the system's answer hidden">Blind</button>
+    <button class="mode on" data-m="SYSTEM" title="Future hidden, system answer shown">System</button>
+    <button class="mode" data-m="AUDIT" title="System answer beside what happened after — debugging only">Audit</button>
+    <span class="sep"></span>
+    <span class="hint">View</span>
+    <button class="view on" data-v="FOCUS" title="Highlight the active path; everything else secondary">Focus path</button>
+    <button class="view" data-v="MAP" title="Show every structure — understand the map, not the route">Map</button>
+    <span class="sep"></span>
+    <button id="golive" title="Drive the identical production pipeline one candle at a time">Live feed</button>
+    <span class="grow"></span>
+    <span id="pills"></span>
+    <span class="clock" id="clock">—</span>
+  </div>
+
+  <div class="nav">
+    <span class="hint">Layers</span><span id="layers"></span>
+    <span class="sep"></span>
+    <span class="hint">Scenario</span><select id="scen"></select>
+    <span class="grow"></span>
+    <span class="hint" id="progress"></span>
+  </div>
+
+  <div class="chart"><svg id="svg"></svg><div class="tip" id="tip"></div></div>
+  <div class="side" id="side"><div class="muted">loading…</div></div>
+  <div class="tl"><div class="ev" id="tl"></div></div>
+
+</div>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

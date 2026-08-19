@@ -1,0 +1,39 @@
+# P1 level-overlap gate (spec 09 3.2b)
+# Marked BEFORE seeing any engine output.
+session: "2024-12-17"
+symbol: "NIFTY BANK"
+annotator: "trader"
+marked_before_engine_output: true
+levels:
+  - price: 53332.6
+    candle: 67
+    kind: ""
+    note: ""
+  - price: 53273.9
+    candle: 71
+    kind: ""
+    note: ""
+  - price: 53187.3
+    candle: 65
+    kind: ""
+    note: ""
+  - price: 53113.1
+    candle: 129
+    kind: ""
+    note: ""
+  - price: 53017.2
+    candle: 149
+    kind: ""
+    note: ""
+  - price: 52989.4
+    candle: 101
+    kind: ""
+    note: ""
+  - price: 52840.9
+    candle: 208
+    kind: ""
+    note: ""
+  - price: 52814.2
+    candle: 200
+    kind: ""
+    note: ""

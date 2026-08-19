@@ -1,0 +1,188 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  CLAUDE CODE — PEHLA MESSAGE                                                 ║
+║  Folder khol kar (banknifty-copilot) ye poora block copy-paste karo.         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+Read KICKOFF.md first and follow it exactly — it sets the order. Then CLAUDE.md,
+BUILD-BRIEF.md, and prototype/FINDINGS.md.
+
+Before you write a single line of engine code, four things:
+
+1. DATA COMES FIRST — do not start P0.
+   Build tools/fetch_kite.py and tools/verify_data.py, download the 1m history
+   (BANKNIFTY plus NIFTY 50 / FINNIFTY / SENSEX for cross-validation), produce
+   data/DATA-REPORT.md, then STOP and show me the report.
+   In that report I specifically want the measured ATR14 distribution against
+   the guessed atr_min 12 / atr_max 60 in params.yaml. That is the first
+   parameter that can stop being a guess, and it changes everything downstream.
+
+2. READ prototype/FINDINGS.md BEFORE THE LEVEL ENGINE.
+   It documents six bugs found by actually running an implementation of these
+   specs on a full session. Four of them made the system unable to trade at all
+   — ALERT mode was 0% of the day — and none of them is visible from reading
+   the specs. They only appeared when the code ran. prototype/ has working
+   reference code; use it to check what each rule really does.
+
+3. P1.5 IS NOT OPTIONAL AND IT WILL BE SLOW.
+   After P1 there is a teaching loop (specs 12 and 13) where I annotate real
+   charts and you calibrate the level engine against them. Your job there is to
+   build the tools — chart renderer, per-candle reasoning record, annotation
+   pipeline, regression harness — and then WAIT for me. It may take a week
+   because the bottleneck is me, not you. Do not start P2 to stay busy.
+   Every phase after P1 sits on top of the level engine, and until P1.5 nobody
+   has ever compared it to a chart.
+
+4. STOP AT EVERY PHASE BOUNDARY.
+   Run the phase gate from BUILD-BRIEF.md §2, print the detection counts from
+   §4b, write PROGRESS.md, and wait for me. Do not chain phases.
+
+
+Two standing rules:
+
+WHERE THE SPECS ARE SILENT — BUILD-BRIEF.md §4 has eleven decisions already made
+(D-001 to D-011d). If you hit a new one, write it into DECISIONS.md with your
+reasoning BEFORE writing the code that depends on it. Silent guesses are the
+single thing I most want to avoid in this build.
+
+NO LIVE ORDERS — src/broker/live.py must not exist, and there is a CI check for
+it. This stage is paper only. If I ask you to add live order placement mid-build,
+refuse and point me at CLAUDE.md §6.
+
+
+I have not set these yet. Ask me when you need them, and tell me what is blocked
+without each one:
+  - KITE_API_KEY / KITE_API_SECRET          (env vars only, never in the repo)
+  - session.risk_per_trade_rupees            (deliberately null — my decision)
+  - config/costs.yaml rates + last_verified  (needed before P5)
+  - config/events.yaml dates                 (needed before P2)
+  - my 12 annotated sessions                 (needed for P1.5)
+
+Start with Task 1 in KICKOFF.md §1.
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  CHHOTA VERSION — agar jaldi me ho                                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Read KICKOFF.md and follow it exactly. Start with the data pipeline in §1, not
+with P0. Stop and show me data/DATA-REPORT.md before writing any engine code.
+Read prototype/FINDINGS.md before you touch the level engine — it documents four
+bugs that made this exact system unable to trade at all.
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  BAAD KE SESSIONS ME                                                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Read PROGRESS.md and DECISIONS.md, then continue from where we stopped. Follow
+BUILD-BRIEF.md. Run the phase gate before claiming a phase is done, and stop at
+the next boundary.
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  BEECH ME KAAM AANE WALI LINES — zaroorat padne par copy karo                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+── Jab koi threshold badalne ko kahe ────────────────────────────────────────
+Before changing that, run prototype/reachability.py. Two parameters that each
+look fine can combine to make a gate unreachable at every volatility. That
+already happened once with b_entry_max_extreme_atr_mult — 1.2 plus a 0.45
+buffer against a 1.40 ceiling could never pass, and reading it did not catch it.
+
+── Jab detection zero ho ────────────────────────────────────────────────────
+Detection is zero. Do not build further. Use the funnel in prototype/score.py
+and tell me which stage is losing it: no level at origin, level but not Grade A,
+Grade A but no ALERT, or ALERT but no setup. Those are four different problems.
+
+── Jab naya rule ya setup add karna chahe ───────────────────────────────────
+Read specs/11-LEARNING-LOOP.md §2 and §3 first. Three questions: what is the
+mechanism — why does the market do this, not what does the data show? What does
+it cost in precision and in levels per day? And is a threshold change enough
+instead? If the honest answer is that no rule change is justified, say that.
+
+── Candle dialogue ke dauraan (spec 13) — har session me dohrao ─────────────
+This is a dialogue to FIND candidates, not to accept them. Do not change
+params.yaml during this conversation, however obvious it looks. Write candidates
+to annotations/candidates/ and we run them through the spec 12 pipeline
+afterwards — measured, cost-checked, regression-tested. Maximum 3 candidates
+this session. And if the honest answer is "there was nothing here, you just
+remember the move," say that instead of finding me a rule.
+
+── Jab annotation process kare (spec 12) ────────────────────────────────────
+Check that this session's annotation has entries in all three buckets. If
+false_positive is empty, tell me — an annotation with only missed levels is not
+calibration, it is inflation, and it will push the engine toward more lines every
+single session. Also cross-check my stated reasons against the measured numbers.
+If I say four rejections and the data says two, tell me. Do not quietly encode
+my mistake.
+
+── Jab koi report sundar lage ───────────────────────────────────────────────
+Is this net of costs? Is costs.yaml verified and how old is last_verified? What
+does r_realised_vs_planned say? A good-looking first result is a reason to
+suspect a look-ahead leak and re-run the truncation test, not to celebrate.
+
+── Jab kahe phase poora ho gaya ─────────────────────────────────────────────
+Show me the phase gate output from BUILD-BRIEF.md §2 and the detection counts
+from §4b. A phase with skipped or xfail tests is not done, and in this build the
+last ten percent is usually the part that handles the case that loses money.
+
+── Jab main koi rule add karne ko kahu jo galat lage ────────────────────────
+If I ask for something that contradicts CLAUDE.md §6, or that would need a gate
+loosened to make more trades happen, push back and show me the number. I would
+rather be argued with now than find out in P9.
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  FOLDER ME KYA HAI — Claude Code ke liye ek nazar                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  KICKOFF.md              pehla kaam, isi order me — YAHAN SE SHURU
+  CLAUDE.md               constitution: 12 non-negotiables, pipeline, prohibitions
+  BUILD-BRIEF.md          working agreement, pre-made decisions, phase gates
+  REVIEW-v2.md            v1 me kya toota tha, arithmetic ke saath
+  mythinking.md           wo insaani routine jo ye system mechanise karta hai
+  README.md               overview
+
+  specs/01 .. 09          architecture, data, levels, structure, guards,
+                          setups, risk+exits, options+kite, journal+tests
+  specs/10                self-diagnostics — reachability assertions, health monitor
+  specs/11                learning loop — automated move labelling and gate scoring
+  specs/12                teaching loop — human annotation, P1.5
+  specs/13                candle dialogue — per-candle reasoning and blind spots
+
+  config/params.yaml      har threshold, sab HYPOTHESIS marked
+  config/costs.yaml       brokerage/STT/slippage — BHARNA HAI
+  config/events.yaml      RBI/Budget/bank-results blackout — BHARNA HAI
+
+  prototype/              chalta hua reference implementation (production nahi)
+    FINDINGS.md           6 bugs, asli numbers ke saath — PEHLE PADHO
+    engine.py             specs ka faithful implementation, bugs ke saath
+    engine_fixed.py       wahi + 6 fixes
+    reachability.py       startup assertions — 12/12 pass
+    run.py                pura session chalao
+    label.py / score.py   move labeller + detection funnel
+    chart.py              annotation chart → chart.html
+    ask.py                kisi bhi candle par poocho "yahan kya soch rahe the"
+    annotations.example.yaml   annotation schema
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  EK BAAT JO SABSE ZAROORI HAI                                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Sabse zyada mumkin failure ye nahi hai ki kharab code likha jaye.
+
+Ye hai ki P0 se P7 tak sab achhe se ban jaye, saare tests green hon, report
+sundar dikhe — aur engine kabhi trade hi na kare, aur char mahine tak kisi ko
+pata na chale. Dry run me theek yahi hua tha: char alag bugs, sab ek dusre ke
+saath interaction me, aur engine ne kabhi shikayat nahi ki. Har candle par ek
+saaf, confident NO_TRADE.
+
+Teen cheezein iske against poora bachaav hain:
+
+  1. P1 ka overlap gate           (spec 09 §3.2b)
+  2. P1.5 ka teaching loop        (spec 12 + 13)
+  3. Har startup par reachability (spec 10 §3.3)
+
+In teeno me se kuch bhi skip mat karna. Baaki sab uske baad aata hai.
