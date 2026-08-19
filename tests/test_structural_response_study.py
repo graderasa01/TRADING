@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 from dataclasses import FrozenInstanceError, asdict, fields
 from datetime import datetime, timedelta
@@ -10,13 +11,21 @@ import pytest
 from src.domain.models import IST
 from src.learning.split import TEACH, VALIDATE
 from tools.structural_response_study import (
+    FROM_INSIDE,
+    FROM_OUTSIDE,
+    GHOST,
+    REAL,
+    UNKNOWN_ORIGIN,
+    BoundaryEncounter,
     CausalSample,
     LocalContext,
     MicroContext,
+    ReferenceFact,
     ReleaseFact,
     ResponseObserver,
     StructureFact,
     aggregate,
+    comparison_boundaries,
 )
 
 BASE = datetime(2025, 1, 2, 9, 20, tzinfo=IST)
@@ -30,6 +39,8 @@ def sample(index: int, close: str, *, high: str | None = None,
            bucket: str = TEACH, episode: str | None = None,
            source_ordinal: int = 4, micro: MicroContext | None = None,
            local: LocalContext | None = None,
+           next_above: ReferenceFact | None = None,
+           next_below: ReferenceFact | None = None,
            releases: tuple[ReleaseFact, ...] = ()) -> CausalSample:
     c = Decimal(close)
     h = Decimal(high) if high is not None else c + Decimal("0.5")
@@ -52,6 +63,8 @@ def sample(index: int, close: str, *, high: str | None = None,
         left_id=left_id,
         micro=micro or MicroContext("ABSENT"),
         local=local or LocalContext(False),
+        next_above=next_above,
+        next_below=next_below,
         releases=releases,
     )
 
@@ -95,6 +108,91 @@ def test_repeated_edge_encounters_are_distinct_and_ordered():
     assert [item.origin.ordinal_for_edge for item in uppers] == [1, 2]
     assert uppers[0].end_reason == "MOVED_INSIDE"
     assert uppers[1].end_reason == "SOURCE_EPISODE_BOUNDARY"
+
+
+def test_encounter_origin_uses_current_candle_location_not_structure_origin():
+    structure_birth = StructureFact(
+        "C01", "cluster", Decimal(100), Decimal(110), "R01", "LOWER_THIRD")
+    encounter_current = StructureFact(
+        "C01", "cluster", Decimal(100), Decimal(110), "R01", "AT_CURRENT_UPPER")
+    observer = observe(
+        sample(0, "105", current=structure_birth),
+        sample(1, "109.5", high="110", low="109", current=encounter_current,
+               interaction="AT_UPPER_EDGE"),
+    )
+
+    assert observer.structures[0].origin.initial_price_location == "LOWER_THIRD"
+    assert observer.encounters[0].origin.price_location == "AT_CURRENT_UPPER"
+    assert observer.encounters[0].origin.origin_class == FROM_INSIDE
+
+
+def test_reclaim_origin_is_classed_from_outside_not_as_inside_approach():
+    outside = StructureFact(
+        "C01", "cluster", Decimal(100), Decimal(110), "R01", "ABOVE_STRUCTURE")
+    reclaim = StructureFact(
+        "C01", "cluster", Decimal(100), Decimal(110), "R01", "REENTERING")
+    observer = observe(
+        sample(0, "112", high="113", low="111.5", current=outside,
+               interaction="BREAK_ATTEMPT_UP"),
+        sample(1, "109", high="112", low="108", current=reclaim,
+               interaction="RE_ENTRY"),
+    )
+    upper = next(item for item in observer.encounters if item.origin.side == "upper")
+
+    assert upper.origin.origin_class == FROM_OUTSIDE
+    assert upper.origin.price_location == "REENTERING"
+
+
+def test_unknown_origin_remains_unknown_without_prior_candle_facts():
+    observer = observe(
+        sample(0, "109", high="110", low="108.5", interaction="AT_UPPER_EDGE"),
+    )
+
+    assert observer.encounters[0].origin.origin_class == UNKNOWN_ORIGIN
+
+
+def test_upper_and_lower_wick_only_interactions_start_encounters():
+    upper = observe(
+        sample(0, "105"),
+        sample(1, "105", high="110", low="104", interaction="INSIDE"),
+    )
+    lower = observe(
+        sample(0, "105"),
+        sample(1, "105", high="106", low="100", interaction="INSIDE"),
+    )
+    upper_encounter = next(
+        item for item in upper.encounters if item.origin.side == "upper")
+    lower_encounter = next(
+        item for item in lower.encounters if item.origin.side == "lower")
+
+    assert upper_encounter.first_touch_index == 1
+    assert upper_encounter.observations[0].close_location == "INSIDE"
+    assert lower_encounter.first_touch_index == 1
+    assert lower_encounter.observations[0].close_location == "INSIDE"
+
+
+def test_outward_and_inward_reference_reaches_remain_distinct():
+    above = ReferenceFact("C02.low", Decimal(112), "IMMEDIATE")
+    below = ReferenceFact("C03.high", Decimal(98), "IMMEDIATE")
+    upper = observe(
+        sample(0, "105"),
+        sample(1, "109", high="110", low="108", interaction="AT_UPPER_EDGE",
+               next_above=above, next_below=below),
+        sample(2, "105", high="113", low="97"),
+    ).encounters[0]
+    lower = observe(
+        sample(0, "105"),
+        sample(1, "101", high="102", low="100", interaction="AT_LOWER_EDGE",
+               next_above=above, next_below=below),
+        sample(2, "105", high="113", low="97"),
+    ).encounters[0]
+
+    assert upper.origin.outward_reference == above
+    assert upper.origin.inward_reference == below
+    assert upper.outward_reference_reached_index == 2
+    assert upper.inward_reference_reached_index == 2
+    assert lower.origin.outward_reference == below
+    assert lower.origin.inward_reference == above
 
 
 def test_touch_without_break_records_inside_response_only():
@@ -178,6 +276,77 @@ def test_origin_candle_range_cannot_claim_later_response_order():
     assert encounter.opposite_edge_reached_index is None
 
 
+def test_ghost_topology_width_and_placement_are_deterministic():
+    observer = observe(sample(0, "103", high="104", low="102"))
+    origin = observer.structures[0].origin
+    first = comparison_boundaries(origin)
+    second = comparison_boundaries(origin)
+    definitions = {(item.boundary_kind, item.side): item for item in first}
+    real_upper = definitions[(REAL, "upper")]
+    real_lower = definitions[(REAL, "lower")]
+    ghost_upper = definitions[(GHOST, "upper")]
+    ghost_lower = definitions[(GHOST, "lower")]
+
+    assert first == second
+    assert real_upper.edge_price == Decimal(110)
+    assert real_lower.edge_price == Decimal(100)
+    assert ghost_upper.edge_price == Decimal(105)
+    assert (ghost_upper.band_low, ghost_upper.band_high) == (
+        Decimal(95), Decimal(105))
+    assert (ghost_lower.band_low, ghost_lower.band_high) == (
+        Decimal(105), Decimal(115))
+    assert ghost_upper.band_width == origin.width
+    assert ghost_lower.band_width == origin.width
+
+
+def test_real_and_ghost_use_the_same_boundary_encounter_state_machine():
+    observer = observe(
+        sample(0, "103", high="104", low="102"),
+        sample(1, "105", high="110", low="104"),
+        sample(2, "102", high="103", low="101"),
+    )
+
+    assert {item.origin.boundary_kind for item in observer.boundary_encounters} == {
+        REAL, GHOST}
+    assert all(isinstance(item, BoundaryEncounter)
+               for item in observer.boundary_encounters)
+    implementation = inspect.getsource(ResponseObserver._append_boundary_encounter)
+    assert "origin.boundary_kind" not in implementation
+    assert "ACCEPTED_ABOVE" not in implementation
+    assert "ACCEPTED_BELOW" not in implementation
+
+
+def test_production_acceptance_cannot_become_ghost_comparison_evidence():
+    observer = observe(
+        sample(0, "105"),
+        sample(1, "111", high="112", low="109", interaction="BREAK_ATTEMPT_UP"),
+        sample(2, "112", high="113", low="111", interaction="ACCEPTED_ABOVE",
+               current=None, left_id="C01"),
+    )
+
+    assert observer.boundary_encounters
+    assert all(item.end_reason != "ACCEPTED_BREAK"
+               for item in observer.boundary_encounters)
+    assert any(item.end_reason == "PERSISTENT_OUTSIDE"
+               for item in observer.boundary_encounters)
+
+
+def test_repeated_ghost_encounters_keep_deterministic_identity():
+    observer = observe(
+        sample(0, "103", high="104", low="102"),
+        sample(1, "105", high="105", low="104"),
+        sample(2, "102", high="103", low="101"),
+        sample(3, "105", high="105.5", low="104"),
+    )
+    ghost_uppers = [item for item in observer.boundary_encounters
+                    if item.origin.boundary_kind == GHOST
+                    and item.origin.side == "upper"]
+
+    assert [item.origin.ordinal_for_boundary for item in ghost_uppers] == [1, 2]
+    assert ghost_uppers[0].end_reason == "MOVED_INSIDE"
+    assert ghost_uppers[1].origin.encounter_order == "REPEAT"
+
+
 def _release(release_id: str, scale: str = "OUTER") -> ReleaseFact:
     return ReleaseFact(
         release_id, scale, "LOG" if scale == "OUTER" else "MICRO_EVENT",
@@ -232,13 +401,18 @@ def test_origins_are_immutable_when_future_candles_append():
                             interaction="AT_UPPER_EDGE"))
     structure_before = asdict(observer.structures[0].origin)
     encounter_before = asdict(observer.encounters[0].origin)
+    boundary_before = [asdict(item.origin) for item in observer.boundary_encounters]
     observer.observe(sample(2, "111", high="112", low="109",
                             interaction="BREAK_ATTEMPT_UP"))
 
     assert asdict(observer.structures[0].origin) == structure_before
     assert asdict(observer.encounters[0].origin) == encounter_before
+    assert [asdict(item.origin) for item in observer.boundary_encounters[
+        :len(boundary_before)]] == boundary_before
     with pytest.raises(FrozenInstanceError):
         observer.encounters[0].origin.edge_price = Decimal(999)  # type: ignore[misc]
+    with pytest.raises(FrozenInstanceError):
+        observer.boundary_encounters[0].origin.edge_price = Decimal(999)  # type: ignore[misc]
     assert all(item.index >= observer.encounters[0].origin.start_index
                for item in observer.encounters[0].observations)
 
@@ -269,6 +443,10 @@ def test_validate_public_result_is_aggregate_only():
     assert "C01" not in encoded
     assert BASE.isoformat() not in encoded
     assert "start_index" not in encoded
+    assert "boundary_id" not in encoded
+    assert "source_ordinal" not in encoded
+    assert public["boundary_comparison_v2"]["cluster"]["population"][REAL][
+        "encounters"] > 0
 
 
 def test_same_causal_stream_has_deterministic_aggregate():
