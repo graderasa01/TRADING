@@ -1,8 +1,8 @@
 """One read-only structural market frame per closed candle.
 
-The frame joins the livemap observations that already exist. It does not scan candles,
-choose structures, score anything, or decide direction. Its job is to make one candle
-readable without giving any consumer permission to rebuild the map.
+The frame joins observations that already exist. It does not scan candles, choose
+structures, or decide direction. Its only job is to preserve the facts emitted for one
+candle in a single immutable value.
 """
 
 from __future__ import annotations
@@ -10,10 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import Sequence
 
 from src.boxes.frontier import Frontier, Reading
-from src.boxes.hierarchy import Node
 from src.boxes.snapshot import MapSnapshot
 from src.livemap import eye as EY
 from src.livemap import reference as RF
@@ -24,11 +22,7 @@ from src.livemap.interpreter import Interpreter, MapState
 
 @dataclass(frozen=True, slots=True)
 class LocalStructure:
-    """A published local observation, when research has supplied one.
-
-    This type is intentionally passive. The production frame can carry a local structure,
-    but it cannot create one; callers must pass one in by candle index.
-    """
+    """A passive local observation supplied by a research caller."""
 
     id: str
     kind: str
@@ -44,7 +38,7 @@ class LocalStructure:
 
 @dataclass(frozen=True, slots=True)
 class StructuralFrame:
-    """The market facts available on one closed candle."""
+    """The complete joined facts available on one closed candle."""
 
     index: int
     at: datetime
@@ -57,72 +51,104 @@ class StructuralFrame:
     thesis: TH.LiveThesis
     broad_id: str | None = None
     local: LocalStructure | None = None
+    local_low: Decimal | None = None
+    local_high: Decimal | None = None
+    distance_to_local_low: Decimal | None = None
+    distance_to_local_high: Decimal | None = None
     micro_id: str | None = None
-    approached_edge: str | None = None
-    broken_edge: str | None = None
+    approaching_current_upper: bool = False
+    approaching_current_lower: bool = False
+    approached_edges: tuple[str, ...] = ()
+    broken_edges: tuple[str, ...] = ()
+    broken_releases: tuple[RL.Release, ...] = ()
     left_id: str | None = None
-    release_held: str | None = None
-    local_invalidation: Decimal | None = None
+    active_release: RL.Release | None = None
     broader_thesis_invalidation: Decimal | None = None
 
     def lines(self) -> list[str]:
         cur = self.map.current
-        broad = "none" if cur is None else f"{cur.id} {cur.band}"
-        local = "none" if self.local is None else f"{self.local.id} {self.local.band}"
-        micro = self.micro_id or "none"
-        rel = self.release_held or "none"
+        broad = "none" if cur is None else (
+            f"{cur.id} {cur.band} | low {float(cur.low):,.1f} | high {float(cur.high):,.1f}"
+        )
+        local = "none" if self.local is None else (
+            f"{self.local.id} {self.local.band} | low {float(self.local.low):,.1f} | "
+            f"high {float(self.local.high):,.1f}"
+        )
+        micro = self.reading.micro
+        micro_text = "none" if micro is None else (
+            f"{micro.micro_id or 'none'} {micro.micro_state or 'none'} | "
+            f"low {_number(micro.micro_low)} | high {_number(micro.micro_high)}"
+        )
+        delta = self.eye.delta("price")
+        delta_text = "none" if delta is None or delta.change is None else _signed(delta.change)
+        upper_distance = self.eye.upper.distance if self.eye.upper is not None else None
+        lower_distance = self.eye.lower.distance if self.eye.lower is not None else None
+        releases = ("none" if not self.broken_releases else " | ".join(
+            f"{item.id} {item.scale} {item.boundary} {item.direction}"
+            for item in self.broken_releases
+        ))
+        active = ("none" if self.active_release is None else
+                  f"{self.active_release.id} {self.active_release.scale} "
+                  f"{self.active_release.boundary}")
+        next_above = self.map.above.next.id if self.map.above.next is not None else "none"
+        next_below = self.map.below.next.id if self.map.below.next is not None else "none"
+        identity = TH.identity_of(self.thesis)
+        thesis_text = (
+            f"{identity or 'none'} | {self.thesis.idea} | "
+            f"generation {self.thesis.generation} | {self.thesis.thesis_status}"
+        )
         return [
             f"{self.at:%H:%M}",
-            f"price {float(self.price):,.1f}",
-            f"broad {broad}",
-            f"local {local}",
-            f"micro {micro}",
-            f"approached_edge {self.approached_edge or 'none'}",
-            f"broken_edge {self.broken_edge or 'none'}",
-            f"release_held {rel}",
-            f"left {self.left_id or 'none'}",
-            "next_above "
-            + (self.map.above.next.id if self.map.above.next is not None else "none"),
-            "next_below "
-            + (self.map.below.next.id if self.map.below.next is not None else "none"),
-            "local_invalidation "
-            + ("none" if self.local_invalidation is None
-               else f"{float(self.local_invalidation):,.1f}"),
-            "broader_thesis_invalidation "
-            + ("none" if self.broader_thesis_invalidation is None
-               else f"{float(self.broader_thesis_invalidation):,.1f}"),
+            f"PRICE {float(self.price):,.1f}",
+            f"BROAD {broad}",
+            f"LOCAL {local}",
+            f"MICRO {micro_text}",
+            f"DELTA {delta_text}",
+            f"CURRENT EDGE DISTANCES upper {_number(upper_distance)} | "
+            f"lower {_number(lower_distance)}",
+            f"WATCH ABOVE {self.eye.watch_above or 'none'}",
+            f"WATCH BELOW {self.eye.watch_below or 'none'}",
+            f"APPROACHED EDGES {', '.join(self.approached_edges) or 'none'}",
+            f"RELEASES ON THIS CANDLE {releases}",
+            f"ACTIVE RELEASE {active}",
+            f"LEFT STRUCTURE {self.left_id or 'none'}",
+            f"NEXT REFERENCES above {next_above} | below {next_below}",
+            f"BROADER THESIS {thesis_text}",
+            "BROADER THESIS INVALIDATION "
+            + _number(self.broader_thesis_invalidation),
         ]
 
 
-def _approached_edge(state: MapState) -> str | None:
-    if state.status in {"APPROACHING_UPPER", "BREAK_ATTEMPT_UP"} and state.break_up is not None:
-        return "upper"
-    if state.status in {"APPROACHING_LOWER", "BREAK_ATTEMPT_DOWN"} and state.break_down is not None:
-        return "lower"
+def _number(value: Decimal | None) -> str:
+    return "none" if value is None else f"{float(value):,.1f}"
+
+
+def _signed(value: Decimal) -> str:
+    return f"{float(value):+,.1f}"
+
+
+def _approached_edges(state: MapState) -> tuple[str, ...]:
+    found: list[str] = []
+    if state.status in {"APPROACHING_UPPER", "BREAK_ATTEMPT_UP"}:
+        if state.break_up is not None:
+            found.append("current.upper")
+    if state.status in {"APPROACHING_LOWER", "BREAK_ATTEMPT_DOWN"}:
+        if state.break_down is not None:
+            found.append("current.lower")
     if state.route_above is not None and state.route_above.watch != "FAR_FROM_NEXT_ZONE":
-        return "next_above"
+        found.append("watch.above")
     if state.route_below is not None and state.route_below.watch != "FAR_FROM_NEXT_ZONE":
-        return "next_below"
-    return None
-
-
-def _local_invalidation(frame_local: LocalStructure | None, state: MapState) -> Decimal | None:
-    if frame_local is not None:
-        middle = (frame_local.low + frame_local.high) / Decimal(2)
-        return frame_local.low if state.price >= middle else frame_local.high
-    cur = state.current
-    if cur is None:
-        return None
-    middle = (cur.low + cur.high) / Decimal(2)
-    return cur.low if state.price >= middle else cur.high
+        found.append("watch.below")
+    return tuple(dict.fromkeys(found))
 
 
 def build(reading: Reading, state: MapState, eye: EY.EyeState,
           release: RL.ReleaseState, references: RF.ReferencePath,
           thesis: TH.LiveThesis, *,
           local: LocalStructure | None = None) -> StructuralFrame:
-    active = release.active
-    first_release = release.releases[0] if release.releases else None
+    approached = _approached_edges(state)
+    local_low = local.low if local is not None else None
+    local_high = local.high if local is not None else None
     return StructuralFrame(
         index=reading.index,
         at=state.at,
@@ -135,12 +161,18 @@ def build(reading: Reading, state: MapState, eye: EY.EyeState,
         thesis=thesis,
         broad_id=state.current.id if state.current is not None else None,
         local=local,
+        local_low=local_low,
+        local_high=local_high,
+        distance_to_local_low=(state.price - local_low if local_low is not None else None),
+        distance_to_local_high=(local_high - state.price if local_high is not None else None),
         micro_id=reading.micro.micro_id if reading.micro is not None else None,
-        approached_edge=_approached_edge(state),
-        broken_edge=first_release.boundary if first_release is not None else None,
+        approaching_current_upper="current.upper" in approached,
+        approaching_current_lower="current.lower" in approached,
+        approached_edges=approached,
+        broken_edges=tuple(item.boundary for item in release.releases),
+        broken_releases=release.releases,
         left_id=state.left_id,
-        release_held=active.boundary if active is not None else None,
-        local_invalidation=_local_invalidation(local, state),
+        active_release=release.active,
         broader_thesis_invalidation=thesis.invalidation_price,
     )
 
@@ -148,18 +180,14 @@ def build(reading: Reading, state: MapState, eye: EY.EyeState,
 def observe(snapshot: MapSnapshot, frontier: Frontier, *,
             locals_by_index: dict[int, LocalStructure] | None = None,
             upto: int | None = None) -> list[StructuralFrame]:
-    """Join existing causal observations.
-
-    `locals_by_index` is optional research input. Passing it does not alter the map and
-    this function never imports or invokes a detector.
-    """
+    """Join the observation layers already emitted for each available candle."""
 
     interpreter = Interpreter(snapshot, frontier)
-    states = {s.index: s for s in interpreter.states()}
-    eyes = {e.index: e for e in EY.observe(snapshot, frontier)}
-    releases = {s.index: s for s in RL.observe(frontier, snapshot)}
-    theses = {t.index: t for t in TH.narrate(snapshot, frontier)}
-    locals_by_index = dict(locals_by_index or {})
+    states = {state.index: state for state in interpreter.states()}
+    eyes = {state.index: state for state in EY.observe(snapshot, frontier)}
+    releases = {state.index: state for state in RL.observe(frontier, snapshot)}
+    theses = {state.index: state for state in TH.narrate(snapshot, frontier)}
+    supplied = dict(locals_by_index or {})
 
     out: list[StructuralFrame] = []
     for reading in frontier.readings:
@@ -167,9 +195,9 @@ def observe(snapshot: MapSnapshot, frontier: Frontier, *,
             break
         state = states[reading.index]
         pool = interpreter.pool_at(reading.index)
-        nodes = {n.id: n for n in pool}
+        nodes = {node.id: node for node in pool}
         thesis = theses[reading.index]
-        refs = RF.build(
+        references = RF.build(
             state, nodes, idea=thesis.idea,
             invalidation_price=thesis.invalidation_price,
             invalidation_rule=thesis.invalidation,
@@ -177,7 +205,7 @@ def observe(snapshot: MapSnapshot, frontier: Frontier, *,
         )
         out.append(build(
             reading, state, eyes[reading.index], releases[reading.index],
-            refs, thesis, local=locals_by_index.get(reading.index)))
+            references, thesis, local=supplied.get(reading.index)))
     return out
 
 

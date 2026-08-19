@@ -37,13 +37,22 @@ from src.boxes import frontier as frontier_mod
 from src.boxes.adaptive import Proposal, WINDOWS, overlap
 from src.boxes.frontier import Frontier, Reading
 from src.boxes.hierarchy import Node
-from src.boxes.micro import CONFIRMED as MICRO_CONFIRMED
+from src.boxes.micro import (
+    CONFIRMED as MICRO_CONFIRMED,
+    MICRO_BREAK_DOWN,
+    MICRO_BREAK_UP,
+    MICRO_COLLAPSED,
+    MICRO_CONFIRMED as MICRO_CONFIRMED_EVENT,
+    MICRO_CREATED,
+)
 from src.boxes.snapshot import SAME_NODE_OVERLAP, MapSnapshot, build_snapshot
 from src.boxes.structure import STRUCTURE_KINDS, atr_at, tol_at
 from src.domain.models import Candle
 from src.feed.aggregator import Aggregator
 from src.feed.replay_feed import ReplayFeed
 from src.learning.split import TEACH, VALIDATE, load_split
+from src.livemap import frame as structural_frame
+from src.livemap import thesis as thesis_mod
 from src.livemap.interpreter import Interpreter
 SYMBOL = "NIFTY BANK"
 
@@ -153,10 +162,21 @@ class HolderObservation:
 
 
 @dataclass(frozen=True, slots=True)
+class EventObservation:
+    event: str
+    bucket: str
+    block: int
+    index: int
+    at: str
+
+
+@dataclass(frozen=True, slots=True)
 class AuditResult:
     config: dict
-    populations: dict
+    available_population: dict
+    audited_population: dict
     counts: dict
+    events: dict
     examples: dict
     timings: dict
     fingerprint: str
@@ -263,6 +283,48 @@ def make_blocks(candles: Sequence[Candle], bucket: str, config: AuditConfig) -> 
     return blocks
 
 
+def population_facts(
+        candles_by_bucket: dict[str, tuple[Candle, ...]],
+        sessions: dict[str, int],
+        blocks_by_bucket: dict[str, list[Block]]) -> tuple[dict, dict]:
+    """Keep availability and actual consumption in mechanically separate records."""
+    available: dict[str, dict] = {}
+    audited: dict[str, dict] = {}
+    for bucket in (TEACH, VALIDATE):
+        candles = candles_by_bucket.get(bucket, ())
+        blocks = blocks_by_bucket.get(bucket, [])
+        touched = [candle for block in blocks for candle in block.history + block.live]
+        available[bucket] = {
+            "sessions": sessions.get(bucket, 0),
+            "candles": len(candles),
+        }
+        audited[bucket] = {
+            "blocks_processed": len(blocks),
+            "history_candles_consumed": sum(len(block.history) for block in blocks),
+            "live_candles_observed": sum(len(block.live) for block in blocks),
+            "unique_sessions_touched": len({candle.session_date for candle in touched}),
+            "first_timestamp": min(
+                (candle.close_time for candle in touched), default=None),
+            "last_timestamp": max(
+                (candle.close_time for candle in touched), default=None),
+        }
+    return available, audited
+
+
+def _record_event(catalog: dict[str, list[EventObservation]], event: str,
+                  block: Block, index: int, at: str, *, limit: int = 3) -> None:
+    bucket = catalog.setdefault(event, [])
+    if len(bucket) >= limit:
+        return
+    bucket.append(EventObservation(
+        event=event,
+        bucket=block.bucket,
+        block=block.ordinal,
+        index=index,
+        at=at,
+    ))
+
+
 def observational_local_candidates(frontier: Frontier, reading: Reading) -> list[Proposal]:
     """Look inside current with existing detector/currency/containment only.
 
@@ -316,7 +378,7 @@ def classify_prefix(prefix_snapshot: MapSnapshot, reading: Reading,
     live_parent = hist_parent if reading.node_id and prefix_snapshot.by_id(reading.node_id) else None
 
     if hist_tight is None and live_band is None:
-        classification = "INSUFFICIENT_INFORMATION"
+        classification = "NO_STRUCTURE_EITHER"
     elif hist_tight is not None and live_band is not None:
         hist_band = _band(hist_tight)
         if proposal_relation(hist_band, live_band, tol) == "same":
@@ -324,13 +386,13 @@ def classify_prefix(prefix_snapshot: MapSnapshot, reading: Reading,
         elif hist_tight.kind == "cluster" and reading.node_kind == "range" and _contains(live_band, hist_band, tol):  # type: ignore[arg-type]
             classification = "LIVE_SCALE_COLLAPSE"
         elif hist_tight.end > reading.index:
-            classification = "HISTORICAL_RETROSPECTION_ONLY"
+            classification = "HISTORICAL_SCAN_ONLY"
         else:
             classification = "PRESENTATION_ONLY"
     elif hist_tight is not None:
-        classification = "HISTORICAL_RETROSPECTION_ONLY"
+        classification = "HISTORICAL_SCAN_ONLY"
     else:
-        classification = "TRUE_CAUSAL_DIVERGENCE"
+        classification = "LIVE_FRONTIER_ONLY"
 
     return PrefixComparison(
         bucket="",
@@ -382,12 +444,16 @@ def _with_price(reading: Reading, price: Decimal) -> Reading:
 
 
 def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
-              examples: dict[str, list], timings: Counter[str]) -> None:
+              examples: dict[str, list], events: dict[str, list[EventObservation]],
+              timings: Counter[str]) -> None:
     snapshot = build_snapshot(block.history, SYMBOL)
     frontier = Frontier(snapshot, block.history)
     interpreter = Interpreter(snapshot, frontier)
     current_choose: list[ChooseObservation] = []
     original_choose = frontier_mod.choose
+    previous_reading: Reading | None = None
+    previous_local = False
+    previous_session = block.history[-1].session_date if block.history else None
 
     def wrapped_choose(candles: Sequence[Candle], atr: Decimal, **kwargs):
         cluster, rng = adaptive.choose(candles, atr, **kwargs)
@@ -416,6 +482,8 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
             relation=band_relation(_band(cluster), _band(rng), tol),
         )
         current_choose.append(obs)
+        if cluster is not None and rng is not None:
+            _record_event(events, "simultaneous_cluster_range", block, i, obs.at)
         return cluster, rng
 
     try:
@@ -425,6 +493,55 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
             t0 = perf_counter()
             reading = frontier.on_candle(candle)
             timings["frontier_seconds"] += perf_counter() - t0
+            state = interpreter.read(reading)
+
+            if candle.session_date != previous_session:
+                _record_event(events, "session_start", block, reading.index,
+                              candle.close_time.isoformat())
+            if reading.interaction in {"NEW_CLUSTER", "NEW_RANGE"}:
+                counters["lifecycle"]["major_births"] += 1
+                _record_event(events, "major_birth", block, reading.index,
+                              candle.close_time.isoformat())
+                _record_event(events, "new_major_structure", block, reading.index,
+                              candle.close_time.isoformat())
+            if (previous_reading is not None
+                    and previous_reading.state == "STRUCTURE_CANDIDATE"
+                    and reading.state == "CONFIRMED"):
+                _record_event(events, "forming_to_confirmed", block, reading.index,
+                              candle.close_time.isoformat())
+            if state.status in {"APPROACHING_UPPER", "APPROACHING_LOWER"}:
+                _record_event(events, "edge_approach", block, reading.index,
+                              candle.close_time.isoformat())
+            if reading.interaction.startswith("BREAK_ATTEMPT_"):
+                _record_event(events, "break_attempt", block, reading.index,
+                              candle.close_time.isoformat())
+            if reading.interaction in {"ACCEPTED_ABOVE", "ACCEPTED_BELOW"}:
+                counters["lifecycle"]["accepted_breaks"] += 1
+                _record_event(events, "accepted_major_break", block, reading.index,
+                              candle.close_time.isoformat())
+            if reading.interaction == "RE_ENTRY":
+                _record_event(events, "re_entry", block, reading.index,
+                              candle.close_time.isoformat())
+            if reading.interaction == "REVISIT":
+                counters["lifecycle"]["revisits"] += 1
+                _record_event(events, "revisit", block, reading.index,
+                              candle.close_time.isoformat())
+            if reading.state == "LEAVING" or reading.interaction == "LEAVING":
+                _record_event(events, "leaving", block, reading.index,
+                              candle.close_time.isoformat())
+
+            micro_events = tuple(reading.micro.events) if reading.micro else ()
+            for emitted, counter_name, event_name in (
+                (MICRO_CREATED, "micro_created", "micro_created"),
+                (MICRO_CONFIRMED_EVENT, "micro_confirmed", "micro_confirmed"),
+                (MICRO_BREAK_UP, "micro_breaks", "micro_break"),
+                (MICRO_BREAK_DOWN, "micro_breaks", "micro_break"),
+                (MICRO_COLLAPSED, "micro_collapses", "micro_collapse"),
+            ):
+                if emitted in micro_events:
+                    counters["lifecycle"][counter_name] += 1
+                    _record_event(events, event_name, block, reading.index,
+                                  candle.close_time.isoformat())
 
             choose_obs = current_choose[-1] if current_choose and current_choose[-1].index == reading.index else None
             if choose_obs is not None:
@@ -501,6 +618,11 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
             ] += 1
             if micro_confirmed:
                 counters["local"]["MICRO_CONFIRMED"] += 1
+            if bool(local) != previous_local:
+                event_name = "local_research_appearance" if local else "local_research_disappearance"
+                _record_event(events, event_name, block, reading.index,
+                              candle.close_time.isoformat())
+            previous_local = bool(local)
 
             if local:
                 parent = frontier.current
@@ -560,9 +682,9 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
                     examples["holders"].append(asdict(holder_obs))
 
             if frontier.finalised and {n.id for n in frontier.finalised} != before_ids:
-                counters["live"]["finalised"] += len({n.id for n in frontier.finalised} - before_ids)
+                counters["lifecycle"]["major_finalised"] += len(
+                    {n.id for n in frontier.finalised} - before_ids)
 
-            state = interpreter.read(reading)
             for role, ref in (
                 ("ABOVE_NEXT", state.above.next),
                 ("ABOVE_MAJOR", state.above.next_major),
@@ -575,6 +697,9 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
                 counters[f"reference_age_{role}"]["sum"] += ref.age
                 counters[f"reference_age_{role}"]["max"] = max(counters[f"reference_age_{role}"]["max"], ref.age)
 
+            previous_reading = reading
+            previous_session = candle.session_date
+
         # End-of-block structural depth facts are historical-only and do not read holdout.
         counters["depth"]["snapshot_nodes"] += len(snapshot.structures())
         counters["depth"]["snapshot_nested"] += sum(1 for n in snapshot.structures() if n.parent is not None)
@@ -582,16 +707,55 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
             counters["depth"]["max_snapshot_depth"],
             max((n.depth for n in snapshot.structures()), default=0),
         )
-        counters["live"]["micro_created"] += sum(
-            1 for r in frontier.readings if r.micro and "MICRO_CREATED" in r.micro.events
-        )
-        counters["live"]["micro_confirmed"] += sum(
-            1 for r in frontier.readings if r.micro and "MICRO_CONFIRMED" in r.micro.events
-        )
-        counters["live"]["micro_breaks"] += sum(
-            1 for r in frontier.readings
-            if r.micro and (("MICRO_BREAK_UP" in r.micro.events) or ("MICRO_BREAK_DOWN" in r.micro.events))
-        )
+        frames = structural_frame.observe(snapshot, frontier)
+        previous_active = None
+        previous_references = None
+        previous_watches = None
+        previous_identity = None
+        previous_generation = 0
+        for frame in frames:
+            at = frame.at.isoformat()
+            if frame.release.releases:
+                counters["lifecycle"]["release_created"] += len(frame.release.releases)
+                _record_event(events, "release_created", block, frame.index, at)
+            if frame.release.simultaneous:
+                counters["lifecycle"]["simultaneous_releases"] += 1
+                _record_event(events, "simultaneous_releases", block, frame.index, at)
+            active = frame.release.active
+            if (previous_active is not None and active is not None
+                    and previous_active.id == active.id):
+                _record_event(events, "release_still_held", block, frame.index, at)
+            if previous_active is not None and active is None:
+                _record_event(events, "release_given_back", block, frame.index, at)
+
+            reference_identity = tuple(
+                (ref.direction, ref.role, ref.structure_id, ref.edge)
+                for path in (frame.references.up, frame.references.down)
+                for ref in path.references
+            )
+            if previous_references is not None and reference_identity != previous_references:
+                _record_event(events, "reference_identity_change", block, frame.index, at)
+
+            watches = (frame.eye.watch_above, frame.eye.watch_below)
+            if previous_watches is not None and watches != previous_watches:
+                _record_event(events, "route_watch_change", block, frame.index, at)
+
+            identity = thesis_mod.identity_of(frame.thesis)
+            if previous_identity is None and identity is not None:
+                _record_event(events, "thesis_birth", block, frame.index, at)
+            if frame.thesis.generation != previous_generation and previous_generation:
+                _record_event(events, "generation_change", block, frame.index, at)
+                _record_event(events, "thesis_invalidation_or_reversal", block,
+                              frame.index, at)
+            elif frame.thesis.thesis_status == "INVALIDATED":
+                _record_event(events, "thesis_invalidation_or_reversal", block,
+                              frame.index, at)
+
+            previous_active = active
+            previous_references = reference_identity
+            previous_watches = watches
+            previous_identity = identity
+            previous_generation = frame.thesis.generation
     finally:
         frontier_mod.choose = original_choose
 
@@ -600,55 +764,116 @@ def _counter_dict(counter: Counter) -> dict:
     return {str(k): v for k, v in sorted(counter.items(), key=lambda kv: str(kv[0]))}
 
 
+def _complete_counter_vocabulary(counters: dict[str, Counter]) -> None:
+    expected = {
+        "choose": ("CLUSTER_ONLY", "RANGE_ONLY", "BOTH", "NEITHER"),
+        "simultaneous": (
+            "BOTH_DETECTED", "BOTH_CURRENT", "BOTH_NOT_BOTH_CURRENT",
+            "cluster_inside_range", "range_inside_cluster", "partial_overlap", "disjoint",
+            "LIVE_SELECTED_CLUSTER", "LIVE_SELECTED_RANGE",
+            "BOTH_WITH_CONTAINMENT", "BOTH_WITHOUT_CONTAINMENT",
+        ),
+        "lifecycle": (
+            "major_births", "major_finalised", "revisits", "accepted_breaks",
+            "micro_created", "micro_confirmed", "micro_breaks", "micro_collapses",
+            "release_created", "simultaneous_releases",
+        ),
+        "micro_matrix": (
+            "LOCAL_ABSENT + MICRO_ABSENT", "LOCAL_ABSENT + MICRO_FOUND",
+            "LOCAL_FOUND + MICRO_ABSENT", "LOCAL_FOUND + MICRO_FOUND",
+        ),
+    }
+    for group, names in expected.items():
+        for name in names:
+            counters[group][name] += 0
+
+
 def run_audit(config: AuditConfig) -> AuditResult:
     timings: Counter[str] = Counter()
     t0 = perf_counter()
     candles_by_bucket, sessions = aggregate_m5_by_bucket()
     timings["load_seconds"] = perf_counter() - t0
 
-    counters: dict[str, Counter] = defaultdict(Counter)
-    examples: dict[str, list] = defaultdict(list)
-    populations: dict[str, dict] = {}
+    counters_by_bucket: dict[str, dict[str, Counter]] = {
+        TEACH: defaultdict(Counter),
+        VALIDATE: defaultdict(Counter),
+    }
+    examples_by_bucket: dict[str, dict[str, list]] = {
+        TEACH: defaultdict(list),
+        VALIDATE: defaultdict(list),
+    }
+    events_by_bucket: dict[str, dict[str, list[EventObservation]]] = {
+        TEACH: defaultdict(list),
+        VALIDATE: defaultdict(list),
+    }
     blocks_by_bucket = {
         bucket: make_blocks(candles, bucket, config)
         for bucket, candles in candles_by_bucket.items()
     }
-
-    for bucket, candles in candles_by_bucket.items():
-        populations[bucket] = {
-            "sessions": sessions.get(bucket, 0),
-            "m5_candles": len(candles),
-            "blocks": len(blocks_by_bucket[bucket]),
-        }
+    available_population, audited_population = population_facts(
+        candles_by_bucket, sessions, blocks_by_bucket)
 
     t_run = perf_counter()
     for bucket in (TEACH, VALIDATE):
         for block in blocks_by_bucket[bucket]:
-            run_block(block, config, counters, examples, timings)
+            run_block(
+                block,
+                config,
+                counters_by_bucket[bucket],
+                examples_by_bucket[bucket],
+                events_by_bucket[bucket],
+                timings,
+            )
     timings["audit_seconds"] = perf_counter() - t_run
     timings["total_seconds"] = perf_counter() - t0
 
-    counts = {name: _counter_dict(counter) for name, counter in sorted(counters.items())}
+    for bucket in (TEACH, VALIDATE):
+        _complete_counter_vocabulary(counters_by_bucket[bucket])
+
+    counts = {
+        bucket: {
+            name: _counter_dict(counter)
+            for name, counter in sorted(counters_by_bucket[bucket].items())
+        }
+        for bucket in (TEACH, VALIDATE)
+    }
+    examples = {
+        bucket: _serialise(dict(examples_by_bucket[bucket]))
+        for bucket in (TEACH, VALIDATE)
+    }
+    events = {
+        bucket: {
+            name: _serialise([asdict(item) for item in observations])
+            for name, observations in sorted(events_by_bucket[bucket].items())
+        }
+        for bucket in (TEACH, VALIDATE)
+    }
     payload = {
         "config": asdict(config),
-        "populations": populations,
+        "available_population": available_population,
+        "audited_population": audited_population,
         "counts": counts,
-        "examples": _serialise(dict(examples)),
+        "events": events,
+        "examples": examples,
         "timings": {k: round(v, 6) for k, v in sorted(timings.items())},
     }
     deterministic_payload = {
         "config": payload["config"],
-        "populations": payload["populations"],
+        "available_population": payload["available_population"],
+        "audited_population": payload["audited_population"],
         "counts": payload["counts"],
+        "events": payload["events"],
         "examples": payload["examples"],
     }
     fingerprint = json.dumps(deterministic_payload, sort_keys=True, default=_decimal_default)
     checksum = hashlib.sha256(fingerprint.encode("utf-8")).hexdigest()[:16]
     return AuditResult(
         config=payload["config"],
-        populations=populations,
+        available_population=available_population,
+        audited_population=_serialise(audited_population),
         counts=counts,
-        examples=payload["examples"],
+        events=events,
+        examples=examples,
         timings=payload["timings"],
         fingerprint=checksum,
     )

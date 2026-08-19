@@ -1,18 +1,25 @@
 {
-  "source": "reports/structural_truth_summary.json",
-  "command": "python tools/live_structure_truth.py --max-blocks 1 --json reports/structural_truth_summary.json",
+  "status": "research_only_not_published",
+  "audited_live_candles": {
+    "teach": 17400,
+    "validate": 3000
+  },
   "matrix": {
-    "LOCAL yes / MICRO yes": 25,
-    "LOCAL yes / MICRO no": 16,
-    "LOCAL no / MICRO yes": 29,
-    "LOCAL no / MICRO no": 530
+    "teach": {
+      "local_absent_micro_absent": 15342,
+      "local_absent_micro_found": 874,
+      "local_found_micro_absent": 662,
+      "local_found_micro_found": 522
+    },
+    "validate": {
+      "local_absent_micro_absent": 2772,
+      "local_absent_micro_found": 89,
+      "local_found_micro_absent": 58,
+      "local_found_micro_found": 81
+    }
   },
-  "local_relations": {
-    "same": 20,
-    "overlapping": 5,
-    "absent": 16
-  },
-  "publication": "research-only",
-  "mutates_major_map": false,
-  "conclusion": "LOCAL and Micro are not equivalent in the smoke audit; lifecycle evidence remains insufficient for production publication."
+  "local_found_total": 1323,
+  "local_found_prevalence": 0.06485294117647059,
+  "fresh_world_appearance_disappearance": "PASS",
+  "gate_d": "NO"
 }

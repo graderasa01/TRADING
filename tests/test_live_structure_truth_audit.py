@@ -6,16 +6,21 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
+from src.learning.split import TEACH, VALIDATE
 from src.boxes.frontier import Frontier
 from src.boxes.hierarchy import Node
 from src.boxes.snapshot import build_snapshot
 from tests.test_frontier import SPLIT, make, path, sit
 from tools.live_structure_truth import (
+    AuditConfig,
     Band,
     band_relation,
     holder_candidates,
     observational_local_candidates,
+    run_audit,
 )
+from tools import live_structure_truth as audit_mod
+from tests import test_release as release_fixture
 
 
 def test_audit_tool_imports_no_execution_surface():
@@ -38,6 +43,34 @@ def test_audit_tool_imports_no_execution_surface():
         "src.exits",
     )
     assert not any(name.startswith(forbidden_prefixes) for name in imports)
+    assert "HOLDOUT" not in source
+
+
+def test_available_population_cannot_be_reported_as_audited_population(monkeypatch):
+    candles = tuple(release_fixture.candles(range(1400)))
+    monkeypatch.setattr(
+        audit_mod,
+        "aggregate_m5_by_bucket",
+        lambda: (
+            {TEACH: candles, VALIDATE: candles},
+            {TEACH: 99, VALIDATE: 44},
+        ),
+    )
+    monkeypatch.setattr(audit_mod, "run_block", lambda *args, **kwargs: None)
+
+    result = run_audit(AuditConfig(max_blocks=1))
+
+    assert result.available_population[TEACH] == {
+        "sessions": 99,
+        "candles": 1400,
+    }
+    assert result.audited_population[TEACH]["blocks_processed"] == 1
+    assert result.audited_population[TEACH]["history_candles_consumed"] == 400
+    assert result.audited_population[TEACH]["live_candles_observed"] == 300
+    assert result.available_population[TEACH]["candles"] != (
+        result.audited_population[TEACH]["live_candles_observed"])
+    assert set(result.available_population[TEACH]) == {"sessions", "candles"}
+    assert "sessions" not in result.audited_population[TEACH]
 
 
 def test_band_relation_uses_existing_containment_shape():

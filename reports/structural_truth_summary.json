@@ -1,471 +1,2731 @@
 {
+  "audited_population": {
+    "teach": {
+      "blocks_processed": 58,
+      "first_timestamp": "2023-08-01T09:20:00+05:30",
+      "history_candles_consumed": 23200,
+      "last_timestamp": "2026-08-10T11:20:00+05:30",
+      "live_candles_observed": 17400,
+      "unique_sessions_touched": 542
+    },
+    "validate": {
+      "blocks_processed": 10,
+      "first_timestamp": "2024-01-01T09:20:00+05:30",
+      "history_candles_consumed": 4000,
+      "last_timestamp": "2026-03-24T11:20:00+05:30",
+      "live_candles_observed": 3000,
+      "unique_sessions_touched": 94
+    }
+  },
+  "available_population": {
+    "teach": {
+      "candles": 40725,
+      "sessions": 543
+    },
+    "validate": {
+      "candles": 7275,
+      "sessions": 97
+    }
+  },
   "config": {
     "history": 400,
     "live": 300,
-    "max_blocks": 1,
+    "max_blocks": null,
     "prefix_examples": 12,
     "trace_examples": 8
   },
   "counts": {
-    "choose": {
-      "BOTH": 1,
-      "CLUSTER_ONLY": 116,
-      "NEITHER": 255
+    "teach": {
+      "choose": {
+        "BOTH": 25,
+        "CLUSTER_ONLY": 3009,
+        "NEITHER": 8433,
+        "RANGE_ONLY": 23
+      },
+      "depth": {
+        "max_snapshot_depth": 1,
+        "snapshot_nested": 40,
+        "snapshot_nodes": 672
+      },
+      "holders": {
+        "births": 320,
+        "no_holder": 320
+      },
+      "lifecycle": {
+        "accepted_breaks": 880,
+        "major_births": 320,
+        "major_finalised": 317,
+        "micro_breaks": 35,
+        "micro_collapses": 285,
+        "micro_confirmed": 58,
+        "micro_created": 322,
+        "release_created": 1348,
+        "revisits": 808,
+        "simultaneous_releases": 71
+      },
+      "local": {
+        "LOCAL_ABSENT": 16216,
+        "LOCAL_FOUND": 1184,
+        "MICRO_CONFIRMED": 278
+      },
+      "local_relations": {
+        "absent": 662,
+        "different": 4,
+        "overlapping": 150,
+        "same": 368
+      },
+      "micro_matrix": {
+        "LOCAL_ABSENT + MICRO_ABSENT": 15342,
+        "LOCAL_ABSENT + MICRO_FOUND": 874,
+        "LOCAL_FOUND + MICRO_ABSENT": 662,
+        "LOCAL_FOUND + MICRO_FOUND": 522
+      },
+      "prefix": {
+        "HISTORICAL_SCAN_ONLY": 3,
+        "LIVE_FRONTIER_ONLY": 1,
+        "LIVE_SCALE_COLLAPSE": 1,
+        "PRESENTATION_ONLY": 3,
+        "SAME_SEMANTICS": 4
+      },
+      "reference_age_ABOVE_MAJOR": {
+        "max": 506,
+        "n": 1013,
+        "sum": 210087
+      },
+      "reference_age_ABOVE_NEXT": {
+        "max": 664,
+        "n": 13100,
+        "sum": 2676273
+      },
+      "reference_age_BELOW_MAJOR": {
+        "max": 498,
+        "n": 638,
+        "sum": 170893
+      },
+      "reference_age_BELOW_NEXT": {
+        "max": 664,
+        "n": 14995,
+        "sum": 2804894
+      },
+      "simultaneous": {
+        "BOTH_CURRENT": 22,
+        "BOTH_DETECTED": 25,
+        "BOTH_NOT_BOTH_CURRENT": 3,
+        "BOTH_WITHOUT_CONTAINMENT": 0,
+        "BOTH_WITH_CONTAINMENT": 25,
+        "LIVE_SELECTED_CLUSTER": 0,
+        "LIVE_SELECTED_RANGE": 22,
+        "cluster_inside_range": 25,
+        "disjoint": 0,
+        "partial_overlap": 0,
+        "range_inside_cluster": 0
+      }
     },
-    "depth": {
-      "max_snapshot_depth": 0,
-      "snapshot_nested": 0,
-      "snapshot_nodes": 19
+    "validate": {
+      "choose": {
+        "BOTH": 2,
+        "CLUSTER_ONLY": 483,
+        "NEITHER": 1577,
+        "RANGE_ONLY": 0
+      },
+      "depth": {
+        "max_snapshot_depth": 1,
+        "snapshot_nested": 3,
+        "snapshot_nodes": 109
+      },
+      "holders": {
+        "births": 55,
+        "no_holder": 55
+      },
+      "lifecycle": {
+        "accepted_breaks": 144,
+        "major_births": 55,
+        "major_finalised": 55,
+        "micro_breaks": 3,
+        "micro_collapses": 38,
+        "micro_confirmed": 7,
+        "micro_created": 41,
+        "release_created": 194,
+        "revisits": 136,
+        "simultaneous_releases": 0
+      },
+      "local": {
+        "LOCAL_ABSENT": 2861,
+        "LOCAL_FOUND": 139,
+        "MICRO_CONFIRMED": 28
+      },
+      "local_relations": {
+        "absent": 58,
+        "overlapping": 26,
+        "same": 55
+      },
+      "micro_matrix": {
+        "LOCAL_ABSENT + MICRO_ABSENT": 2772,
+        "LOCAL_ABSENT + MICRO_FOUND": 89,
+        "LOCAL_FOUND + MICRO_ABSENT": 58,
+        "LOCAL_FOUND + MICRO_FOUND": 81
+      },
+      "prefix": {
+        "PRESENTATION_ONLY": 1,
+        "SAME_SEMANTICS": 1
+      },
+      "reference_age_ABOVE_NEXT": {
+        "max": 691,
+        "n": 2690,
+        "sum": 526925
+      },
+      "reference_age_BELOW_MAJOR": {
+        "max": 334,
+        "n": 298,
+        "sum": 54779
+      },
+      "reference_age_BELOW_NEXT": {
+        "max": 677,
+        "n": 2595,
+        "sum": 475076
+      },
+      "simultaneous": {
+        "BOTH_CURRENT": 2,
+        "BOTH_DETECTED": 2,
+        "BOTH_NOT_BOTH_CURRENT": 0,
+        "BOTH_WITHOUT_CONTAINMENT": 0,
+        "BOTH_WITH_CONTAINMENT": 2,
+        "LIVE_SELECTED_CLUSTER": 0,
+        "LIVE_SELECTED_RANGE": 2,
+        "cluster_inside_range": 2,
+        "disjoint": 0,
+        "partial_overlap": 0,
+        "range_inside_cluster": 0
+      }
+    }
+  },
+  "events": {
+    "teach": {
+      "accepted_major_break": [
+        {
+          "at": "2023-08-08T12:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "accepted_major_break",
+          "index": 410
+        },
+        {
+          "at": "2023-08-08T13:45:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "accepted_major_break",
+          "index": 428
+        },
+        {
+          "at": "2023-08-08T14:55:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "accepted_major_break",
+          "index": 442
+        }
+      ],
+      "break_attempt": [
+        {
+          "at": "2023-08-08T11:55:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "break_attempt",
+          "index": 406
+        },
+        {
+          "at": "2023-08-08T12:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "break_attempt",
+          "index": 409
+        },
+        {
+          "at": "2023-08-08T13:40:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "break_attempt",
+          "index": 427
+        }
+      ],
+      "edge_approach": [
+        {
+          "at": "2023-08-08T11:50:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "edge_approach",
+          "index": 405
+        },
+        {
+          "at": "2023-08-08T13:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "edge_approach",
+          "index": 425
+        },
+        {
+          "at": "2023-08-08T14:05:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "edge_approach",
+          "index": 432
+        }
+      ],
+      "forming_to_confirmed": [
+        {
+          "at": "2023-08-09T13:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "forming_to_confirmed",
+          "index": 500
+        },
+        {
+          "at": "2023-08-10T14:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "forming_to_confirmed",
+          "index": 583
+        },
+        {
+          "at": "2023-08-11T10:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "forming_to_confirmed",
+          "index": 610
+        }
+      ],
+      "generation_change": [
+        {
+          "at": "2023-08-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "generation_change",
+          "index": 431
+        },
+        {
+          "at": "2023-08-08T14:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "generation_change",
+          "index": 435
+        },
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "generation_change",
+          "index": 437
+        }
+      ],
+      "leaving": [
+        {
+          "at": "2023-08-08T12:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "leaving",
+          "index": 410
+        },
+        {
+          "at": "2023-08-08T12:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "leaving",
+          "index": 411
+        },
+        {
+          "at": "2023-08-08T12:25:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "leaving",
+          "index": 412
+        }
+      ],
+      "local_research_appearance": [
+        {
+          "at": "2023-08-08T14:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "local_research_appearance",
+          "index": 433
+        },
+        {
+          "at": "2023-08-09T13:45:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "local_research_appearance",
+          "index": 503
+        },
+        {
+          "at": "2023-08-09T13:55:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "local_research_appearance",
+          "index": 505
+        }
+      ],
+      "local_research_disappearance": [
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "local_research_disappearance",
+          "index": 437
+        },
+        {
+          "at": "2023-08-09T13:50:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "local_research_disappearance",
+          "index": 504
+        },
+        {
+          "at": "2023-08-09T14:05:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "local_research_disappearance",
+          "index": 507
+        }
+      ],
+      "major_birth": [
+        {
+          "at": "2023-08-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "major_birth",
+          "index": 431
+        },
+        {
+          "at": "2023-08-09T13:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "major_birth",
+          "index": 500
+        },
+        {
+          "at": "2023-08-10T14:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "major_birth",
+          "index": 585
+        }
+      ],
+      "micro_break": [
+        {
+          "at": "2023-08-23T11:05:00+05:30",
+          "block": 2,
+          "bucket": "teach",
+          "event": "micro_break",
+          "index": 446
+        },
+        {
+          "at": "2023-10-06T12:35:00+05:30",
+          "block": 5,
+          "bucket": "teach",
+          "event": "micro_break",
+          "index": 614
+        },
+        {
+          "at": "2023-10-17T12:45:00+05:30",
+          "block": 6,
+          "bucket": "teach",
+          "event": "micro_break",
+          "index": 441
+        }
+      ],
+      "micro_collapse": [
+        {
+          "at": "2023-08-08T12:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_collapse",
+          "index": 409
+        },
+        {
+          "at": "2023-08-09T14:05:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_collapse",
+          "index": 507
+        },
+        {
+          "at": "2023-08-10T13:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_collapse",
+          "index": 575
+        }
+      ],
+      "micro_confirmed": [
+        {
+          "at": "2023-08-09T13:45:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_confirmed",
+          "index": 503
+        },
+        {
+          "at": "2023-08-10T13:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_confirmed",
+          "index": 573
+        },
+        {
+          "at": "2023-08-23T09:30:00+05:30",
+          "block": 2,
+          "bucket": "teach",
+          "event": "micro_confirmed",
+          "index": 427
+        }
+      ],
+      "micro_created": [
+        {
+          "at": "2023-08-08T12:05:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_created",
+          "index": 408
+        },
+        {
+          "at": "2023-08-09T13:35:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_created",
+          "index": 501
+        },
+        {
+          "at": "2023-08-10T13:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "micro_created",
+          "index": 569
+        }
+      ],
+      "new_major_structure": [
+        {
+          "at": "2023-08-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "new_major_structure",
+          "index": 431
+        },
+        {
+          "at": "2023-08-09T13:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "new_major_structure",
+          "index": 500
+        },
+        {
+          "at": "2023-08-10T14:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "new_major_structure",
+          "index": 585
+        }
+      ],
+      "re_entry": [
+        {
+          "at": "2023-08-08T12:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "re_entry",
+          "index": 407
+        },
+        {
+          "at": "2023-08-08T15:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "re_entry",
+          "index": 447
+        },
+        {
+          "at": "2023-08-10T13:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "re_entry",
+          "index": 571
+        }
+      ],
+      "reference_identity_change": [
+        {
+          "at": "2023-08-08T11:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "reference_identity_change",
+          "index": 401
+        },
+        {
+          "at": "2023-08-08T12:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "reference_identity_change",
+          "index": 410
+        },
+        {
+          "at": "2023-08-08T12:35:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "reference_identity_change",
+          "index": 414
+        }
+      ],
+      "release_created": [
+        {
+          "at": "2023-08-08T11:45:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_created",
+          "index": 404
+        },
+        {
+          "at": "2023-08-08T12:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_created",
+          "index": 410
+        },
+        {
+          "at": "2023-08-08T13:45:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_created",
+          "index": 428
+        }
+      ],
+      "release_given_back": [
+        {
+          "at": "2023-08-08T12:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_given_back",
+          "index": 407
+        },
+        {
+          "at": "2023-09-05T11:15:00+05:30",
+          "block": 3,
+          "bucket": "teach",
+          "event": "release_given_back",
+          "index": 423
+        },
+        {
+          "at": "2023-09-18T13:30:00+05:30",
+          "block": 4,
+          "bucket": "teach",
+          "event": "release_given_back",
+          "index": 425
+        }
+      ],
+      "release_still_held": [
+        {
+          "at": "2023-08-08T11:50:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_still_held",
+          "index": 405
+        },
+        {
+          "at": "2023-08-08T11:55:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_still_held",
+          "index": 406
+        },
+        {
+          "at": "2023-08-08T12:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "release_still_held",
+          "index": 411
+        }
+      ],
+      "revisit": [
+        {
+          "at": "2023-08-08T11:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "revisit",
+          "index": 401
+        },
+        {
+          "at": "2023-08-08T13:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "revisit",
+          "index": 422
+        },
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "revisit",
+          "index": 437
+        }
+      ],
+      "route_watch_change": [
+        {
+          "at": "2023-08-08T11:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "route_watch_change",
+          "index": 401
+        },
+        {
+          "at": "2023-08-08T11:55:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "route_watch_change",
+          "index": 406
+        },
+        {
+          "at": "2023-08-08T12:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "route_watch_change",
+          "index": 407
+        }
+      ],
+      "session_start": [
+        {
+          "at": "2023-08-09T09:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "session_start",
+          "index": 450
+        },
+        {
+          "at": "2023-08-10T09:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "session_start",
+          "index": 525
+        },
+        {
+          "at": "2023-08-11T09:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "session_start",
+          "index": 600
+        }
+      ],
+      "simultaneous_cluster_range": [
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "simultaneous_cluster_range",
+          "index": 437
+        },
+        {
+          "at": "2023-09-20T15:20:00+05:30",
+          "block": 4,
+          "bucket": "teach",
+          "event": "simultaneous_cluster_range",
+          "index": 522
+        },
+        {
+          "at": "2023-09-20T15:30:00+05:30",
+          "block": 4,
+          "bucket": "teach",
+          "event": "simultaneous_cluster_range",
+          "index": 524
+        }
+      ],
+      "simultaneous_releases": [
+        {
+          "at": "2023-08-08T12:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "simultaneous_releases",
+          "index": 410
+        },
+        {
+          "at": "2023-08-23T11:15:00+05:30",
+          "block": 2,
+          "bucket": "teach",
+          "event": "simultaneous_releases",
+          "index": 448
+        },
+        {
+          "at": "2023-09-05T11:20:00+05:30",
+          "block": 3,
+          "bucket": "teach",
+          "event": "simultaneous_releases",
+          "index": 424
+        }
+      ],
+      "thesis_birth": [
+        {
+          "at": "2023-08-08T12:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "thesis_birth",
+          "index": 410
+        },
+        {
+          "at": "2023-08-22T14:30:00+05:30",
+          "block": 2,
+          "bucket": "teach",
+          "event": "thesis_birth",
+          "index": 412
+        },
+        {
+          "at": "2023-09-05T11:05:00+05:30",
+          "block": 3,
+          "bucket": "teach",
+          "event": "thesis_birth",
+          "index": 421
+        }
+      ],
+      "thesis_invalidation_or_reversal": [
+        {
+          "at": "2023-08-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "thesis_invalidation_or_reversal",
+          "index": 431
+        },
+        {
+          "at": "2023-08-08T14:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "thesis_invalidation_or_reversal",
+          "index": 435
+        },
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "event": "thesis_invalidation_or_reversal",
+          "index": 437
+        }
+      ]
     },
-    "holders": {
-      "births": 12,
-      "no_holder": 12
-    },
-    "live": {
-      "finalised": 12,
-      "micro_breaks": 0,
-      "micro_confirmed": 3,
-      "micro_created": 12
-    },
-    "local": {
-      "LOCAL_ABSENT": 559,
-      "LOCAL_FOUND": 41,
-      "MICRO_CONFIRMED": 14
-    },
-    "local_relations": {
-      "absent": 16,
-      "overlapping": 5,
-      "same": 20
-    },
-    "micro_matrix": {
-      "LOCAL_ABSENT + MICRO_ABSENT": 530,
-      "LOCAL_ABSENT + MICRO_FOUND": 29,
-      "LOCAL_FOUND + MICRO_ABSENT": 16,
-      "LOCAL_FOUND + MICRO_FOUND": 25
-    },
-    "prefix": {
-      "PRESENTATION_ONLY": 1
-    },
-    "reference_age_ABOVE_NEXT": {
-      "max": 466,
-      "n": 600,
-      "sum": 142546
-    },
-    "reference_age_BELOW_NEXT": {
-      "max": 470,
-      "n": 406,
-      "sum": 66750
-    },
-    "simultaneous": {
-      "BOTH_CURRENT": 1,
-      "BOTH_DETECTED": 1,
-      "BOTH_WITH_CONTAINMENT": 1,
-      "LIVE_SELECTED_RANGE": 1,
-      "cluster_inside_range": 1
+    "validate": {
+      "accepted_major_break": [
+        {
+          "at": "2024-01-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "accepted_major_break",
+          "index": 437
+        },
+        {
+          "at": "2024-01-09T09:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "accepted_major_break",
+          "index": 451
+        },
+        {
+          "at": "2024-01-09T12:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "accepted_major_break",
+          "index": 485
+        }
+      ],
+      "break_attempt": [
+        {
+          "at": "2024-01-08T13:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "break_attempt",
+          "index": 424
+        },
+        {
+          "at": "2024-01-08T13:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "break_attempt",
+          "index": 428
+        },
+        {
+          "at": "2024-01-08T14:10:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "break_attempt",
+          "index": 433
+        }
+      ],
+      "edge_approach": [
+        {
+          "at": "2024-01-08T13:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "edge_approach",
+          "index": 423
+        },
+        {
+          "at": "2024-01-08T14:05:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "edge_approach",
+          "index": 432
+        },
+        {
+          "at": "2024-01-09T11:35:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "edge_approach",
+          "index": 477
+        }
+      ],
+      "forming_to_confirmed": [
+        {
+          "at": "2024-01-08T13:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "forming_to_confirmed",
+          "index": 422
+        },
+        {
+          "at": "2024-01-08T15:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "forming_to_confirmed",
+          "index": 449
+        },
+        {
+          "at": "2024-01-10T10:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "forming_to_confirmed",
+          "index": 542
+        }
+      ],
+      "generation_change": [
+        {
+          "at": "2024-01-09T12:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "generation_change",
+          "index": 491
+        },
+        {
+          "at": "2024-01-09T13:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "generation_change",
+          "index": 504
+        },
+        {
+          "at": "2024-01-09T14:05:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "generation_change",
+          "index": 507
+        }
+      ],
+      "leaving": [
+        {
+          "at": "2024-01-09T12:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "leaving",
+          "index": 485
+        },
+        {
+          "at": "2024-01-09T12:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "leaving",
+          "index": 486
+        },
+        {
+          "at": "2024-01-10T12:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "leaving",
+          "index": 562
+        }
+      ],
+      "local_research_appearance": [
+        {
+          "at": "2024-01-08T13:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "local_research_appearance",
+          "index": 423
+        },
+        {
+          "at": "2024-01-08T13:35:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "local_research_appearance",
+          "index": 426
+        },
+        {
+          "at": "2024-01-09T13:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "local_research_appearance",
+          "index": 499
+        }
+      ],
+      "local_research_disappearance": [
+        {
+          "at": "2024-01-08T13:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "local_research_disappearance",
+          "index": 425
+        },
+        {
+          "at": "2024-01-08T14:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "local_research_disappearance",
+          "index": 434
+        },
+        {
+          "at": "2024-01-09T13:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "local_research_disappearance",
+          "index": 500
+        }
+      ],
+      "major_birth": [
+        {
+          "at": "2024-01-08T13:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "major_birth",
+          "index": 422
+        },
+        {
+          "at": "2024-01-08T15:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "major_birth",
+          "index": 449
+        },
+        {
+          "at": "2024-01-10T10:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "major_birth",
+          "index": 542
+        }
+      ],
+      "micro_break": [
+        {
+          "at": "2024-11-22T11:45:00+05:30",
+          "block": 6,
+          "bucket": "validate",
+          "event": "micro_break",
+          "index": 504
+        },
+        {
+          "at": "2024-11-25T12:35:00+05:30",
+          "block": 6,
+          "bucket": "validate",
+          "event": "micro_break",
+          "index": 589
+        },
+        {
+          "at": "2025-08-22T13:55:00+05:30",
+          "block": 8,
+          "bucket": "validate",
+          "event": "micro_break",
+          "index": 630
+        }
+      ],
+      "micro_collapse": [
+        {
+          "at": "2024-01-08T13:35:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_collapse",
+          "index": 426
+        },
+        {
+          "at": "2024-01-08T13:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_collapse",
+          "index": 429
+        },
+        {
+          "at": "2024-01-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_collapse",
+          "index": 431
+        }
+      ],
+      "micro_confirmed": [
+        {
+          "at": "2024-01-09T13:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_confirmed",
+          "index": 499
+        },
+        {
+          "at": "2024-01-24T14:15:00+05:30",
+          "block": 2,
+          "bucket": "validate",
+          "event": "micro_confirmed",
+          "index": 634
+        },
+        {
+          "at": "2024-11-21T14:30:00+05:30",
+          "block": 6,
+          "bucket": "validate",
+          "event": "micro_confirmed",
+          "index": 462
+        }
+      ],
+      "micro_created": [
+        {
+          "at": "2024-01-08T13:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_created",
+          "index": 425
+        },
+        {
+          "at": "2024-01-08T13:40:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_created",
+          "index": 427
+        },
+        {
+          "at": "2024-01-08T13:55:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "micro_created",
+          "index": 430
+        }
+      ],
+      "new_major_structure": [
+        {
+          "at": "2024-01-08T13:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "new_major_structure",
+          "index": 422
+        },
+        {
+          "at": "2024-01-08T15:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "new_major_structure",
+          "index": 449
+        },
+        {
+          "at": "2024-01-10T10:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "new_major_structure",
+          "index": 542
+        }
+      ],
+      "re_entry": [
+        {
+          "at": "2024-01-08T13:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "re_entry",
+          "index": 425
+        },
+        {
+          "at": "2024-01-08T13:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "re_entry",
+          "index": 429
+        },
+        {
+          "at": "2024-01-08T14:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "re_entry",
+          "index": 434
+        }
+      ],
+      "reference_identity_change": [
+        {
+          "at": "2024-01-08T11:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "reference_identity_change",
+          "index": 405
+        },
+        {
+          "at": "2024-01-08T11:55:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "reference_identity_change",
+          "index": 406
+        },
+        {
+          "at": "2024-01-08T12:00:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "reference_identity_change",
+          "index": 407
+        }
+      ],
+      "release_created": [
+        {
+          "at": "2024-01-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_created",
+          "index": 437
+        },
+        {
+          "at": "2024-01-09T09:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_created",
+          "index": 451
+        },
+        {
+          "at": "2024-01-09T12:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_created",
+          "index": 485
+        }
+      ],
+      "release_given_back": [
+        {
+          "at": "2024-01-09T09:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_given_back",
+          "index": 450
+        },
+        {
+          "at": "2024-06-05T10:10:00+05:30",
+          "block": 3,
+          "bucket": "validate",
+          "event": "release_given_back",
+          "index": 410
+        },
+        {
+          "at": "2024-06-05T10:45:00+05:30",
+          "block": 3,
+          "bucket": "validate",
+          "event": "release_given_back",
+          "index": 417
+        }
+      ],
+      "release_still_held": [
+        {
+          "at": "2024-01-08T14:35:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_still_held",
+          "index": 438
+        },
+        {
+          "at": "2024-01-08T14:40:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_still_held",
+          "index": 439
+        },
+        {
+          "at": "2024-01-08T14:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "release_still_held",
+          "index": 440
+        }
+      ],
+      "revisit": [
+        {
+          "at": "2024-01-09T11:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "revisit",
+          "index": 476
+        },
+        {
+          "at": "2024-01-09T12:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "revisit",
+          "index": 487
+        },
+        {
+          "at": "2024-01-09T14:05:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "revisit",
+          "index": 507
+        }
+      ],
+      "route_watch_change": [
+        {
+          "at": "2024-01-08T11:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "route_watch_change",
+          "index": 405
+        },
+        {
+          "at": "2024-01-08T11:55:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "route_watch_change",
+          "index": 406
+        },
+        {
+          "at": "2024-01-08T12:00:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "route_watch_change",
+          "index": 407
+        }
+      ],
+      "session_start": [
+        {
+          "at": "2024-01-09T09:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "session_start",
+          "index": 450
+        },
+        {
+          "at": "2024-01-10T09:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "session_start",
+          "index": 525
+        },
+        {
+          "at": "2024-01-11T09:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "session_start",
+          "index": 600
+        }
+      ],
+      "simultaneous_cluster_range": [
+        {
+          "at": "2024-11-26T14:10:00+05:30",
+          "block": 6,
+          "bucket": "validate",
+          "event": "simultaneous_cluster_range",
+          "index": 683
+        },
+        {
+          "at": "2026-03-23T13:00:00+05:30",
+          "block": 10,
+          "bucket": "validate",
+          "event": "simultaneous_cluster_range",
+          "index": 644
+        }
+      ],
+      "thesis_birth": [
+        {
+          "at": "2024-01-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "thesis_birth",
+          "index": 437
+        },
+        {
+          "at": "2024-01-20T09:20:00+05:30",
+          "block": 2,
+          "bucket": "validate",
+          "event": "thesis_birth",
+          "index": 425
+        },
+        {
+          "at": "2024-06-05T09:55:00+05:30",
+          "block": 3,
+          "bucket": "validate",
+          "event": "thesis_birth",
+          "index": 407
+        }
+      ],
+      "thesis_invalidation_or_reversal": [
+        {
+          "at": "2024-01-09T12:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "thesis_invalidation_or_reversal",
+          "index": 491
+        },
+        {
+          "at": "2024-01-09T13:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "thesis_invalidation_or_reversal",
+          "index": 504
+        },
+        {
+          "at": "2024-01-09T14:05:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "event": "thesis_invalidation_or_reversal",
+          "index": 507
+        }
+      ]
     }
   },
   "examples": {
-    "holders": [
-      {
-        "at": "2023-08-08T14:00:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "deterministic": true,
-        "holders": [],
-        "index": 431,
-        "live_band": {
-          "high": "44991.39475",
-          "low": "44945.79150"
-        },
-        "live_id": "L01",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2023-08-09T13:30:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "deterministic": true,
-        "holders": [],
-        "index": 500,
-        "live_band": {
-          "high": "44650.93250",
-          "low": "44567.27200"
-        },
-        "live_id": "L02",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2023-08-10T14:20:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "deterministic": true,
-        "holders": [],
-        "index": 585,
-        "live_band": {
-          "high": "44572.61875",
-          "low": "44474.33475"
-        },
-        "live_id": "L03",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2023-08-11T10:10:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "deterministic": true,
-        "holders": [],
-        "index": 610,
-        "live_band": {
-          "high": "44352.70750",
-          "low": "44309.86225"
-        },
-        "live_id": "L04",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2023-08-14T09:20:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "deterministic": true,
-        "holders": [],
-        "index": 675,
-        "live_band": {
-          "high": "44266.05075",
-          "low": "44139.01600"
-        },
-        "live_id": "L05",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2023-08-14T10:35:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "deterministic": true,
-        "holders": [],
-        "index": 690,
-        "live_band": {
-          "high": "43887.70925",
-          "low": "43837.64900"
-        },
-        "live_id": "L06",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2024-01-08T13:15:00+05:30",
-        "block": 1,
-        "bucket": "validate",
-        "deterministic": true,
-        "holders": [],
-        "index": 422,
-        "live_band": {
-          "high": "47812.5350",
-          "low": "47759.3450"
-        },
-        "live_id": "L01",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      },
-      {
-        "at": "2024-01-08T15:30:00+05:30",
-        "block": 1,
-        "bucket": "validate",
-        "deterministic": true,
-        "holders": [],
-        "index": 449,
-        "live_band": {
-          "high": "47492.60550",
-          "low": "47424.94125"
-        },
-        "live_id": "L02",
-        "live_kind": "cluster",
-        "tightest_holder": null
-      }
-    ],
-    "local": [
-      {
-        "at": "2023-08-08T14:10:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "44997.742",
-          "low": "44954.712"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 10,
-        "index": 433,
-        "micro_relation": "absent",
-        "parent_band": {
-          "high": "44991.39475",
-          "low": "44945.79150"
-        },
-        "parent_id": "L01",
-        "parent_kind": "cluster",
-        "price": "44979.8",
-        "production_micro_band": null,
-        "production_micro_id": null,
-        "production_micro_state": null
-      },
-      {
-        "at": "2023-08-08T14:15:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "45000.635",
-          "low": "44958.545"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 8,
-        "index": 434,
-        "micro_relation": "absent",
-        "parent_band": {
-          "high": "44991.39475",
-          "low": "44945.79150"
-        },
-        "parent_id": "L01",
-        "parent_kind": "cluster",
-        "price": "44982.85",
-        "production_micro_band": null,
-        "production_micro_id": null,
-        "production_micro_state": null
-      },
-      {
-        "at": "2023-08-08T14:20:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "45001.1975",
-          "low": "44958.7325"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 15,
-        "index": 435,
-        "micro_relation": "absent",
-        "parent_band": {
-          "high": "44991.39475",
-          "low": "44945.79150"
-        },
-        "parent_id": "L01",
-        "parent_kind": "cluster",
-        "price": "44950.4",
-        "production_micro_band": null,
-        "production_micro_id": null,
-        "production_micro_state": null
-      },
-      {
-        "at": "2023-08-08T14:25:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "44998.33875",
-          "low": "44958.83550"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 12,
-        "index": 436,
-        "micro_relation": "absent",
-        "parent_band": {
-          "high": "44991.39475",
-          "low": "44945.79150"
-        },
-        "parent_id": "L01",
-        "parent_kind": "cluster",
-        "price": "45008.2",
-        "production_micro_band": null,
-        "production_micro_id": null,
-        "production_micro_state": null
-      },
-      {
-        "at": "2023-08-09T13:45:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "44656.76500",
-          "low": "44605.93450"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 10,
-        "index": 503,
-        "micro_relation": "same",
-        "parent_band": {
-          "high": "44650.93250",
-          "low": "44567.27200"
-        },
-        "parent_id": "L02",
-        "parent_kind": "cluster",
-        "price": "44625.2",
-        "production_micro_band": {
-          "high": "44656.76500",
-          "low": "44605.93450"
-        },
-        "production_micro_id": "L02.m1",
-        "production_micro_state": "CONFIRMED"
-      },
-      {
-        "at": "2023-08-09T13:55:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "44656.17500",
-          "low": "44609.35875"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 12,
-        "index": 505,
-        "micro_relation": "same",
-        "parent_band": {
-          "high": "44650.93250",
-          "low": "44567.27200"
-        },
-        "parent_id": "L02",
-        "parent_kind": "cluster",
-        "price": "44634.65",
-        "production_micro_band": {
-          "high": "44656.76500",
-          "low": "44605.93450"
-        },
-        "production_micro_id": "L02.m1",
-        "production_micro_state": "CONFIRMED"
-      },
-      {
-        "at": "2023-08-09T14:00:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "44658.83125",
-          "low": "44612.60000"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 12,
-        "index": 506,
-        "micro_relation": "same",
-        "parent_band": {
-          "high": "44650.93250",
-          "low": "44567.27200"
-        },
-        "parent_id": "L02",
-        "parent_kind": "cluster",
-        "price": "44655.2",
-        "production_micro_band": {
-          "high": "44656.76500",
-          "low": "44605.93450"
-        },
-        "production_micro_id": "L02.m1",
-        "production_micro_state": "CONFIRMED"
-      },
-      {
-        "at": "2023-08-10T13:20:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "candidate_band": {
-          "high": "44662.17175",
-          "low": "44619.53775"
-        },
-        "candidate_kind": "cluster",
-        "candidate_window": 8,
-        "index": 573,
-        "micro_relation": "same",
-        "parent_band": {
-          "high": "44650.93250",
-          "low": "44567.27200"
-        },
-        "parent_id": "L02",
-        "parent_kind": "cluster",
-        "price": "44625.5",
-        "production_micro_band": {
-          "high": "44662.17175",
-          "low": "44619.53775"
-        },
-        "production_micro_id": "L02.m1",
-        "production_micro_state": "CONFIRMED"
-      }
-    ],
-    "prefix": [
-      {
-        "at": "2023-08-08T14:30:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "classification": "PRESENTATION_ONLY",
-        "cluster_band": {
-          "high": "44999.96625",
-          "low": "44954.98875"
-        },
-        "historical_parent_id": null,
-        "historical_tight_band": {
-          "high": "45075.93950",
-          "low": "45031.09475"
-        },
-        "historical_tight_id": "C04",
-        "historical_tight_kind": "cluster",
-        "index": 437,
-        "live_current_band": {
-          "high": "45076.94425",
-          "low": "44970.49225"
-        },
-        "live_current_kind": "cluster",
-        "live_parent_id": null,
-        "micro_band": null,
-        "micro_id": null,
-        "price": "45020.35",
-        "range_band": {
-          "high": "45038.75",
-          "low": "44932.5"
-        }
-      }
-    ],
-    "simultaneous": [
-      {
-        "at": "2023-08-08T14:30:00+05:30",
-        "block": 1,
-        "bucket": "teach",
-        "cluster": {
-          "high": "44999.96625",
-          "low": "44954.98875"
-        },
-        "cluster_current": true,
-        "cluster_window": 12,
-        "index": 437,
-        "known_match": "C08",
-        "price": "45020.35",
-        "range": {
-          "high": "45038.75",
-          "low": "44932.5"
-        },
-        "range_current": true,
-        "range_window": 15,
-        "relation": "cluster_inside_range",
-        "selected_band": {
-          "high": "45038.75",
-          "low": "44932.5"
-        },
-        "selected_kind": "range"
-      }
-    ]
-  },
-  "fingerprint": "cadb60743b0d4267",
-  "populations": {
     "teach": {
-      "blocks": 1,
-      "m5_candles": 40725,
-      "sessions": 543
+      "holders": [
+        {
+          "at": "2023-08-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 431,
+          "live_band": {
+            "high": "44991.39475",
+            "low": "44945.79150"
+          },
+          "live_id": "L01",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-09T13:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 500,
+          "live_band": {
+            "high": "44650.93250",
+            "low": "44567.27200"
+          },
+          "live_id": "L02",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-10T14:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 585,
+          "live_band": {
+            "high": "44572.61875",
+            "low": "44474.33475"
+          },
+          "live_id": "L03",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-11T10:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 610,
+          "live_band": {
+            "high": "44352.70750",
+            "low": "44309.86225"
+          },
+          "live_id": "L04",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-14T09:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 675,
+          "live_band": {
+            "high": "44266.05075",
+            "low": "44139.01600"
+          },
+          "live_id": "L05",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-14T10:35:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 690,
+          "live_band": {
+            "high": "43887.70925",
+            "low": "43837.64900"
+          },
+          "live_id": "L06",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-23T13:35:00+05:30",
+          "block": 2,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 476,
+          "live_band": {
+            "high": "44400.6315",
+            "low": "44359.9665"
+          },
+          "live_id": "L01",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2023-08-23T14:55:00+05:30",
+          "block": 2,
+          "bucket": "teach",
+          "deterministic": true,
+          "holders": [],
+          "index": 492,
+          "live_band": {
+            "high": "44499.50",
+            "low": "44460.00"
+          },
+          "live_id": "L02",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        }
+      ],
+      "local": [
+        {
+          "at": "2023-08-08T14:10:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "44997.742",
+            "low": "44954.712"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 10,
+          "index": 433,
+          "micro_relation": "absent",
+          "parent_band": {
+            "high": "44991.39475",
+            "low": "44945.79150"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "44979.8",
+          "production_micro_band": null,
+          "production_micro_id": null,
+          "production_micro_state": null
+        },
+        {
+          "at": "2023-08-08T14:15:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "45000.635",
+            "low": "44958.545"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 8,
+          "index": 434,
+          "micro_relation": "absent",
+          "parent_band": {
+            "high": "44991.39475",
+            "low": "44945.79150"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "44982.85",
+          "production_micro_band": null,
+          "production_micro_id": null,
+          "production_micro_state": null
+        },
+        {
+          "at": "2023-08-08T14:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "45001.1975",
+            "low": "44958.7325"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 15,
+          "index": 435,
+          "micro_relation": "absent",
+          "parent_band": {
+            "high": "44991.39475",
+            "low": "44945.79150"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "44950.4",
+          "production_micro_band": null,
+          "production_micro_id": null,
+          "production_micro_state": null
+        },
+        {
+          "at": "2023-08-08T14:25:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "44998.33875",
+            "low": "44958.83550"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 12,
+          "index": 436,
+          "micro_relation": "absent",
+          "parent_band": {
+            "high": "44991.39475",
+            "low": "44945.79150"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "45008.2",
+          "production_micro_band": null,
+          "production_micro_id": null,
+          "production_micro_state": null
+        },
+        {
+          "at": "2023-08-09T13:45:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "44656.76500",
+            "low": "44605.93450"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 10,
+          "index": 503,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "44650.93250",
+            "low": "44567.27200"
+          },
+          "parent_id": "L02",
+          "parent_kind": "cluster",
+          "price": "44625.2",
+          "production_micro_band": {
+            "high": "44656.76500",
+            "low": "44605.93450"
+          },
+          "production_micro_id": "L02.m1",
+          "production_micro_state": "CONFIRMED"
+        },
+        {
+          "at": "2023-08-09T13:55:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "44656.17500",
+            "low": "44609.35875"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 12,
+          "index": 505,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "44650.93250",
+            "low": "44567.27200"
+          },
+          "parent_id": "L02",
+          "parent_kind": "cluster",
+          "price": "44634.65",
+          "production_micro_band": {
+            "high": "44656.76500",
+            "low": "44605.93450"
+          },
+          "production_micro_id": "L02.m1",
+          "production_micro_state": "CONFIRMED"
+        },
+        {
+          "at": "2023-08-09T14:00:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "44658.83125",
+            "low": "44612.60000"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 12,
+          "index": 506,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "44650.93250",
+            "low": "44567.27200"
+          },
+          "parent_id": "L02",
+          "parent_kind": "cluster",
+          "price": "44655.2",
+          "production_micro_band": {
+            "high": "44656.76500",
+            "low": "44605.93450"
+          },
+          "production_micro_id": "L02.m1",
+          "production_micro_state": "CONFIRMED"
+        },
+        {
+          "at": "2023-08-10T13:20:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "candidate_band": {
+            "high": "44662.17175",
+            "low": "44619.53775"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 8,
+          "index": 573,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "44650.93250",
+            "low": "44567.27200"
+          },
+          "parent_id": "L02",
+          "parent_kind": "cluster",
+          "price": "44625.5",
+          "production_micro_band": {
+            "high": "44662.17175",
+            "low": "44619.53775"
+          },
+          "production_micro_id": "L02.m1",
+          "production_micro_state": "CONFIRMED"
+        }
+      ],
+      "prefix": [
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "classification": "PRESENTATION_ONLY",
+          "cluster_band": {
+            "high": "44999.96625",
+            "low": "44954.98875"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "45075.93950",
+            "low": "45031.09475"
+          },
+          "historical_tight_id": "C04",
+          "historical_tight_kind": "cluster",
+          "index": 437,
+          "live_current_band": {
+            "high": "45076.94425",
+            "low": "44970.49225"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "45020.35",
+          "range_band": {
+            "high": "45038.75",
+            "low": "44932.5"
+          }
+        },
+        {
+          "at": "2023-09-20T15:20:00+05:30",
+          "block": 4,
+          "bucket": "teach",
+          "classification": "HISTORICAL_SCAN_ONLY",
+          "cluster_band": {
+            "high": "45391.96025",
+            "low": "45335.65925"
+          },
+          "historical_parent_id": "R01",
+          "historical_tight_band": {
+            "high": "45430.053",
+            "low": "45379.835"
+          },
+          "historical_tight_id": "C12",
+          "historical_tight_kind": "cluster",
+          "index": 522,
+          "live_current_band": null,
+          "live_current_kind": null,
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "45414.05",
+          "range_band": {
+            "high": "45414.05",
+            "low": "45281.5"
+          }
+        },
+        {
+          "at": "2024-03-13T12:40:00+05:30",
+          "block": 12,
+          "bucket": "teach",
+          "classification": "SAME_SEMANTICS",
+          "cluster_band": {
+            "high": "47122.73275",
+            "low": "47051.54350"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "47122.73275",
+            "low": "47051.54350"
+          },
+          "historical_tight_id": "C14",
+          "historical_tight_kind": "cluster",
+          "index": 515,
+          "live_current_band": {
+            "high": "47120.7730",
+            "low": "47050.3390"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "47122.05",
+          "range_band": {
+            "high": "47162.45",
+            "low": "47038.6"
+          }
+        },
+        {
+          "at": "2024-05-29T13:35:00+05:30",
+          "block": 17,
+          "bucket": "teach",
+          "classification": "LIVE_FRONTIER_ONLY",
+          "cluster_band": {
+            "high": "48621.8330",
+            "low": "48564.8345"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": null,
+          "historical_tight_id": null,
+          "historical_tight_kind": null,
+          "index": 626,
+          "live_current_band": {
+            "high": "48671.34825",
+            "low": "48618.37075"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "48634.15",
+          "range_band": {
+            "high": "48670.75",
+            "low": "48560.45"
+          }
+        },
+        {
+          "at": "2025-04-02T13:05:00+05:30",
+          "block": 31,
+          "bucket": "teach",
+          "classification": "SAME_SEMANTICS",
+          "cluster_band": {
+            "high": "51267.190",
+            "low": "51178.654"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "51237.500",
+            "low": "51162.840"
+          },
+          "historical_tight_id": "C10",
+          "historical_tight_kind": "cluster",
+          "index": 645,
+          "live_current_band": {
+            "high": "51237.500",
+            "low": "51162.840"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "51184.95",
+          "range_band": {
+            "high": "51280.15",
+            "low": "51110.95"
+          }
+        },
+        {
+          "at": "2025-04-02T13:40:00+05:30",
+          "block": 31,
+          "bucket": "teach",
+          "classification": "SAME_SEMANTICS",
+          "cluster_band": {
+            "high": "51262.73500",
+            "low": "51182.62625"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "51237.500",
+            "low": "51162.840"
+          },
+          "historical_tight_id": "C10",
+          "historical_tight_kind": "cluster",
+          "index": 652,
+          "live_current_band": {
+            "high": "51237.500",
+            "low": "51162.840"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "51240.95",
+          "range_band": {
+            "high": "51286.9",
+            "low": "51110.95"
+          }
+        },
+        {
+          "at": "2025-06-09T14:10:00+05:30",
+          "block": 36,
+          "bucket": "teach",
+          "classification": "HISTORICAL_SCAN_ONLY",
+          "cluster_band": {
+            "high": "56938.84500",
+            "low": "56893.92375"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "56938.84500",
+            "low": "56893.92375"
+          },
+          "historical_tight_id": "C13",
+          "historical_tight_kind": "cluster",
+          "index": 458,
+          "live_current_band": null,
+          "live_current_kind": null,
+          "live_parent_id": null,
+          "micro_band": {
+            "high": "56935.648",
+            "low": "56905.078"
+          },
+          "micro_id": "L02.m1",
+          "price": "56892.75",
+          "range_band": {
+            "high": "56949.1",
+            "low": "56890.0"
+          }
+        },
+        {
+          "at": "2025-10-03T13:25:00+05:30",
+          "block": 40,
+          "bucket": "teach",
+          "classification": "PRESENTATION_ONLY",
+          "cluster_band": {
+            "high": "55548.792",
+            "low": "55498.612"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "55548.792",
+            "low": "55498.612"
+          },
+          "historical_tight_id": "C17",
+          "historical_tight_kind": "cluster",
+          "index": 649,
+          "live_current_band": {
+            "high": "55536.073",
+            "low": "55450.457"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "55508.6",
+          "range_band": {
+            "high": "55567.95",
+            "low": "55452.85"
+          }
+        },
+        {
+          "at": "2025-10-13T14:10:00+05:30",
+          "block": 41,
+          "bucket": "teach",
+          "classification": "SAME_SEMANTICS",
+          "cluster_band": {
+            "high": "56615.70750",
+            "low": "56559.59500"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "56636.05375",
+            "low": "56598.92375"
+          },
+          "historical_tight_id": "C08",
+          "historical_tight_kind": "cluster",
+          "index": 408,
+          "live_current_band": {
+            "high": "56636.05375",
+            "low": "56598.92375"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "56642.85",
+          "range_band": {
+            "high": "56667.05",
+            "low": "56537.15"
+          }
+        },
+        {
+          "at": "2025-11-17T10:50:00+05:30",
+          "block": 43,
+          "bucket": "teach",
+          "classification": "LIVE_SCALE_COLLAPSE",
+          "cluster_band": {
+            "high": "58942.4485",
+            "low": "58880.1035"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "58942.4485",
+            "low": "58880.1035"
+          },
+          "historical_tight_id": "C23",
+          "historical_tight_kind": "cluster",
+          "index": 618,
+          "live_current_band": {
+            "high": "58979.85",
+            "low": "58862.15"
+          },
+          "live_current_kind": "range",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "58898.35",
+          "range_band": {
+            "high": "58979.85",
+            "low": "58862.15"
+          }
+        },
+        {
+          "at": "2026-01-06T13:25:00+05:30",
+          "block": 47,
+          "bucket": "teach",
+          "classification": "HISTORICAL_SCAN_ONLY",
+          "cluster_band": {
+            "high": "60234.812",
+            "low": "60170.540"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "60137.30175",
+            "low": "60075.19375"
+          },
+          "historical_tight_id": "C12",
+          "historical_tight_kind": "cluster",
+          "index": 474,
+          "live_current_band": null,
+          "live_current_kind": null,
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "60140.25",
+          "range_band": {
+            "high": "60241.2",
+            "low": "60121.1"
+          }
+        },
+        {
+          "at": "2026-01-20T09:20:00+05:30",
+          "block": 48,
+          "bucket": "teach",
+          "classification": "PRESENTATION_ONLY",
+          "cluster_band": {
+            "high": "59934.84800",
+            "low": "59844.78250"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "59960.58100",
+            "low": "59864.08225"
+          },
+          "historical_tight_id": "C10",
+          "historical_tight_kind": "cluster",
+          "index": 400,
+          "live_current_band": {
+            "high": "59937.9910",
+            "low": "59843.4385"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "59951.3",
+          "range_band": {
+            "high": "59993.5",
+            "low": "59774.1"
+          }
+        }
+      ],
+      "simultaneous": [
+        {
+          "at": "2023-08-08T14:30:00+05:30",
+          "block": 1,
+          "bucket": "teach",
+          "cluster": {
+            "high": "44999.96625",
+            "low": "44954.98875"
+          },
+          "cluster_current": true,
+          "cluster_window": 12,
+          "index": 437,
+          "known_match": "C08",
+          "price": "45020.35",
+          "range": {
+            "high": "45038.75",
+            "low": "44932.5"
+          },
+          "range_current": true,
+          "range_window": 15,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "45038.75",
+            "low": "44932.5"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2023-09-20T15:20:00+05:30",
+          "block": 4,
+          "bucket": "teach",
+          "cluster": {
+            "high": "45391.96025",
+            "low": "45335.65925"
+          },
+          "cluster_current": true,
+          "cluster_window": 10,
+          "index": 522,
+          "known_match": "C01",
+          "price": "45414.05",
+          "range": {
+            "high": "45414.05",
+            "low": "45281.5"
+          },
+          "range_current": true,
+          "range_window": 18,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "45414.05",
+            "low": "45281.5"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2023-09-20T15:30:00+05:30",
+          "block": 4,
+          "bucket": "teach",
+          "cluster": {
+            "high": "45390.727",
+            "low": "45314.743"
+          },
+          "cluster_current": false,
+          "cluster_window": 22,
+          "index": 524,
+          "known_match": "C01",
+          "price": "45442.65",
+          "range": {
+            "high": "45461.7",
+            "low": "45281.5"
+          },
+          "range_current": true,
+          "range_window": 33,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "45461.7",
+            "low": "45281.5"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2024-03-13T12:40:00+05:30",
+          "block": 12,
+          "bucket": "teach",
+          "cluster": {
+            "high": "47122.73275",
+            "low": "47051.54350"
+          },
+          "cluster_current": true,
+          "cluster_window": 10,
+          "index": 515,
+          "known_match": "L02",
+          "price": "47122.05",
+          "range": {
+            "high": "47162.45",
+            "low": "47038.6"
+          },
+          "range_current": true,
+          "range_window": 10,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "47162.45",
+            "low": "47038.6"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2024-05-29T13:35:00+05:30",
+          "block": 17,
+          "bucket": "teach",
+          "cluster": {
+            "high": "48621.8330",
+            "low": "48564.8345"
+          },
+          "cluster_current": true,
+          "cluster_window": 10,
+          "index": 626,
+          "known_match": "L07",
+          "price": "48634.15",
+          "range": {
+            "high": "48670.75",
+            "low": "48560.45"
+          },
+          "range_current": true,
+          "range_window": 15,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "48670.75",
+            "low": "48560.45"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2025-04-02T13:05:00+05:30",
+          "block": 31,
+          "bucket": "teach",
+          "cluster": {
+            "high": "51267.190",
+            "low": "51178.654"
+          },
+          "cluster_current": true,
+          "cluster_window": 12,
+          "index": 645,
+          "known_match": "C10",
+          "price": "51184.95",
+          "range": {
+            "high": "51280.15",
+            "low": "51110.95"
+          },
+          "range_current": true,
+          "range_window": 22,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "51280.15",
+            "low": "51110.95"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2025-04-02T13:40:00+05:30",
+          "block": 31,
+          "bucket": "teach",
+          "cluster": {
+            "high": "51262.73500",
+            "low": "51182.62625"
+          },
+          "cluster_current": true,
+          "cluster_window": 15,
+          "index": 652,
+          "known_match": "C10",
+          "price": "51240.95",
+          "range": {
+            "high": "51286.9",
+            "low": "51110.95"
+          },
+          "range_current": true,
+          "range_window": 27,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "51286.9",
+            "low": "51110.95"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2025-04-30T10:35:00+05:30",
+          "block": 33,
+          "bucket": "teach",
+          "cluster": {
+            "high": "55495.88750",
+            "low": "55330.07500"
+          },
+          "cluster_current": false,
+          "cluster_window": 50,
+          "index": 490,
+          "known_match": "C01",
+          "price": "55114.15",
+          "range": {
+            "high": "55548.45",
+            "low": "55093.2"
+          },
+          "range_current": true,
+          "range_window": 50,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "55548.45",
+            "low": "55093.2"
+          },
+          "selected_kind": "range"
+        }
+      ]
     },
     "validate": {
-      "blocks": 1,
-      "m5_candles": 7275,
-      "sessions": 97
+      "holders": [
+        {
+          "at": "2024-01-08T13:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 422,
+          "live_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "live_id": "L01",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-08T15:30:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 449,
+          "live_band": {
+            "high": "47492.60550",
+            "low": "47424.94125"
+          },
+          "live_id": "L02",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-10T10:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 542,
+          "live_band": {
+            "high": "47335.27475",
+            "low": "47262.77300"
+          },
+          "live_id": "L03",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-10T13:15:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 572,
+          "live_band": {
+            "high": "47280.46625",
+            "low": "47201.20625"
+          },
+          "live_id": "L04",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-10T15:10:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 595,
+          "live_band": {
+            "high": "47380.73025",
+            "low": "47303.66300"
+          },
+          "live_id": "L05",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-11T10:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 618,
+          "live_band": {
+            "high": "47519.280",
+            "low": "47478.904"
+          },
+          "live_id": "L06",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-20T13:55:00+05:30",
+          "block": 2,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 480,
+          "live_band": {
+            "high": "46108.54250",
+            "low": "46039.86850"
+          },
+          "live_id": "L01",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        },
+        {
+          "at": "2024-01-23T13:15:00+05:30",
+          "block": 2,
+          "bucket": "validate",
+          "deterministic": true,
+          "holders": [],
+          "index": 547,
+          "live_band": {
+            "high": "45309.59650",
+            "low": "45206.80975"
+          },
+          "live_id": "L02",
+          "live_kind": "cluster",
+          "tightest_holder": null
+        }
+      ],
+      "local": [
+        {
+          "at": "2024-01-08T13:20:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47807.91125",
+            "low": "47759.27750"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 12,
+          "index": 423,
+          "micro_relation": "absent",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47763.65",
+          "production_micro_band": null,
+          "production_micro_id": null,
+          "production_micro_state": null
+        },
+        {
+          "at": "2024-01-08T13:25:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47803.248",
+            "low": "47751.702"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 12,
+          "index": 424,
+          "micro_relation": "absent",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47752.05",
+          "production_micro_band": null,
+          "production_micro_id": null,
+          "production_micro_state": null
+        },
+        {
+          "at": "2024-01-08T13:35:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47794.15475",
+            "low": "47749.88725"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 10,
+          "index": 426,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47799.95",
+          "production_micro_band": {
+            "high": "47788.33125",
+            "low": "47751.30125"
+          },
+          "production_micro_id": "L01.m1",
+          "production_micro_state": "COLLAPSED"
+        },
+        {
+          "at": "2024-01-08T13:40:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47801.55475",
+            "low": "47749.35175"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 12,
+          "index": 427,
+          "micro_relation": "overlapping",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47784.75",
+          "production_micro_band": {
+            "high": "47788.50400",
+            "low": "47749.35175"
+          },
+          "production_micro_id": "L01.m2",
+          "production_micro_state": "FORMING"
+        },
+        {
+          "at": "2024-01-08T13:45:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47790.756",
+            "low": "47750.337"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 8,
+          "index": 428,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47750.05",
+          "production_micro_band": {
+            "high": "47790.756",
+            "low": "47750.337"
+          },
+          "production_micro_id": "L01.m2",
+          "production_micro_state": "FORMING"
+        },
+        {
+          "at": "2024-01-08T13:50:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47791.7720",
+            "low": "47750.7815"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 10,
+          "index": 429,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47794.8",
+          "production_micro_band": {
+            "high": "47790.756",
+            "low": "47750.337"
+          },
+          "production_micro_id": "L01.m2",
+          "production_micro_state": "COLLAPSED"
+        },
+        {
+          "at": "2024-01-08T13:55:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47796.913",
+            "low": "47751.023"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 8,
+          "index": 430,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47785.45",
+          "production_micro_band": {
+            "high": "47796.913",
+            "low": "47751.023"
+          },
+          "production_micro_id": "L01.m3",
+          "production_micro_state": "FORMING"
+        },
+        {
+          "at": "2024-01-08T14:00:00+05:30",
+          "block": 1,
+          "bucket": "validate",
+          "candidate_band": {
+            "high": "47796.3435",
+            "low": "47750.7885"
+          },
+          "candidate_kind": "cluster",
+          "candidate_window": 15,
+          "index": 431,
+          "micro_relation": "same",
+          "parent_band": {
+            "high": "47812.5350",
+            "low": "47759.3450"
+          },
+          "parent_id": "L01",
+          "parent_kind": "cluster",
+          "price": "47800.3",
+          "production_micro_band": {
+            "high": "47796.913",
+            "low": "47751.023"
+          },
+          "production_micro_id": "L01.m3",
+          "production_micro_state": "COLLAPSED"
+        }
+      ],
+      "prefix": [
+        {
+          "at": "2024-11-26T14:10:00+05:30",
+          "block": 6,
+          "bucket": "validate",
+          "classification": "PRESENTATION_ONLY",
+          "cluster_band": {
+            "high": "52123.70950",
+            "low": "52084.66700"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "52123.70950",
+            "low": "52084.66700"
+          },
+          "historical_tight_id": "C15",
+          "historical_tight_kind": "cluster",
+          "index": 683,
+          "live_current_band": {
+            "high": "52189.05900",
+            "low": "52108.55300"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": null,
+          "micro_id": null,
+          "price": "52132.3",
+          "range_band": {
+            "high": "52163.45",
+            "low": "52069.05"
+          }
+        },
+        {
+          "at": "2026-03-23T13:00:00+05:30",
+          "block": 10,
+          "bucket": "validate",
+          "classification": "SAME_SEMANTICS",
+          "cluster_band": {
+            "high": "51775.403",
+            "low": "51663.044"
+          },
+          "historical_parent_id": null,
+          "historical_tight_band": {
+            "high": "51775.403",
+            "low": "51663.044"
+          },
+          "historical_tight_id": "C15",
+          "historical_tight_kind": "cluster",
+          "index": 644,
+          "live_current_band": {
+            "high": "51793.118",
+            "low": "51663.473"
+          },
+          "live_current_kind": "cluster",
+          "live_parent_id": null,
+          "micro_band": {
+            "high": "51749.0315",
+            "low": "51654.2170"
+          },
+          "micro_id": "L02.m2",
+          "price": "51648.9",
+          "range_band": {
+            "high": "51806.8",
+            "low": "51593.9"
+          }
+        }
+      ],
+      "simultaneous": [
+        {
+          "at": "2024-11-26T14:10:00+05:30",
+          "block": 6,
+          "bucket": "validate",
+          "cluster": {
+            "high": "52123.70950",
+            "low": "52084.66700"
+          },
+          "cluster_current": true,
+          "cluster_window": 8,
+          "index": 683,
+          "known_match": "L05",
+          "price": "52132.3",
+          "range": {
+            "high": "52163.45",
+            "low": "52069.05"
+          },
+          "range_current": true,
+          "range_window": 22,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "52163.45",
+            "low": "52069.05"
+          },
+          "selected_kind": "range"
+        },
+        {
+          "at": "2026-03-23T13:00:00+05:30",
+          "block": 10,
+          "bucket": "validate",
+          "cluster": {
+            "high": "51775.403",
+            "low": "51663.044"
+          },
+          "cluster_current": true,
+          "cluster_window": 10,
+          "index": 644,
+          "known_match": "L02",
+          "price": "51648.9",
+          "range": {
+            "high": "51806.8",
+            "low": "51593.9"
+          },
+          "range_current": true,
+          "range_window": 15,
+          "relation": "cluster_inside_range",
+          "selected_band": {
+            "high": "51806.8",
+            "low": "51593.9"
+          },
+          "selected_kind": "range"
+        }
+      ]
     }
   },
+  "fingerprint": "2ac55a9f4cddeede",
   "timings": {
-    "audit_seconds": 2.040879,
-    "frontier_seconds": 1.044755,
-    "load_seconds": 7.270633,
-    "local_scan_seconds": 0.068238,
-    "prefix_rebuild_seconds": 0.191604,
-    "total_seconds": 9.311574
+    "audit_seconds": 140.817789,
+    "frontier_seconds": 46.823251,
+    "load_seconds": 8.227569,
+    "local_scan_seconds": 2.846544,
+    "prefix_rebuild_seconds": 5.720725,
+    "total_seconds": 149.06617
   }
 }

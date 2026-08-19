@@ -3,38 +3,42 @@
 Reproduction:
 
 ```bash
-python tools/live_structure_truth.py --max-blocks 1 --json reports/structural_truth_summary.json
+python tools/live_structure_truth.py --json reports/structural_truth_summary.json
 ```
 
-The LOCAL scan is research-only. It reuses `adaptive.choose`, existing windows, existing
-tolerance, existing currency checks, and containment under the active `Frontier.current`.
-It does not mutate `Frontier._known`, `MapSnapshot`, live logs, historical map, or finalised
-history.
+LOCAL is a research observation only. It reuses the existing structure machinery beneath
+the active broad structure and does not mutate the snapshot, frontier history, known-node
+pool, or logs. It is not published by production code.
 
-## Smoke Matrix
+## Population
 
-From `reports/structural_truth_summary.json`:
+The audit observed all complete blocks: 17,400 TEACH live candles and 3,000 VALIDATE live
+candles. HOLDOUT was not loaded.
 
-- LOCAL yes / MICRO yes: 25
-- LOCAL yes / MICRO no: 16
-- LOCAL no / MICRO yes: 29
-- LOCAL no / MICRO no: 530
+## LOCAL / Micro Matrix
 
-LOCAL was found on 41 candles. Production Micro was confirmed on 14 candles. Relations
-between LOCAL and Micro among LOCAL examples:
+| Bucket | LOCAL absent / Micro absent | LOCAL absent / Micro found | LOCAL found / Micro absent | LOCAL found / Micro found |
+|---|---:|---:|---:|---:|
+| TEACH | 15,342 | 874 | 662 | 522 |
+| VALIDATE | 2,772 | 89 | 58 | 81 |
+| Total | 18,114 | 963 | 720 | 603 |
 
-- same: 20
-- overlapping: 5
-- absent: 16
+LOCAL appeared on 1,323/20,400 observed live candles (6.49%). LOCAL and Micro disagreed on
+presence for 1,683 candles. Among LOCAL-found candles, geometry relation to Micro was:
+423 same, 176 overlapping, 4 different, and 720 with no Micro geometry.
 
-## Examples
+Micro lifecycle totals were 363 creates, 65 confirms, 38 breaks, and 323 collapses. Those
+are production Micro events; LOCAL still has no independently certified birth, continuity,
+identity, or retirement lifecycle.
 
-- TEACH 2023-08-08 14:10: LOCAL 44,954.712-44,997.742 while Micro absent.
-- TEACH 2023-08-09 13:45: LOCAL 44,605.9345-44,656.765 same as `L02.m1`.
-- TEACH 2023-08-10 13:20: LOCAL 44,619.53775-44,662.17175 same as `L02.m1`.
+## Causal Coverage
+
+Fresh-world cuts included LOCAL appearance and disappearance in both TEACH and VALIDATE,
+with `k-1/k/k+1` around each event. All LOCAL research values matched between independent
+worlds. This certifies causal observation, not production ownership.
 
 ## Conclusion
 
-LOCAL appears to carry information not always present in Micro, and Micro can be present
-when LOCAL is absent. It should remain research-only until lifecycle start/keep/end rules
-are proven across a broader audit.
+LOCAL contains information not reducible to Micro presence, but Gate D remains NO. A
+candidate that is causally observable is not automatically a publishable market object.
+Production publication must wait for a measured lifecycle and the response-ledger study.
