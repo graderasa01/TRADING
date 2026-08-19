@@ -33,9 +33,13 @@ from src.livemap import thesis as thesis_mod
 from tools.live_structure_truth import (
     AuditConfig,
     Block,
-    aggregate_m5_by_bucket,
+    EventObservation,
+    assert_research_blocks,
+    discover_event_catalog,
+    load_research_episodes,
     make_blocks,
     observational_local_candidates,
+    sample_event_observations,
 )
 
 SYMBOL = "NIFTY BANK"
@@ -106,6 +110,23 @@ class Mismatch:
     streaming_fingerprint: str
 
 
+@dataclass(frozen=True, slots=True)
+class CapturedTruth:
+    value: dict
+    retained: dict[str, Any]
+
+
+RETAINED_LAYERS = (
+    "frontier_reading",
+    "map_state",
+    "eye_state",
+    "release_state",
+    "reference_path",
+    "live_thesis",
+    "structural_frame",
+)
+
+
 def canonical(value: Any) -> Any:
     """Convert the full value into a deterministic tree of JSON primitives."""
     if value is None or isinstance(value, (bool, int, str)):
@@ -174,8 +195,8 @@ def capture_choose(frontier: Frontier) -> Iterator[dict[int, tuple[Any, Any]]]:
 
 
 def capture_truth(snapshot: MapSnapshot, frontier: Frontier,
-                  chosen: tuple[Any, Any] | None) -> dict:
-    """Serialize every requested perception fact immediately at the current candle."""
+                  chosen: tuple[Any, Any] | None) -> CapturedTruth:
+    """Capture canonical truth plus the actual immutable trader-facing objects."""
     reading = frontier.readings[-1]
     frame = structural_frame.observe(snapshot, frontier)[-1]
     local = observational_local_candidates(frontier, reading)
@@ -215,7 +236,8 @@ def capture_truth(snapshot: MapSnapshot, frontier: Frontier,
     captured = canonical(raw)
     if not primitive_only(captured):
         raise AssertionError("canonical capture retained a domain object")
-    return captured
+    retained = {name: raw[name] for name in RETAINED_LAYERS}
+    return CapturedTruth(value=captured, retained=retained)
 
 
 def run_prefix_world(block: Block, cut_index: int) -> dict:
@@ -228,26 +250,68 @@ def run_prefix_world(block: Block, cut_index: int) -> dict:
     with capture_choose(frontier) as choices:
         for candle in block.live[:live_count]:
             frontier.on_candle(candle)
-        return capture_truth(snapshot, frontier, choices.get(cut_index))
+        return capture_truth(snapshot, frontier, choices.get(cut_index)).value
 
 
-def run_streaming_world(block: Block, cuts: Sequence[int]) -> tuple[dict[int, dict], list[int]]:
-    """World B: capture at each cut before feeding any later candle."""
+def changed_paths(before: Any, after: Any, path: str = "") -> list[str]:
+    """Locate nested mutations instead of reporting only a whole-object mismatch."""
+    if type(before) is not type(after):
+        return [path or "$"]
+    if isinstance(before, dict):
+        changed: list[str] = []
+        for key in sorted(set(before) | set(after)):
+            child = f"{path}.{key}" if path else str(key)
+            if key not in before or key not in after:
+                changed.append(child)
+            else:
+                changed.extend(changed_paths(before[key], after[key], child))
+        return changed
+    if isinstance(before, list):
+        changed = []
+        for index in range(max(len(before), len(after))):
+            child = f"{path}[{index}]"
+            if index >= len(before) or index >= len(after):
+                changed.append(child)
+            else:
+                changed.extend(changed_paths(before[index], after[index], child))
+        return changed
+    return [] if before == after else [path or "$"]
+
+
+def run_streaming_world(block: Block, cuts: Sequence[int]
+                        ) -> tuple[dict[int, dict], list[dict]]:
+    """World B: retain objects at cuts, feed the future, then serialize them again."""
     wanted = set(cuts)
     snapshot = build_snapshot(block.history, SYMBOL)
     frontier = Frontier(snapshot, block.history)
     captured: dict[int, dict] = {}
-    immutable_text: dict[int, str] = {}
+    retained_objects: dict[int, dict[str, Any]] = {}
+    retained_before: dict[int, dict[str, Any]] = {}
     with capture_choose(frontier) as choices:
         for candle in block.live:
             reading = frontier.on_candle(candle)
             if reading.index in wanted:
-                value = capture_truth(snapshot, frontier, choices.get(reading.index))
-                captured[reading.index] = value
-                immutable_text[reading.index] = canonical_json(value)
+                truth = capture_truth(snapshot, frontier, choices.get(reading.index))
+                captured[reading.index] = truth.value
+                retained_objects[reading.index] = truth.retained
+                retained_before[reading.index] = {
+                    layer: canonical(value) for layer, value in truth.retained.items()
+                }
 
-    changed = [index for index, value in captured.items()
-               if canonical_json(value) != immutable_text[index]]
+    changed: list[dict] = []
+    for index, objects in retained_objects.items():
+        for layer, retained in objects.items():
+            before = retained_before[index][layer]
+            after = canonical(retained)
+            if before == after:
+                continue
+            changed.append({
+                "index": index,
+                "layer": layer,
+                "paths": changed_paths(before, after),
+                "before_fingerprint": fingerprint(before),
+                "after_fingerprint": fingerprint(after),
+            })
     missing = wanted - set(captured)
     if missing:
         raise ValueError(f"streaming world missed cuts {sorted(missing)}")
@@ -272,7 +336,7 @@ def _add_cut(target: dict[tuple[str, int, int], dict], block: Block,
 
 def select_cuts(blocks_by_bucket: dict[str, list[Block]], event_catalog: dict,
                 *, ordinary_per_bucket: int = 8) -> list[Cut]:
-    """Expand every observed event to k-1/k/k+1 and add an ordinary spread."""
+    """Expand first/middle/last event occurrences to k-1/k/k+1."""
     selected: dict[tuple[str, int, int], dict] = {}
     for bucket in (TEACH, VALIDATE):
         by_ordinal = {block.ordinal: block for block in blocks_by_bucket[bucket]}
@@ -281,13 +345,12 @@ def select_cuts(blocks_by_bucket: dict[str, list[Block]], event_catalog: dict,
             observations = catalog.get(event, [])
             if not observations:
                 continue
-            observation = observations[0]
-            block = by_ordinal.get(int(observation["block"]))
-            if block is None:
-                continue
-            index = int(observation["index"])
-            for offset in (-1, 0, 1):
-                _add_cut(selected, block, index + offset, event)
+            for observation in sample_event_observations(observations):
+                block = by_ordinal.get(observation.block)
+                if block is None:
+                    continue
+                for offset in (-1, 0, 1):
+                    _add_cut(selected, block, observation.index + offset, event)
 
         blocks = blocks_by_bucket[bucket]
         total = sum(len(block.live) for block in blocks)
@@ -309,6 +372,19 @@ def select_cuts(blocks_by_bucket: dict[str, list[Block]], event_catalog: dict,
         for item in sorted(selected.values(), key=lambda value: (
             value["bucket"], value["block"], value["index"]))
     ]
+
+
+def event_sampling_facts(event_catalog: dict) -> tuple[dict, dict]:
+    covered: dict[str, list[str]] = {}
+    sampled: dict[str, dict[str, int]] = {}
+    for bucket in (TEACH, VALIDATE):
+        catalog = event_catalog.get(bucket, {})
+        covered[bucket] = [event for event in REQUIRED_EVENTS if catalog.get(event)]
+        sampled[bucket] = {
+            event: len(sample_event_observations(catalog[event]))
+            for event in covered[bucket]
+        }
+    return covered, sampled
 
 
 _INDEX_FIELDS = frozenset({
@@ -371,6 +447,15 @@ def compare_cut(cut: Cut, prefix: dict, streaming: dict) -> list[Mismatch]:
     return out
 
 
+def assert_validate_aggregate_only(result: dict) -> None:
+    """Case-level public sections must contain TEACH records only."""
+    for section in ("cuts", "mismatches", "mutable_reference_details"):
+        if any(item.get("bucket") == VALIDATE for item in result.get(section, [])):
+            raise AssertionError(f"{section} exposed a case-level validate record")
+    if result.get("validate_exposure") != "aggregate_only":
+        raise AssertionError("validate exposure policy is missing")
+
+
 def run_certification(audit_payload: dict, *, ordinary_per_bucket: int = 8) -> dict:
     config_data = audit_payload["config"]
     config = AuditConfig(
@@ -380,16 +465,19 @@ def run_certification(audit_payload: dict, *, ordinary_per_bucket: int = 8) -> d
         prefix_examples=int(config_data.get("prefix_examples", 12)),
         trace_examples=int(config_data.get("trace_examples", 8)),
     )
-    candles_by_bucket, _sessions = aggregate_m5_by_bucket()
+    episodes_by_bucket, _source_population = load_research_episodes()
     blocks_by_bucket = {
-        bucket: make_blocks(candles, bucket, config)
-        for bucket, candles in candles_by_bucket.items()
+        bucket: make_blocks(episodes, bucket, config)
+        for bucket, episodes in episodes_by_bucket.items()
     }
+    assert_research_blocks(blocks_by_bucket)
+    event_catalog = discover_event_catalog(blocks_by_bucket, config)
     cuts = select_cuts(
         blocks_by_bucket,
-        audit_payload.get("events", {}),
+        event_catalog,
         ordinary_per_bucket=ordinary_per_bucket,
     )
+    event_types_covered, event_occurrences_sampled = event_sampling_facts(event_catalog)
     cuts_by_block: dict[tuple[str, int], list[Cut]] = defaultdict(list)
     for cut in cuts:
         cuts_by_block[(cut.bucket, cut.block)].append(cut)
@@ -405,10 +493,11 @@ def run_certification(audit_payload: dict, *, ordinary_per_bucket: int = 8) -> d
         values, changed = run_streaming_world(block, [cut.index for cut in block_cuts])
         for cut in block_cuts:
             streaming[(bucket, ordinal, cut.index)] = values[cut.index]
-        for index in changed:
+        for leak in changed:
             mutable_reference_leaks.append({
-                "bucket": bucket, "block": ordinal, "index": index,
+                "bucket": bucket, "block": ordinal,
                 "classification": "MUTABLE_REFERENCE_LEAK",
+                **leak,
             })
 
     mismatches: list[Mismatch] = []
@@ -423,17 +512,36 @@ def run_certification(audit_payload: dict, *, ordinary_per_bucket: int = 8) -> d
     for name in CLASSIFICATIONS:
         classifications.setdefault(name, 0)
 
-    cuts_by_event: Counter[str] = Counter()
+    cuts_by_event: dict[str, Counter[str]] = {
+        TEACH: Counter(), VALIDATE: Counter(),
+    }
     for cut in cuts:
         for event in cut.events:
-            cuts_by_event[event] += 1
+            cuts_by_event[cut.bucket][event] += 1
     cuts_by_bucket = Counter(cut.bucket for cut in cuts)
     mismatch_fields_by_bucket = Counter(item.bucket for item in mismatches)
+    mismatch_fields_by_bucket.update(
+        leak["bucket"] for leak in mutable_reference_leaks)
     mismatch_cuts_by_bucket = {
-        bucket: len({(item.block, item.index) for item in mismatches
-                     if item.bucket == bucket})
+        bucket: len(
+            {(item.block, item.index) for item in mismatches if item.bucket == bucket}
+            | {(item["block"], item["index"]) for item in mutable_reference_leaks
+               if item["bucket"] == bucket}
+        )
         for bucket in (TEACH, VALIDATE)
     }
+    classification_by_bucket = {
+        bucket: Counter(item.classification for item in mismatches
+                        if item.bucket == bucket)
+        for bucket in (TEACH, VALIDATE)
+    }
+    layer_by_bucket = {
+        bucket: Counter(item.layer for item in mismatches if item.bucket == bucket)
+        for bucket in (TEACH, VALIDATE)
+    }
+    for leak in mutable_reference_leaks:
+        classification_by_bucket[leak["bucket"]]["MUTABLE_REFERENCE_LEAK"] += 1
+        layer_by_bucket[leak["bucket"]][leak["layer"]] += 1
     blocking_count = sum(classifications[name] for name in BLOCKING)
     result = {
         "config": {
@@ -444,12 +552,26 @@ def run_certification(audit_payload: dict, *, ordinary_per_bucket: int = 8) -> d
         "source_audit_fingerprint": audit_payload.get("fingerprint"),
         "available_population": audit_payload.get("available_population", {}),
         "audited_population": audit_payload.get("audited_population", {}),
+        "holdout_access_semantics": audit_payload.get("holdout_access_semantics", {}),
+        "replay_integrity": {
+            bucket: {
+                "eligible_episodes": len(episodes_by_bucket[bucket]),
+                "blocks": len(blocks_by_bucket[bucket]),
+                "source_contiguous": True,
+            }
+            for bucket in (TEACH, VALIDATE)
+        },
         "total_cuts": len(cuts),
         "cuts_by_bucket": dict(sorted(cuts_by_bucket.items())),
-        "cuts_by_event": dict(sorted(cuts_by_event.items())),
+        "cuts_by_event": {
+            bucket: dict(sorted(cuts_by_event[bucket].items()))
+            for bucket in (TEACH, VALIDATE)
+        },
+        "event_types_covered": event_types_covered,
+        "event_occurrences_sampled": event_occurrences_sampled,
         "unobserved_event_types": {
             bucket: [event for event in REQUIRED_EVENTS
-                     if not audit_payload.get("events", {}).get(bucket, {}).get(event)]
+                     if not event_catalog.get(bucket, {}).get(event)]
             for bucket in (TEACH, VALIDATE)
         },
         "mismatch_cuts": mismatch_cuts_by_bucket,
@@ -460,15 +582,31 @@ def run_certification(audit_payload: dict, *, ordinary_per_bucket: int = 8) -> d
         "mismatch_classification": {
             name: classifications[name] for name in CLASSIFICATIONS
         },
+        "mismatch_classification_by_bucket": {
+            bucket: {name: classification_by_bucket[bucket][name]
+                     for name in CLASSIFICATIONS}
+            for bucket in (TEACH, VALIDATE)
+        },
+        "validate_mismatch_aggregate": {
+            "layers": dict(sorted(layer_by_bucket[VALIDATE].items())),
+            "classifications": {
+                name: classification_by_bucket[VALIDATE][name]
+                for name in CLASSIFICATIONS
+            },
+        },
         "future_leaks": classifications["FUTURE_LEAK"],
         "mutable_reference_leaks": classifications["MUTABLE_REFERENCE_LEAK"],
         "identity_drift": classifications["IDENTITY_DRIFT"],
         "bugs": classifications["BUG"],
         "determinism_result": "PASS" if blocking_count == 0 else "FAIL",
-        "cuts": [asdict(cut) for cut in cuts],
-        "mismatches": [asdict(item) for item in mismatches],
-        "mutable_reference_details": mutable_reference_leaks,
+        "retained_object_layers": list(RETAINED_LAYERS),
+        "cuts": [asdict(cut) for cut in cuts if cut.bucket == TEACH],
+        "mismatches": [asdict(item) for item in mismatches if item.bucket == TEACH],
+        "mutable_reference_details": [item for item in mutable_reference_leaks
+                                      if item["bucket"] == TEACH],
+        "validate_exposure": "aggregate_only",
     }
+    assert_validate_aggregate_only(result)
     stable = dict(result)
     stable.pop("fingerprint", None)
     result["fingerprint"] = fingerprint(canonical(stable))

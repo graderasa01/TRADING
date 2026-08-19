@@ -24,16 +24,20 @@
   },
   "fresh_world": {
     "result": "PASS",
-    "cuts": 83,
-    "teach_cuts": 40,
-    "validate_cuts": 43,
+    "supersedes_bucket_compressed_result": true,
+    "source_contiguous": true,
+    "cuts": 287,
+    "teach_cuts": 142,
+    "validate_cuts": 145,
+    "event_types_covered_per_bucket": 26,
+    "event_occurrences_sampled": 154,
     "teach_mismatch_cuts": 0,
     "validate_mismatch_cuts": 0,
     "future_leaks": 0,
     "mutable_reference_leaks": 0,
     "identity_drift": 0,
     "bugs": 0,
-    "fingerprint": "5607fc3e34ef177f"
+    "fingerprint": "f9d1e3d3cafb5470"
   },
   "gates": {
     "A": "YES",
@@ -43,7 +47,7 @@
     "D": "NO",
     "E": "YES",
     "F": "YES",
-    "G": "NOT YET",
+    "G": "YES - READY, NOT EXECUTED",
     "H": "NOT REACHED"
   }
 }

@@ -1,30 +1,38 @@
 {
   "audited_population": {
     "teach": {
-      "blocks_processed": 58,
-      "first_timestamp": "2023-08-01T09:20:00+05:30",
-      "history_candles_consumed": 23200,
-      "last_timestamp": "2026-08-10T11:20:00+05:30",
-      "live_candles_observed": 17400,
-      "unique_sessions_touched": 542
+      "blocks_processed": 52,
+      "episodes_touched": 10,
+      "history_candles_consumed": 20800,
+      "live_candles_observed": 15600,
+      "unique_sessions_touched": 489
     },
     "validate": {
-      "blocks_processed": 10,
-      "first_timestamp": "2024-01-01T09:20:00+05:30",
-      "history_candles_consumed": 4000,
-      "last_timestamp": "2026-03-24T11:20:00+05:30",
-      "live_candles_observed": 3000,
-      "unique_sessions_touched": 94
+      "blocks_processed": 9,
+      "episodes_touched": 5,
+      "history_candles_consumed": 3600,
+      "live_candles_observed": 2700,
+      "unique_sessions_touched": 86
     }
   },
   "available_population": {
     "teach": {
-      "candles": 40725,
-      "sessions": 543
+      "eligible_episodes": 12,
+      "episodes_long_enough": 10,
+      "m5_candles": 40725,
+      "possible_blocks": 52,
+      "replayable_sessions": 543,
+      "source_sessions_assigned": 548,
+      "unused_warmup_tail_candles": 4325
     },
     "validate": {
-      "candles": 7275,
-      "sessions": 97
+      "eligible_episodes": 5,
+      "episodes_long_enough": 5,
+      "m5_candles": 7275,
+      "possible_blocks": 9,
+      "replayable_sessions": 97,
+      "source_sessions_assigned": 98,
+      "unused_warmup_tail_candles": 975
     }
   },
   "bugs": 0,
@@ -369,26 +377,26 @@
       "index": 447
     },
     {
-      "at": "2023-11-02T10:00:00+05:30",
-      "block": 7,
+      "at": "2023-10-20T10:00:00+05:30",
+      "block": 6,
       "bucket": "teach",
       "events": [
         "ordinary"
       ],
-      "index": 533
+      "index": 633
     },
     {
-      "at": "2024-04-01T14:50:00+05:30",
-      "block": 13,
+      "at": "2024-03-28T14:50:00+05:30",
+      "block": 12,
       "bucket": "teach",
       "events": [
         "ordinary"
       ],
-      "index": 666
+      "index": 566
     },
     {
-      "at": "2024-09-04T15:30:00+05:30",
-      "block": 20,
+      "at": "2024-09-19T13:25:00+05:30",
+      "block": 18,
       "bucket": "teach",
       "events": [
         "ordinary"
@@ -396,35 +404,35 @@
       "index": 499
     },
     {
-      "at": "2024-12-26T14:05:00+05:30",
-      "block": 26,
+      "at": "2024-12-13T09:20:00+05:30",
+      "block": 21,
       "bucket": "teach",
       "events": [
-        "ordinary"
+        "micro_break"
       ],
-      "index": 632
+      "index": 675
     },
     {
-      "at": "2025-04-29T14:50:00+05:30",
-      "block": 33,
+      "at": "2024-12-13T09:25:00+05:30",
+      "block": 21,
       "bucket": "teach",
       "events": [
-        "ordinary"
+        "micro_break"
       ],
-      "index": 466
+      "index": 676
     },
     {
-      "at": "2025-07-21T13:25:00+05:30",
-      "block": 39,
+      "at": "2024-12-13T09:30:00+05:30",
+      "block": 21,
       "bucket": "teach",
       "events": [
-        "ordinary"
+        "micro_break"
       ],
-      "index": 599
+      "index": 677
     },
     {
-      "at": "2025-12-22T14:05:00+05:30",
-      "block": 46,
+      "at": "2025-01-17T14:05:00+05:30",
+      "block": 24,
       "bucket": "teach",
       "events": [
         "ordinary"
@@ -432,262 +440,487 @@
       "index": 432
     },
     {
-      "at": "2026-05-18T12:40:00+05:30",
-      "block": 52,
+      "at": "2025-03-11T10:45:00+05:30",
+      "block": 25,
       "bucket": "teach",
       "events": [
-        "ordinary"
+        "local_research_disappearance"
       ],
-      "index": 565
+      "index": 467
     },
     {
-      "at": "2024-01-08T11:45:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-11T10:50:00+05:30",
+      "block": 25,
+      "bucket": "teach",
       "events": [
-        "reference_identity_change",
-        "route_watch_change"
+        "local_research_disappearance"
       ],
-      "index": 404
+      "index": 468
     },
     {
-      "at": "2024-01-08T11:50:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-11T10:55:00+05:30",
+      "block": 25,
+      "bucket": "teach",
       "events": [
-        "reference_identity_change",
-        "route_watch_change"
+        "local_research_disappearance"
       ],
-      "index": 405
+      "index": 469
     },
     {
-      "at": "2024-01-08T11:55:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-12T15:10:00+05:30",
+      "block": 25,
+      "bucket": "teach",
       "events": [
-        "reference_identity_change",
-        "route_watch_change"
+        "local_research_appearance"
       ],
-      "index": 406
+      "index": 595
     },
     {
-      "at": "2024-01-08T13:10:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-12T15:15:00+05:30",
+      "block": 25,
+      "bucket": "teach",
       "events": [
-        "forming_to_confirmed",
+        "local_research_appearance"
+      ],
+      "index": 596
+    },
+    {
+      "at": "2025-03-12T15:20:00+05:30",
+      "block": 25,
+      "bucket": "teach",
+      "events": [
+        "local_research_appearance"
+      ],
+      "index": 597
+    },
+    {
+      "at": "2025-03-13T13:35:00+05:30",
+      "block": 25,
+      "bucket": "teach",
+      "events": [
         "major_birth",
         "new_major_structure"
       ],
-      "index": 421
+      "index": 651
     },
     {
-      "at": "2024-01-08T13:15:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-13T13:40:00+05:30",
+      "block": 25,
+      "bucket": "teach",
       "events": [
-        "edge_approach",
-        "forming_to_confirmed",
-        "local_research_appearance",
         "major_birth",
         "new_major_structure"
       ],
-      "index": 422
+      "index": 652
     },
     {
-      "at": "2024-01-08T13:20:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-13T13:45:00+05:30",
+      "block": 25,
+      "bucket": "teach",
       "events": [
-        "break_attempt",
-        "edge_approach",
-        "forming_to_confirmed",
-        "local_research_appearance",
         "major_birth",
         "new_major_structure"
       ],
-      "index": 423
+      "index": 653
     },
     {
-      "at": "2024-01-08T13:25:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-25T12:20:00+05:30",
+      "block": 26,
+      "bucket": "teach",
       "events": [
-        "break_attempt",
-        "edge_approach",
-        "local_research_appearance",
-        "local_research_disappearance",
-        "micro_created",
-        "re_entry"
+        "release_created"
       ],
-      "index": 424
+      "index": 461
     },
     {
-      "at": "2024-01-08T13:30:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-25T12:25:00+05:30",
+      "block": 26,
+      "bucket": "teach",
       "events": [
-        "break_attempt",
-        "local_research_disappearance",
-        "micro_collapse",
-        "micro_created",
-        "re_entry"
+        "release_created"
       ],
-      "index": 425
+      "index": 462
     },
     {
-      "at": "2024-01-08T13:35:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-25T12:30:00+05:30",
+      "block": 26,
+      "bucket": "teach",
       "events": [
-        "local_research_disappearance",
-        "micro_collapse",
-        "micro_created",
-        "re_entry"
+        "release_created"
       ],
-      "index": 426
+      "index": 463
     },
     {
-      "at": "2024-01-08T13:40:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-25T13:40:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_created"
+      ],
+      "index": 477
+    },
+    {
+      "at": "2025-03-25T13:45:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_created"
+      ],
+      "index": 478
+    },
+    {
+      "at": "2025-03-25T13:50:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_created"
+      ],
+      "index": 479
+    },
+    {
+      "at": "2025-03-26T14:10:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "release_still_held"
+      ],
+      "index": 558
+    },
+    {
+      "at": "2025-03-26T14:15:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "release_still_held"
+      ],
+      "index": 559
+    },
+    {
+      "at": "2025-03-26T14:20:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "release_still_held"
+      ],
+      "index": 560
+    },
+    {
+      "at": "2025-03-26T14:55:00+05:30",
+      "block": 26,
+      "bucket": "teach",
       "events": [
         "micro_collapse"
       ],
-      "index": 427
+      "index": 567
     },
     {
-      "at": "2024-01-08T14:25:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-03-26T15:00:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_collapse"
+      ],
+      "index": 568
+    },
+    {
+      "at": "2025-03-26T15:05:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_collapse"
+      ],
+      "index": 569
+    },
+    {
+      "at": "2025-03-27T12:50:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_confirmed"
+      ],
+      "index": 617
+    },
+    {
+      "at": "2025-03-27T12:55:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_confirmed"
+      ],
+      "index": 618
+    },
+    {
+      "at": "2025-03-27T13:00:00+05:30",
+      "block": 26,
+      "bucket": "teach",
+      "events": [
+        "micro_confirmed"
+      ],
+      "index": 619
+    },
+    {
+      "at": "2025-04-08T09:20:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "session_start"
+      ],
+      "index": 400
+    },
+    {
+      "at": "2025-04-08T09:25:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "session_start"
+      ],
+      "index": 401
+    },
+    {
+      "at": "2025-04-08T12:00:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "edge_approach"
+      ],
+      "index": 432
+    },
+    {
+      "at": "2025-04-08T12:05:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "edge_approach"
+      ],
+      "index": 433
+    },
+    {
+      "at": "2025-04-08T12:10:00+05:30",
+      "block": 27,
+      "bucket": "teach",
       "events": [
         "accepted_major_break",
-        "release_created",
+        "edge_approach",
+        "leaving",
+        "thesis_birth"
+      ],
+      "index": 434
+    },
+    {
+      "at": "2025-04-08T12:15:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "accepted_major_break",
+        "leaving",
+        "thesis_birth"
+      ],
+      "index": 435
+    },
+    {
+      "at": "2025-04-08T12:20:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "accepted_major_break",
+        "leaving",
         "thesis_birth"
       ],
       "index": 436
     },
     {
-      "at": "2024-01-08T14:30:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-08T13:50:00+05:30",
+      "block": 27,
+      "bucket": "teach",
       "events": [
-        "accepted_major_break",
-        "release_created",
-        "release_still_held",
-        "thesis_birth"
+        "forming_to_confirmed"
+      ],
+      "index": 454
+    },
+    {
+      "at": "2025-04-08T13:55:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "forming_to_confirmed"
+      ],
+      "index": 455
+    },
+    {
+      "at": "2025-04-08T14:00:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "forming_to_confirmed"
+      ],
+      "index": 456
+    },
+    {
+      "at": "2025-04-08T14:50:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "revisit"
+      ],
+      "index": 466
+    },
+    {
+      "at": "2025-04-08T14:55:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "revisit"
+      ],
+      "index": 467
+    },
+    {
+      "at": "2025-04-08T15:00:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "revisit"
+      ],
+      "index": 468
+    },
+    {
+      "at": "2025-04-11T13:15:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "break_attempt"
+      ],
+      "index": 597
+    },
+    {
+      "at": "2025-04-11T13:20:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "break_attempt"
+      ],
+      "index": 598
+    },
+    {
+      "at": "2025-04-11T13:25:00+05:30",
+      "block": 27,
+      "bucket": "teach",
+      "events": [
+        "break_attempt"
+      ],
+      "index": 599
+    },
+    {
+      "at": "2025-04-24T14:20:00+05:30",
+      "block": 28,
+      "bucket": "teach",
+      "events": [
+        "release_given_back"
+      ],
+      "index": 435
+    },
+    {
+      "at": "2025-04-24T14:25:00+05:30",
+      "block": 28,
+      "bucket": "teach",
+      "events": [
+        "release_given_back"
+      ],
+      "index": 436
+    },
+    {
+      "at": "2025-04-24T14:30:00+05:30",
+      "block": 28,
+      "bucket": "teach",
+      "events": [
+        "release_given_back"
       ],
       "index": 437
     },
     {
-      "at": "2024-01-08T14:35:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-30T10:15:00+05:30",
+      "block": 28,
+      "bucket": "teach",
       "events": [
-        "accepted_major_break",
-        "release_created",
-        "release_still_held",
-        "thesis_birth"
+        "simultaneous_releases"
       ],
-      "index": 438
+      "index": 686
     },
     {
-      "at": "2024-01-08T14:40:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-30T10:20:00+05:30",
+      "block": 28,
+      "bucket": "teach",
       "events": [
-        "release_still_held"
+        "simultaneous_releases"
       ],
-      "index": 439
+      "index": 687
     },
     {
-      "at": "2024-01-08T15:30:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-30T10:25:00+05:30",
+      "block": 28,
+      "bucket": "teach",
       "events": [
-        "release_given_back",
-        "session_start"
+        "simultaneous_releases"
       ],
-      "index": 449
+      "index": 688
     },
     {
-      "at": "2024-01-09T09:20:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-30T10:30:00+05:30",
+      "block": 28,
+      "bucket": "teach",
       "events": [
-        "release_given_back",
-        "session_start"
+        "reference_identity_change"
       ],
-      "index": 450
+      "index": 689
     },
     {
-      "at": "2024-01-09T09:25:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-30T10:35:00+05:30",
+      "block": 28,
+      "bucket": "teach",
       "events": [
-        "release_given_back",
-        "session_start"
+        "reference_identity_change"
       ],
-      "index": 451
+      "index": 690
     },
     {
-      "at": "2024-01-09T11:25:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-04-30T10:40:00+05:30",
+      "block": 28,
+      "bucket": "teach",
       "events": [
-        "revisit"
+        "reference_identity_change"
       ],
-      "index": 475
+      "index": 691
     },
     {
-      "at": "2024-01-09T11:30:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-09T10:55:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
-        "revisit"
+        "re_entry"
       ],
-      "index": 476
+      "index": 444
     },
     {
-      "at": "2024-01-09T11:35:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-09T11:00:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
-        "revisit"
+        "re_entry"
       ],
-      "index": 477
+      "index": 445
     },
     {
-      "at": "2024-01-09T12:10:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-09T11:05:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
-        "leaving"
+        "re_entry"
       ],
-      "index": 484
+      "index": 446
     },
     {
-      "at": "2024-01-09T12:15:00+05:30",
-      "block": 1,
-      "bucket": "validate",
-      "events": [
-        "leaving"
-      ],
-      "index": 485
-    },
-    {
-      "at": "2024-01-09T12:20:00+05:30",
-      "block": 1,
-      "bucket": "validate",
-      "events": [
-        "leaving"
-      ],
-      "index": 486
-    },
-    {
-      "at": "2024-01-09T12:40:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-09T14:45:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
         "generation_change",
         "thesis_invalidation_or_reversal"
@@ -695,9 +928,9 @@
       "index": 490
     },
     {
-      "at": "2024-01-09T12:45:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-09T14:50:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
         "generation_change",
         "thesis_invalidation_or_reversal"
@@ -705,9 +938,9 @@
       "index": 491
     },
     {
-      "at": "2024-01-09T12:50:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-09T14:55:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
         "generation_change",
         "thesis_invalidation_or_reversal"
@@ -715,195 +948,664 @@
       "index": 492
     },
     {
-      "at": "2024-01-09T13:20:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-12T11:35:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
-        "micro_confirmed"
+        "route_watch_change"
       ],
-      "index": 498
+      "index": 527
     },
     {
-      "at": "2024-01-09T13:25:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-12T11:40:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
-        "micro_confirmed"
+        "route_watch_change"
       ],
-      "index": 499
+      "index": 528
     },
     {
-      "at": "2024-01-09T13:30:00+05:30",
-      "block": 1,
-      "bucket": "validate",
+      "at": "2025-05-12T11:45:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
-        "micro_confirmed"
+        "route_watch_change"
       ],
-      "index": 500
+      "index": 529
     },
     {
-      "at": "2024-01-20T10:00:00+05:30",
-      "block": 2,
-      "bucket": "validate",
-      "events": [
-        "ordinary"
-      ],
-      "index": 433
-    },
-    {
-      "at": "2024-06-05T14:50:00+05:30",
-      "block": 3,
-      "bucket": "validate",
-      "events": [
-        "ordinary"
-      ],
-      "index": 466
-    },
-    {
-      "at": "2024-06-20T13:25:00+05:30",
-      "block": 4,
-      "bucket": "validate",
-      "events": [
-        "ordinary"
-      ],
-      "index": 499
-    },
-    {
-      "at": "2024-11-07T12:00:00+05:30",
-      "block": 5,
-      "bucket": "validate",
-      "events": [
-        "ordinary"
-      ],
-      "index": 532
-    },
-    {
-      "at": "2024-11-22T11:40:00+05:30",
-      "block": 6,
-      "bucket": "validate",
-      "events": [
-        "micro_break"
-      ],
-      "index": 503
-    },
-    {
-      "at": "2024-11-22T11:45:00+05:30",
-      "block": 6,
-      "bucket": "validate",
-      "events": [
-        "micro_break"
-      ],
-      "index": 504
-    },
-    {
-      "at": "2024-11-22T11:50:00+05:30",
-      "block": 6,
-      "bucket": "validate",
-      "events": [
-        "micro_break"
-      ],
-      "index": 505
-    },
-    {
-      "at": "2024-11-25T10:40:00+05:30",
-      "block": 6,
-      "bucket": "validate",
-      "events": [
-        "ordinary"
-      ],
-      "index": 566
-    },
-    {
-      "at": "2024-11-26T14:05:00+05:30",
-      "block": 6,
-      "bucket": "validate",
+      "at": "2025-05-12T14:00:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
         "simultaneous_cluster_range"
       ],
-      "index": 682
+      "index": 556
     },
     {
-      "at": "2024-11-26T14:10:00+05:30",
-      "block": 6,
-      "bucket": "validate",
+      "at": "2025-05-12T14:05:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
         "simultaneous_cluster_range"
       ],
-      "index": 683
+      "index": 557
     },
     {
-      "at": "2024-11-26T14:15:00+05:30",
-      "block": 6,
-      "bucket": "validate",
+      "at": "2025-05-12T14:10:00+05:30",
+      "block": 29,
+      "bucket": "teach",
       "events": [
         "simultaneous_cluster_range"
       ],
-      "index": 684
+      "index": 558
     },
     {
-      "at": "2025-08-07T15:30:00+05:30",
-      "block": 7,
-      "bucket": "validate",
+      "at": "2025-05-14T10:40:00+05:30",
+      "block": 29,
+      "bucket": "teach",
+      "events": [
+        "ordinary"
+      ],
+      "index": 666
+    },
+    {
+      "at": "2025-07-30T11:20:00+05:30",
+      "block": 35,
+      "bucket": "teach",
       "events": [
         "ordinary"
       ],
       "index": 599
     },
     {
-      "at": "2025-08-22T14:05:00+05:30",
-      "block": 8,
-      "bucket": "validate",
+      "at": "2025-12-26T12:00:00+05:30",
+      "block": 41,
+      "bucket": "teach",
       "events": [
         "ordinary"
       ],
-      "index": 632
+      "index": 532
     },
     {
-      "at": "2026-03-10T12:40:00+05:30",
-      "block": 9,
-      "bucket": "validate",
+      "at": "2026-05-25T12:40:00+05:30",
+      "block": 47,
+      "bucket": "teach",
       "events": [
         "ordinary"
       ],
-      "index": 665
+      "index": 465
+    },
+    {
+      "at": "2026-05-29T10:20:00+05:30",
+      "block": 47,
+      "bucket": "teach",
+      "events": [
+        "simultaneous_cluster_range"
+      ],
+      "index": 662
+    },
+    {
+      "at": "2026-05-29T10:25:00+05:30",
+      "block": 47,
+      "bucket": "teach",
+      "events": [
+        "simultaneous_cluster_range"
+      ],
+      "index": 663
+    },
+    {
+      "at": "2026-05-29T10:30:00+05:30",
+      "block": 47,
+      "bucket": "teach",
+      "events": [
+        "simultaneous_cluster_range"
+      ],
+      "index": 664
+    },
+    {
+      "at": "2026-07-21T14:00:00+05:30",
+      "block": 51,
+      "bucket": "teach",
+      "events": [
+        "micro_confirmed"
+      ],
+      "index": 606
+    },
+    {
+      "at": "2026-07-21T14:05:00+05:30",
+      "block": 51,
+      "bucket": "teach",
+      "events": [
+        "micro_confirmed"
+      ],
+      "index": 607
+    },
+    {
+      "at": "2026-07-21T14:10:00+05:30",
+      "block": 51,
+      "bucket": "teach",
+      "events": [
+        "micro_break",
+        "micro_confirmed"
+      ],
+      "index": 608
+    },
+    {
+      "at": "2026-07-21T14:15:00+05:30",
+      "block": 51,
+      "bucket": "teach",
+      "events": [
+        "micro_break"
+      ],
+      "index": 609
+    },
+    {
+      "at": "2026-07-21T14:20:00+05:30",
+      "block": 51,
+      "bucket": "teach",
+      "events": [
+        "micro_break"
+      ],
+      "index": 610
+    },
+    {
+      "at": "2026-07-30T12:35:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "thesis_birth"
+      ],
+      "index": 414
+    },
+    {
+      "at": "2026-07-30T12:40:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "thesis_birth"
+      ],
+      "index": 415
+    },
+    {
+      "at": "2026-07-30T12:45:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "thesis_birth"
+      ],
+      "index": 416
+    },
+    {
+      "at": "2026-07-30T14:05:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "release_given_back"
+      ],
+      "index": 432
+    },
+    {
+      "at": "2026-07-30T14:10:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "release_given_back",
+        "simultaneous_releases"
+      ],
+      "index": 433
+    },
+    {
+      "at": "2026-07-30T14:15:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "release_given_back",
+        "simultaneous_releases"
+      ],
+      "index": 434
+    },
+    {
+      "at": "2026-07-30T14:20:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "simultaneous_releases"
+      ],
+      "index": 435
+    },
+    {
+      "at": "2026-07-31T10:35:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "re_entry"
+      ],
+      "index": 465
+    },
+    {
+      "at": "2026-07-31T10:40:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "re_entry"
+      ],
+      "index": 466
+    },
+    {
+      "at": "2026-07-31T10:45:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "re_entry"
+      ],
+      "index": 467
+    },
+    {
+      "at": "2026-08-03T12:10:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "micro_created"
+      ],
+      "index": 559
+    },
+    {
+      "at": "2026-08-03T12:15:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "micro_created"
+      ],
+      "index": 560
+    },
+    {
+      "at": "2026-08-03T12:20:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "micro_collapse",
+        "micro_created"
+      ],
+      "index": 561
+    },
+    {
+      "at": "2026-08-03T12:25:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "micro_collapse"
+      ],
+      "index": 562
+    },
+    {
+      "at": "2026-08-03T12:30:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "micro_collapse"
+      ],
+      "index": 563
+    },
+    {
+      "at": "2026-08-04T15:20:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "local_research_appearance"
+      ],
+      "index": 672
+    },
+    {
+      "at": "2026-08-04T15:25:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "local_research_appearance",
+        "local_research_disappearance"
+      ],
+      "index": 673
+    },
+    {
+      "at": "2026-08-04T15:30:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "local_research_appearance",
+        "local_research_disappearance",
+        "session_start"
+      ],
+      "index": 674
+    },
+    {
+      "at": "2026-08-05T09:20:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "local_research_disappearance",
+        "session_start"
+      ],
+      "index": 675
+    },
+    {
+      "at": "2026-08-05T09:25:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "session_start"
+      ],
+      "index": 676
+    },
+    {
+      "at": "2026-08-05T10:05:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "forming_to_confirmed",
+        "major_birth",
+        "new_major_structure"
+      ],
+      "index": 684
+    },
+    {
+      "at": "2026-08-05T10:10:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "forming_to_confirmed",
+        "major_birth",
+        "new_major_structure"
+      ],
+      "index": 685
+    },
+    {
+      "at": "2026-08-05T10:15:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "edge_approach",
+        "forming_to_confirmed",
+        "major_birth",
+        "new_major_structure"
+      ],
+      "index": 686
+    },
+    {
+      "at": "2026-08-05T10:20:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "edge_approach"
+      ],
+      "index": 687
+    },
+    {
+      "at": "2026-08-05T10:25:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "edge_approach"
+      ],
+      "index": 688
+    },
+    {
+      "at": "2026-08-05T11:00:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "accepted_major_break",
+        "release_created"
+      ],
+      "index": 695
+    },
+    {
+      "at": "2026-08-05T11:05:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "accepted_major_break",
+        "leaving",
+        "release_created"
+      ],
+      "index": 696
+    },
+    {
+      "at": "2026-08-05T11:10:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "accepted_major_break",
+        "generation_change",
+        "leaving",
+        "reference_identity_change",
+        "release_created",
+        "revisit",
+        "thesis_invalidation_or_reversal"
+      ],
+      "index": 697
+    },
+    {
+      "at": "2026-08-05T11:15:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "break_attempt",
+        "generation_change",
+        "leaving",
+        "reference_identity_change",
+        "release_still_held",
+        "revisit",
+        "route_watch_change",
+        "thesis_invalidation_or_reversal"
+      ],
+      "index": 698
+    },
+    {
+      "at": "2026-08-05T11:20:00+05:30",
+      "block": 52,
+      "bucket": "teach",
+      "events": [
+        "break_attempt",
+        "generation_change",
+        "reference_identity_change",
+        "release_still_held",
+        "revisit",
+        "route_watch_change",
+        "thesis_invalidation_or_reversal"
+      ],
+      "index": 699
     }
   ],
   "cuts_by_bucket": {
-    "teach": 40,
-    "validate": 43
+    "teach": 142,
+    "validate": 145
   },
   "cuts_by_event": {
-    "accepted_major_break": 6,
-    "break_attempt": 6,
-    "edge_approach": 6,
-    "forming_to_confirmed": 6,
-    "generation_change": 6,
-    "leaving": 6,
-    "local_research_appearance": 6,
-    "local_research_disappearance": 6,
-    "major_birth": 6,
-    "micro_break": 6,
-    "micro_collapse": 6,
-    "micro_confirmed": 6,
-    "micro_created": 6,
-    "new_major_structure": 6,
-    "ordinary": 16,
-    "re_entry": 6,
-    "reference_identity_change": 6,
-    "release_created": 6,
-    "release_given_back": 6,
-    "release_still_held": 6,
-    "revisit": 6,
-    "route_watch_change": 6,
-    "session_start": 6,
-    "simultaneous_cluster_range": 6,
-    "simultaneous_releases": 3,
-    "thesis_birth": 6,
-    "thesis_invalidation_or_reversal": 6
+    "teach": {
+      "accepted_major_break": 9,
+      "break_attempt": 8,
+      "edge_approach": 9,
+      "forming_to_confirmed": 9,
+      "generation_change": 9,
+      "leaving": 9,
+      "local_research_appearance": 9,
+      "local_research_disappearance": 9,
+      "major_birth": 9,
+      "micro_break": 9,
+      "micro_collapse": 9,
+      "micro_confirmed": 9,
+      "micro_created": 9,
+      "new_major_structure": 9,
+      "ordinary": 8,
+      "re_entry": 9,
+      "reference_identity_change": 9,
+      "release_created": 9,
+      "release_given_back": 9,
+      "release_still_held": 8,
+      "revisit": 9,
+      "route_watch_change": 8,
+      "session_start": 8,
+      "simultaneous_cluster_range": 9,
+      "simultaneous_releases": 9,
+      "thesis_birth": 9,
+      "thesis_invalidation_or_reversal": 9
+    },
+    "validate": {
+      "accepted_major_break": 8,
+      "break_attempt": 9,
+      "edge_approach": 9,
+      "forming_to_confirmed": 9,
+      "generation_change": 8,
+      "leaving": 8,
+      "local_research_appearance": 9,
+      "local_research_disappearance": 9,
+      "major_birth": 9,
+      "micro_break": 9,
+      "micro_collapse": 9,
+      "micro_confirmed": 9,
+      "micro_created": 9,
+      "new_major_structure": 9,
+      "ordinary": 8,
+      "re_entry": 9,
+      "reference_identity_change": 8,
+      "release_created": 8,
+      "release_given_back": 9,
+      "release_still_held": 9,
+      "revisit": 9,
+      "route_watch_change": 8,
+      "session_start": 9,
+      "simultaneous_cluster_range": 9,
+      "simultaneous_releases": 3,
+      "thesis_birth": 9,
+      "thesis_invalidation_or_reversal": 8
+    }
   },
   "determinism_result": "PASS",
-  "fingerprint": "5607fc3e34ef177f",
+  "event_occurrences_sampled": {
+    "teach": {
+      "accepted_major_break": 3,
+      "break_attempt": 3,
+      "edge_approach": 3,
+      "forming_to_confirmed": 3,
+      "generation_change": 3,
+      "leaving": 3,
+      "local_research_appearance": 3,
+      "local_research_disappearance": 3,
+      "major_birth": 3,
+      "micro_break": 3,
+      "micro_collapse": 3,
+      "micro_confirmed": 3,
+      "micro_created": 3,
+      "new_major_structure": 3,
+      "re_entry": 3,
+      "reference_identity_change": 3,
+      "release_created": 3,
+      "release_given_back": 3,
+      "release_still_held": 3,
+      "revisit": 3,
+      "route_watch_change": 3,
+      "session_start": 3,
+      "simultaneous_cluster_range": 3,
+      "simultaneous_releases": 3,
+      "thesis_birth": 3,
+      "thesis_invalidation_or_reversal": 3
+    },
+    "validate": {
+      "accepted_major_break": 3,
+      "break_attempt": 3,
+      "edge_approach": 3,
+      "forming_to_confirmed": 3,
+      "generation_change": 3,
+      "leaving": 3,
+      "local_research_appearance": 3,
+      "local_research_disappearance": 3,
+      "major_birth": 3,
+      "micro_break": 3,
+      "micro_collapse": 3,
+      "micro_confirmed": 3,
+      "micro_created": 3,
+      "new_major_structure": 3,
+      "re_entry": 3,
+      "reference_identity_change": 3,
+      "release_created": 3,
+      "release_given_back": 3,
+      "release_still_held": 3,
+      "revisit": 3,
+      "route_watch_change": 3,
+      "session_start": 3,
+      "simultaneous_cluster_range": 3,
+      "simultaneous_releases": 1,
+      "thesis_birth": 3,
+      "thesis_invalidation_or_reversal": 3
+    }
+  },
+  "event_types_covered": {
+    "teach": [
+      "major_birth",
+      "forming_to_confirmed",
+      "edge_approach",
+      "break_attempt",
+      "accepted_major_break",
+      "re_entry",
+      "revisit",
+      "leaving",
+      "new_major_structure",
+      "micro_created",
+      "micro_confirmed",
+      "micro_break",
+      "micro_collapse",
+      "local_research_appearance",
+      "local_research_disappearance",
+      "simultaneous_cluster_range",
+      "simultaneous_releases",
+      "release_created",
+      "release_still_held",
+      "release_given_back",
+      "reference_identity_change",
+      "route_watch_change",
+      "thesis_birth",
+      "generation_change",
+      "thesis_invalidation_or_reversal",
+      "session_start"
+    ],
+    "validate": [
+      "major_birth",
+      "forming_to_confirmed",
+      "edge_approach",
+      "break_attempt",
+      "accepted_major_break",
+      "re_entry",
+      "revisit",
+      "leaving",
+      "new_major_structure",
+      "micro_created",
+      "micro_confirmed",
+      "micro_break",
+      "micro_collapse",
+      "local_research_appearance",
+      "local_research_disappearance",
+      "simultaneous_cluster_range",
+      "simultaneous_releases",
+      "release_created",
+      "release_still_held",
+      "release_given_back",
+      "reference_identity_change",
+      "route_watch_change",
+      "thesis_birth",
+      "generation_change",
+      "thesis_invalidation_or_reversal",
+      "session_start"
+    ]
+  },
+  "fingerprint": "f9d1e3d3cafb5470",
   "future_leaks": 0,
+  "holdout_access_semantics": {
+    "accessor_called": false,
+    "excluded_price_sessions_converted": 0,
+    "price_conversion": "teach_validate_whitelist_only",
+    "source_index": "timestamps_only"
+  },
   "identity_drift": 0,
   "mismatch_classification": {
     "BUG": 0,
@@ -912,6 +1614,24 @@
     "IDENTITY_DRIFT": 0,
     "MUTABLE_REFERENCE_LEAK": 0,
     "PRESENTATION_ONLY": 0
+  },
+  "mismatch_classification_by_bucket": {
+    "teach": {
+      "BUG": 0,
+      "EXPECTED_LIFECYCLE_DIFFERENCE": 0,
+      "FUTURE_LEAK": 0,
+      "IDENTITY_DRIFT": 0,
+      "MUTABLE_REFERENCE_LEAK": 0,
+      "PRESENTATION_ONLY": 0
+    },
+    "validate": {
+      "BUG": 0,
+      "EXPECTED_LIFECYCLE_DIFFERENCE": 0,
+      "FUTURE_LEAK": 0,
+      "IDENTITY_DRIFT": 0,
+      "MUTABLE_REFERENCE_LEAK": 0,
+      "PRESENTATION_ONLY": 0
+    }
   },
   "mismatch_cuts": {
     "teach": 0,
@@ -924,12 +1644,43 @@
   "mismatches": [],
   "mutable_reference_details": [],
   "mutable_reference_leaks": 0,
-  "source_audit_fingerprint": "2ac55a9f4cddeede",
-  "total_cuts": 83,
+  "replay_integrity": {
+    "teach": {
+      "blocks": 52,
+      "eligible_episodes": 12,
+      "source_contiguous": true
+    },
+    "validate": {
+      "blocks": 9,
+      "eligible_episodes": 5,
+      "source_contiguous": true
+    }
+  },
+  "retained_object_layers": [
+    "frontier_reading",
+    "map_state",
+    "eye_state",
+    "release_state",
+    "reference_path",
+    "live_thesis",
+    "structural_frame"
+  ],
+  "source_audit_fingerprint": "7d17cb56c1d9afe3",
+  "total_cuts": 287,
   "unobserved_event_types": {
     "teach": [],
-    "validate": [
-      "simultaneous_releases"
-    ]
+    "validate": []
+  },
+  "validate_exposure": "aggregate_only",
+  "validate_mismatch_aggregate": {
+    "classifications": {
+      "BUG": 0,
+      "EXPECTED_LIFECYCLE_DIFFERENCE": 0,
+      "FUTURE_LEAK": 0,
+      "IDENTITY_DRIFT": 0,
+      "MUTABLE_REFERENCE_LEAK": 0,
+      "PRESENTATION_ONLY": 0
+    },
+    "layers": {}
   }
 }

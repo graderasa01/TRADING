@@ -2,25 +2,37 @@ from __future__ import annotations
 
 import ast
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
+from types import SimpleNamespace
 
-from src.learning.split import TEACH, VALIDATE
+import pytest
+
 from src.boxes.frontier import Frontier
 from src.boxes.hierarchy import Node
 from src.boxes.snapshot import build_snapshot
+from src.domain.models import IST, Candle
+from src.feed.replay_feed import Session, SourceDay
+from src.learning.split import TEACH, VALIDATE
 from tests.test_frontier import SPLIT, make, path, sit
 from tools.live_structure_truth import (
     AuditConfig,
     Band,
+    Block,
+    EventObservation,
+    ResearchEpisode,
+    SourceSessionRecord,
+    assert_research_blocks,
     band_relation,
     holder_candidates,
+    load_research_episodes,
+    make_blocks,
     observational_local_candidates,
-    run_audit,
+    partition_source_sessions,
+    population_facts,
+    public_event_catalog,
 )
-from tools import live_structure_truth as audit_mod
-from tests import test_release as release_fixture
 
 
 def test_audit_tool_imports_no_execution_surface():
@@ -46,31 +58,188 @@ def test_audit_tool_imports_no_execution_surface():
     assert "HOLDOUT" not in source
 
 
-def test_available_population_cannot_be_reported_as_audited_population(monkeypatch):
-    candles = tuple(release_fixture.candles(range(1400)))
-    monkeypatch.setattr(
-        audit_mod,
-        "aggregate_m5_by_bucket",
-        lambda: (
-            {TEACH: candles, VALIDATE: candles},
-            {TEACH: 99, VALIDATE: 44},
-        ),
+def test_available_population_cannot_be_reported_as_audited_population():
+    records = tuple(
+        SourceSessionRecord(
+            index,
+            date(2025, 3, 3) + timedelta(days=index),
+            TEACH,
+            _day_candles(date(2025, 3, 3) + timedelta(days=index), 70),
+        )
+        for index in range(20)
     )
-    monkeypatch.setattr(audit_mod, "run_block", lambda *args, **kwargs: None)
-
-    result = run_audit(AuditConfig(max_blocks=1))
-
-    assert result.available_population[TEACH] == {
-        "sessions": 99,
-        "candles": 1400,
+    episodes = {
+        bucket: (ResearchEpisode(bucket, 1, tuple(
+            SourceSessionRecord(item.source_ordinal, item.day, bucket, item.m5)
+            for item in records
+        )),)
+        for bucket in (TEACH, VALIDATE)
     }
-    assert result.audited_population[TEACH]["blocks_processed"] == 1
-    assert result.audited_population[TEACH]["history_candles_consumed"] == 400
-    assert result.audited_population[TEACH]["live_candles_observed"] == 300
-    assert result.available_population[TEACH]["candles"] != (
-        result.audited_population[TEACH]["live_candles_observed"])
-    assert set(result.available_population[TEACH]) == {"sessions", "candles"}
-    assert "sessions" not in result.audited_population[TEACH]
+    source_population = {
+        "buckets": {
+            bucket: {
+                "source_sessions_assigned": 99,
+                "replayable_sessions": 20,
+                "m5_candles": 1400,
+                "eligible_episodes": 1,
+            }
+            for bucket in (TEACH, VALIDATE)
+        }
+    }
+    config = AuditConfig(max_blocks=1)
+    blocks = {bucket: make_blocks(episodes[bucket], bucket, config)
+              for bucket in (TEACH, VALIDATE)}
+
+    available, audited = population_facts(
+        episodes, source_population, config, blocks)
+
+    assert available[TEACH]["m5_candles"] == 1400
+    assert available[TEACH]["possible_blocks"] == 2
+    assert available[TEACH]["unused_warmup_tail_candles"] == 0
+    assert audited[TEACH]["blocks_processed"] == 1
+    assert audited[TEACH]["history_candles_consumed"] == 400
+    assert audited[TEACH]["live_candles_observed"] == 300
+    assert available[TEACH]["m5_candles"] != audited[TEACH]["live_candles_observed"]
+    assert "source_sessions_assigned" not in audited[TEACH]
+
+
+def test_interleaved_split_months_form_distinct_source_episodes():
+    records = (
+        SourceSessionRecord(0, date(2024, 12, 2), TEACH, ()),
+        SourceSessionRecord(1, date(2025, 1, 2), VALIDATE, ()),
+        SourceSessionRecord(2, date(2025, 2, 3), "holdout", None),
+        SourceSessionRecord(3, date(2025, 3, 3), TEACH, ()),
+        SourceSessionRecord(4, date(2025, 4, 1), VALIDATE, ()),
+        SourceSessionRecord(5, date(2025, 5, 1), TEACH, ()),
+        SourceSessionRecord(6, date(2025, 6, 2), "holdout", None),
+        SourceSessionRecord(7, date(2025, 7, 1), VALIDATE, ()),
+    )
+
+    episodes = partition_source_sessions(records)
+
+    assert [[item.source_ordinal for item in episode.sessions]
+            for episode in episodes[TEACH]] == [[0], [3], [5]]
+    assert [[item.source_ordinal for item in episode.sessions]
+            for episode in episodes[VALIDATE]] == [[1], [4], [7]]
+
+
+def _day_candles(day: date, count: int = 75) -> tuple[Candle, ...]:
+    start = datetime.combine(day, time(9, 15), tzinfo=IST)
+    return tuple(
+        Candle("TEST", "5m", start + timedelta(minutes=5 * index),
+               start + timedelta(minutes=5 * (index + 1)),
+               Decimal(100), Decimal(101), Decimal(99), Decimal(100))
+        for index in range(count)
+    )
+
+
+def test_blocks_stay_inside_one_episode_and_keep_consecutive_source_ordinals():
+    first_sessions = tuple(
+        SourceSessionRecord(index, date(2025, 3, 3) + timedelta(days=index),
+                            TEACH, _day_candles(date(2025, 3, 3) + timedelta(days=index)))
+        for index in range(10)
+    )
+    second_sessions = tuple(
+        SourceSessionRecord(index + 20, date(2025, 4, 1) + timedelta(days=index),
+                            TEACH, _day_candles(date(2025, 4, 1) + timedelta(days=index)))
+        for index in range(10)
+    )
+    episodes = (
+        ResearchEpisode(TEACH, 1, first_sessions),
+        ResearchEpisode(TEACH, 2, second_sessions),
+    )
+
+    blocks = make_blocks(episodes, TEACH, AuditConfig())
+
+    assert [block.episode for block in blocks] == [1, 2]
+    assert all(block.source_session_ordinals == tuple(range(
+        block.source_start_ordinal, block.source_end_ordinal + 1)) for block in blocks)
+    assert all(len(block.history) == 400 and len(block.live) == 300
+               for block in blocks)
+
+
+def test_price_loading_and_aggregation_are_whitelisted_before_observers():
+    days = (
+        SourceDay(date(2024, 12, 2), time(9, 15), time(15, 29), "normal"),
+        SourceDay(date(2025, 1, 2), time(9, 15), time(15, 29), "normal"),
+        SourceDay(date(2025, 2, 3), time(9, 15), time(15, 29), "normal"),
+        SourceDay(date(2025, 3, 3), time(9, 15), time(15, 29), "normal"),
+    )
+    buckets = {
+        days[0].day: TEACH,
+        days[1].day: VALIDATE,
+        days[2].day: "holdout",
+        days[3].day: TEACH,
+    }
+    requested: list[date] = []
+    aggregated: list[date] = []
+
+    class FakeSplit:
+        def bucket_of(self, day):
+            return buckets[day]
+
+    class FakeFeed:
+        def source_days(self):
+            return list(days)
+
+        def sessions(self, *, days):
+            requested.extend(days)
+            for day in days:
+                candle = _day_candles(day, 1)[0]
+                yield Session("TEST", day, (candle,), None, 0)
+
+    class SpyAggregator:
+        def __init__(self, **_kwargs):
+            pass
+
+        def on_candle(self, candle):
+            aggregated.append(candle.session_date)
+            return SimpleNamespace(m5=candle)
+
+    episodes, facts = load_research_episodes(
+        feed=FakeFeed(), split=FakeSplit(), aggregator_factory=SpyAggregator)
+
+    assert days[2].day not in requested
+    assert days[2].day not in aggregated
+    assert facts["excluded_price_sessions_converted"] == 0
+    assert [[session.source_ordinal for session in episode.sessions]
+            for episode in episodes[TEACH]] == [[0], [3]]
+
+
+def test_excluded_session_is_rejected_before_any_research_observer():
+    excluded_day = date(2025, 2, 3)
+    candles = _day_candles(excluded_day)
+    repeated = tuple(candles[index % len(candles)] for index in range(700))
+    block = Block(
+        bucket=TEACH,
+        ordinal=1,
+        start_index=0,
+        history=repeated[:400],
+        live=repeated[400:],
+        episode=1,
+        source_start_ordinal=2,
+        source_end_ordinal=2,
+        source_session_ordinals=(2,),
+    )
+
+    class ExcludedSplit:
+        def bucket_of(self, _day):
+            return "holdout"
+
+    with pytest.raises(AssertionError, match="split boundary"):
+        assert_research_blocks({TEACH: [block], VALIDATE: []}, split=ExcludedSplit())
+
+
+def test_validate_event_output_contains_aggregates_only():
+    observations = [
+        EventObservation("release_created", VALIDATE, 1, index, f"at-{index}")
+        for index in range(5)
+    ]
+
+    public = public_event_catalog(VALIDATE, {"release_created": observations})
+
+    assert public == {"release_created": {"occurrences": 5}}
+    assert "at-" not in repr(public)
 
 
 def test_band_relation_uses_existing_containment_shape():

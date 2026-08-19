@@ -1,9 +1,11 @@
 {
   "status": "NOT_EXECUTED",
-  "reason": "Fresh-world causality is complete; response measurement is the next milestone.",
+  "reason": "Corrected source-contiguous fresh-world causality passes; the schema awaits reviewer approval before measurement.",
   "rows": 0,
-  "holdout_loaded": false,
+  "holdout_price_sessions_converted": 0,
+  "validate_output": "aggregate_only",
+  "source_episode_required": true,
   "local_published": false,
   "shadow_component_built": false,
-  "next_milestone": "raw structural-response ledger"
+  "next_milestone": "review and approve the raw structural-response ledger schema"
 }

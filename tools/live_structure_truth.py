@@ -26,7 +26,7 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 from time import perf_counter
-from typing import Iterable, Sequence
+from typing import Callable, Iterable, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
@@ -49,7 +49,7 @@ from src.boxes.snapshot import SAME_NODE_OVERLAP, MapSnapshot, build_snapshot
 from src.boxes.structure import STRUCTURE_KINDS, atr_at, tol_at
 from src.domain.models import Candle
 from src.feed.aggregator import Aggregator
-from src.feed.replay_feed import ReplayFeed
+from src.feed.replay_feed import ReplayFeed, Session
 from src.learning.split import TEACH, VALIDATE, load_split
 from src.livemap import frame as structural_frame
 from src.livemap import thesis as thesis_mod
@@ -73,6 +73,37 @@ class Block:
     start_index: int
     history: tuple[Candle, ...]
     live: tuple[Candle, ...]
+    episode: int = 1
+    source_start_ordinal: int = 0
+    source_end_ordinal: int = 0
+    source_session_ordinals: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class SourceSessionRecord:
+    source_ordinal: int
+    day: date
+    bucket: str
+    m5: tuple[Candle, ...] | None
+
+
+@dataclass(frozen=True, slots=True)
+class ResearchEpisode:
+    bucket: str
+    ordinal: int
+    sessions: tuple[SourceSessionRecord, ...]
+
+    @property
+    def candles(self) -> tuple[Candle, ...]:
+        return tuple(candle for session in self.sessions for candle in session.m5 or ())
+
+    @property
+    def source_start_ordinal(self) -> int:
+        return self.sessions[0].source_ordinal
+
+    @property
+    def source_end_ordinal(self) -> int:
+        return self.sessions[-1].source_ordinal
 
 
 @dataclass(frozen=True, slots=True)
@@ -173,6 +204,7 @@ class EventObservation:
 @dataclass(frozen=True, slots=True)
 class AuditResult:
     config: dict
+    holdout_access_semantics: dict
     available_population: dict
     audited_population: dict
     counts: dict
@@ -245,77 +277,199 @@ def holder_candidates(band: Band, known: Sequence[Node], tol: Decimal) -> tuple[
     return holders, ordered[0], len(tied) == 1
 
 
-def aggregate_m5_by_bucket() -> tuple[dict[str, tuple[Candle, ...]], dict[str, int]]:
-    split = load_split()
-    by_bucket: dict[str, list[Candle]] = {TEACH: [], VALIDATE: []}
-    sessions: Counter[str] = Counter()
-    feed = ReplayFeed(SYMBOL, on_gap="skip")
+def partition_source_sessions(
+        records: Sequence[SourceSessionRecord]) -> dict[str, tuple[ResearchEpisode, ...]]:
+    """Create maximal replayable runs without deleting intervening source sessions."""
+    episodes: dict[str, list[ResearchEpisode]] = {TEACH: [], VALIDATE: []}
+    current: list[SourceSessionRecord] = []
 
-    for session in feed.sessions():
-        bucket = split.bucket_of(session.day)
-        if bucket not in by_bucket:
+    def flush() -> None:
+        if not current:
+            return
+        bucket = current[0].bucket
+        episodes[bucket].append(ResearchEpisode(
+            bucket=bucket,
+            ordinal=len(episodes[bucket]) + 1,
+            sessions=tuple(current),
+        ))
+        current.clear()
+
+    for record in sorted(records, key=lambda item: item.source_ordinal):
+        replayable = record.bucket in episodes and record.m5 is not None
+        adjacent = bool(
+            current
+            and record.bucket == current[-1].bucket
+            and record.source_ordinal == current[-1].source_ordinal + 1
+        )
+        if not replayable:
+            flush()
             continue
-        agg = Aggregator(htf=("5m",))
-        m5: list[Candle] = []
-        for candle in session.candles:
-            update = agg.on_candle(candle)
-            if update.m5 is not None:
-                m5.append(update.m5)
-        by_bucket[bucket].extend(m5)
-        sessions[bucket] += 1
+        if current and not adjacent:
+            flush()
+        current.append(record)
+    flush()
 
-    return {k: tuple(v) for k, v in by_bucket.items()}, dict(sessions)
+    for bucket, bucket_episodes in episodes.items():
+        for episode in bucket_episodes:
+            ordinals = tuple(item.source_ordinal for item in episode.sessions)
+            if episode.bucket != bucket or ordinals != tuple(range(
+                    ordinals[0], ordinals[-1] + 1)):
+                raise AssertionError("research episode is not source-session contiguous")
+            if any(item.bucket != bucket or item.m5 is None
+                   for item in episode.sessions):
+                raise AssertionError("research episode crossed a bucket or replay barrier")
+    return {bucket: tuple(items) for bucket, items in episodes.items()}
 
 
-def make_blocks(candles: Sequence[Candle], bucket: str, config: AuditConfig) -> list[Block]:
+def _aggregate_session(session: Session, aggregator_factory: Callable[..., Aggregator]
+                       ) -> tuple[Candle, ...]:
+    aggregator = aggregator_factory(htf=("5m",))
+    m5: list[Candle] = []
+    for candle in session.candles:
+        update = aggregator.on_candle(candle)
+        if update.m5 is not None:
+            m5.append(update.m5)
+    return tuple(m5)
+
+
+def load_research_episodes(
+        *, feed: ReplayFeed | None = None, split=None,
+        aggregator_factory: Callable[..., Aggregator] = Aggregator,
+        ) -> tuple[dict[str, tuple[ResearchEpisode, ...]], dict]:
+    """Load only TEACH/VALIDATE prices while retaining every source-day barrier."""
+    split = split or load_split()
+    feed = feed or ReplayFeed(SYMBOL, on_gap="skip")
+    source_days = feed.source_days()
+    usable_kinds = {"normal", "weekend_full"}
+    bucket_by_day = {source.day: split.bucket_of(source.day) for source in source_days}
+    requested_days = [
+        source.day for source in source_days
+        if source.kind in usable_kinds and bucket_by_day[source.day] in (TEACH, VALIDATE)
+    ]
+
+    m5_by_day: dict[date, tuple[Candle, ...]] = {}
+    for session in feed.sessions(days=requested_days):
+        bucket = bucket_by_day[session.day]
+        if bucket not in (TEACH, VALIDATE):
+            raise AssertionError("non-research session reached the M5 aggregator")
+        m5_by_day[session.day] = _aggregate_session(session, aggregator_factory)
+
+    records = tuple(
+        SourceSessionRecord(
+            source_ordinal=ordinal,
+            day=source.day,
+            bucket=bucket_by_day[source.day],
+            m5=m5_by_day.get(source.day),
+        )
+        for ordinal, source in enumerate(source_days)
+    )
+    episodes = partition_source_sessions(records)
+    source_population = {
+        "source_sessions_indexed": len(source_days),
+        "price_sessions_requested": len(requested_days),
+        "price_sessions_replayed": len(m5_by_day),
+        "excluded_price_sessions_converted": 0,
+        "buckets": {
+            bucket: {
+                "source_sessions_assigned": sum(
+                    item.bucket == bucket for item in records),
+                "replayable_sessions": sum(
+                    item.bucket == bucket and item.m5 is not None for item in records),
+                "m5_candles": sum(
+                    len(item.m5 or ()) for item in records if item.bucket == bucket),
+                "eligible_episodes": len(episodes[bucket]),
+            }
+            for bucket in (TEACH, VALIDATE)
+        },
+    }
+    return episodes, source_population
+
+
+def make_blocks(episodes: Sequence[ResearchEpisode], bucket: str,
+                config: AuditConfig) -> list[Block]:
     span = config.history + config.live
     blocks: list[Block] = []
-    for ordinal, start in enumerate(range(0, len(candles) - span + 1, span), start=1):
-        if config.max_blocks is not None and len(blocks) >= config.max_blocks:
-            break
-        blocks.append(Block(
-            bucket=bucket,
-            ordinal=ordinal,
-            start_index=start,
-            history=tuple(candles[start:start + config.history]),
-            live=tuple(candles[start + config.history:start + span]),
-        ))
+    for episode in episodes:
+        if episode.bucket != bucket:
+            raise AssertionError("block builder received an episode from another bucket")
+        candles = episode.candles
+        ordinal_by_day = {
+            item.day: item.source_ordinal for item in episode.sessions
+        }
+        for start in range(0, len(candles) - span + 1, span):
+            if config.max_blocks is not None and len(blocks) >= config.max_blocks:
+                return blocks
+            consumed = tuple(candles[start:start + span])
+            touched = tuple(sorted({ordinal_by_day[candle.session_date]
+                                    for candle in consumed}))
+            expected = tuple(range(touched[0], touched[-1] + 1))
+            if touched != expected:
+                raise AssertionError("block omitted a source session inside its span")
+            blocks.append(Block(
+                bucket=bucket,
+                ordinal=len(blocks) + 1,
+                start_index=start,
+                history=consumed[:config.history],
+                live=consumed[config.history:],
+                episode=episode.ordinal,
+                source_start_ordinal=touched[0],
+                source_end_ordinal=touched[-1],
+                source_session_ordinals=touched,
+            ))
     return blocks
 
 
 def population_facts(
-        candles_by_bucket: dict[str, tuple[Candle, ...]],
-        sessions: dict[str, int],
+        episodes_by_bucket: dict[str, tuple[ResearchEpisode, ...]],
+        source_population: dict,
+        config: AuditConfig,
         blocks_by_bucket: dict[str, list[Block]]) -> tuple[dict, dict]:
     """Keep availability and actual consumption in mechanically separate records."""
     available: dict[str, dict] = {}
     audited: dict[str, dict] = {}
+    span = config.history + config.live
     for bucket in (TEACH, VALIDATE):
-        candles = candles_by_bucket.get(bucket, ())
+        episodes = episodes_by_bucket.get(bucket, ())
         blocks = blocks_by_bucket.get(bucket, [])
-        touched = [candle for block in blocks for candle in block.history + block.live]
-        available[bucket] = {
-            "sessions": sessions.get(bucket, 0),
-            "candles": len(candles),
-        }
+        bucket_source = source_population["buckets"][bucket]
+        available[bucket] = dict(bucket_source)
+        available[bucket].update({
+            "episodes_long_enough": sum(len(episode.candles) >= span
+                                         for episode in episodes),
+            "possible_blocks": sum(len(episode.candles) // span
+                                   for episode in episodes),
+            "unused_warmup_tail_candles": sum(len(episode.candles) % span
+                                               for episode in episodes),
+        })
         audited[bucket] = {
             "blocks_processed": len(blocks),
             "history_candles_consumed": sum(len(block.history) for block in blocks),
             "live_candles_observed": sum(len(block.live) for block in blocks),
-            "unique_sessions_touched": len({candle.session_date for candle in touched}),
-            "first_timestamp": min(
-                (candle.close_time for candle in touched), default=None),
-            "last_timestamp": max(
-                (candle.close_time for candle in touched), default=None),
+            "episodes_touched": len({block.episode for block in blocks}),
+            "unique_sessions_touched": len({ordinal for block in blocks
+                                             for ordinal in block.source_session_ordinals}),
         }
     return available, audited
 
 
+def assert_research_blocks(blocks_by_bucket: dict[str, list[Block]], split=None) -> None:
+    """Fail before any observer if a block crosses a source or split boundary."""
+    split = split or load_split()
+    for bucket in (TEACH, VALIDATE):
+        for block in blocks_by_bucket.get(bucket, []):
+            if block.bucket != bucket:
+                raise AssertionError("block is assigned to the wrong research bucket")
+            ordinals = block.source_session_ordinals
+            if ordinals and ordinals != tuple(range(ordinals[0], ordinals[-1] + 1)):
+                raise AssertionError("block source ordinals are not contiguous")
+            if any(split.bucket_of(candle.session_date) != bucket
+                   for candle in block.history + block.live):
+                raise AssertionError("block crossed a split boundary")
+
+
 def _record_event(catalog: dict[str, list[EventObservation]], event: str,
-                  block: Block, index: int, at: str, *, limit: int = 3) -> None:
+                  block: Block, index: int, at: str) -> None:
     bucket = catalog.setdefault(event, [])
-    if len(bucket) >= limit:
-        return
     bucket.append(EventObservation(
         event=event,
         bucket=block.bucket,
@@ -454,6 +608,7 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
     previous_reading: Reading | None = None
     previous_local = False
     previous_session = block.history[-1].session_date if block.history else None
+    expose_cases = block.bucket == TEACH
 
     def wrapped_choose(candles: Sequence[Candle], atr: Decimal, **kwargs):
         cluster, rng = adaptive.choose(candles, atr, **kwargs)
@@ -564,11 +719,13 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
                         counters["simultaneous"]["BOTH_WITH_CONTAINMENT"] += 1
                     else:
                         counters["simultaneous"]["BOTH_WITHOUT_CONTAINMENT"] += 1
-                    if len(examples["simultaneous"]) < config.trace_examples:
+                    if (expose_cases
+                            and len(examples["simultaneous"]) < config.trace_examples):
                         examples["simultaneous"].append(asdict(choose_obs))
 
                 if (c and r and choose_obs.cluster_current and choose_obs.range_current
-                        and len(examples["prefix"]) < config.prefix_examples):
+                        and counters["prefix_sampling"]["sampled"]
+                        < config.prefix_examples):
                     t1 = perf_counter()
                     prefix_snapshot = build_snapshot(frontier.candles[:reading.index + 1], SYMBOL)
                     timings["prefix_rebuild_seconds"] += perf_counter() - t1
@@ -600,7 +757,9 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
                         classification=comparison.classification,
                     )
                     counters["prefix"][comparison.classification] += 1
-                    examples["prefix"].append(asdict(comparison))
+                    counters["prefix_sampling"]["sampled"] += 1
+                    if expose_cases:
+                        examples["prefix"].append(asdict(comparison))
 
             t2 = perf_counter()
             local = observational_local_candidates(frontier, reading)
@@ -649,7 +808,7 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
                     micro_relation=proposal_relation(Band(first.low, first.high), micro_band, tol),
                 )
                 counters["local_relations"][obs.micro_relation] += 1
-                if len(examples["local"]) < config.trace_examples:
+                if expose_cases and len(examples["local"]) < config.trace_examples:
                     examples["local"].append(asdict(obs))
 
             if reading.interaction in {"NEW_CLUSTER", "NEW_RANGE"} and frontier.current is not None:
@@ -678,7 +837,7 @@ def run_block(block: Block, config: AuditConfig, counters: dict[str, Counter],
                     tightest_holder=tightest.id if tightest else None,
                     deterministic=deterministic,
                 )
-                if len(examples["holders"]) < config.trace_examples:
+                if expose_cases and len(examples["holders"]) < config.trace_examples:
                     examples["holders"].append(asdict(holder_obs))
 
             if frontier.finalised and {n.id for n in frontier.finalised} != before_ids:
@@ -788,10 +947,61 @@ def _complete_counter_vocabulary(counters: dict[str, Counter]) -> None:
             counters[group][name] += 0
 
 
+def sample_event_observations(
+        observations: Sequence[EventObservation]) -> tuple[EventObservation, ...]:
+    """Return all rare cases, otherwise the exact first, middle, and last cases."""
+    ordered = sorted(observations, key=lambda item: (item.block, item.index, item.at))
+    if len(ordered) <= 3:
+        return tuple(ordered)
+    return ordered[0], ordered[len(ordered) // 2], ordered[-1]
+
+
+def public_event_catalog(bucket: str,
+                         catalog: dict[str, list[EventObservation]]) -> dict:
+    out = {}
+    for name, observations in sorted(catalog.items()):
+        item = {"occurrences": len(observations)}
+        if bucket == TEACH:
+            item["sampled"] = _serialise([
+                asdict(observation)
+                for observation in sample_event_observations(observations)
+            ])
+        out[name] = item
+    return out
+
+
+def discover_event_catalog(blocks_by_bucket: dict[str, list[Block]],
+                           config: AuditConfig
+                           ) -> dict[str, dict[str, list[EventObservation]]]:
+    """Re-observe events in memory; no case-level VALIDATE data is returned by CLIs."""
+    events_by_bucket: dict[str, dict[str, list[EventObservation]]] = {
+        TEACH: defaultdict(list),
+        VALIDATE: defaultdict(list),
+    }
+    discovery_config = AuditConfig(
+        history=config.history,
+        live=config.live,
+        max_blocks=config.max_blocks,
+        prefix_examples=0,
+        trace_examples=0,
+    )
+    for bucket in (TEACH, VALIDATE):
+        for block in blocks_by_bucket[bucket]:
+            run_block(
+                block,
+                discovery_config,
+                defaultdict(Counter),
+                defaultdict(list),
+                events_by_bucket[bucket],
+                Counter(),
+            )
+    return events_by_bucket
+
+
 def run_audit(config: AuditConfig) -> AuditResult:
     timings: Counter[str] = Counter()
     t0 = perf_counter()
-    candles_by_bucket, sessions = aggregate_m5_by_bucket()
+    episodes_by_bucket, source_population = load_research_episodes()
     timings["load_seconds"] = perf_counter() - t0
 
     counters_by_bucket: dict[str, dict[str, Counter]] = {
@@ -807,11 +1017,12 @@ def run_audit(config: AuditConfig) -> AuditResult:
         VALIDATE: defaultdict(list),
     }
     blocks_by_bucket = {
-        bucket: make_blocks(candles, bucket, config)
-        for bucket, candles in candles_by_bucket.items()
+        bucket: make_blocks(episodes, bucket, config)
+        for bucket, episodes in episodes_by_bucket.items()
     }
+    assert_research_blocks(blocks_by_bucket)
     available_population, audited_population = population_facts(
-        candles_by_bucket, sessions, blocks_by_bucket)
+        episodes_by_bucket, source_population, config, blocks_by_bucket)
 
     t_run = perf_counter()
     for bucket in (TEACH, VALIDATE):
@@ -838,14 +1049,11 @@ def run_audit(config: AuditConfig) -> AuditResult:
         for bucket in (TEACH, VALIDATE)
     }
     examples = {
-        bucket: _serialise(dict(examples_by_bucket[bucket]))
-        for bucket in (TEACH, VALIDATE)
+        TEACH: _serialise(dict(examples_by_bucket[TEACH])),
+        VALIDATE: {},
     }
     events = {
-        bucket: {
-            name: _serialise([asdict(item) for item in observations])
-            for name, observations in sorted(events_by_bucket[bucket].items())
-        }
+        bucket: public_event_catalog(bucket, events_by_bucket[bucket])
         for bucket in (TEACH, VALIDATE)
     }
     payload = {
@@ -855,10 +1063,18 @@ def run_audit(config: AuditConfig) -> AuditResult:
         "counts": counts,
         "events": events,
         "examples": examples,
+        "holdout_access_semantics": {
+            "accessor_called": False,
+            "source_index": "timestamps_only",
+            "price_conversion": "teach_validate_whitelist_only",
+            "excluded_price_sessions_converted": source_population[
+                "excluded_price_sessions_converted"],
+        },
         "timings": {k: round(v, 6) for k, v in sorted(timings.items())},
     }
     deterministic_payload = {
         "config": payload["config"],
+        "holdout_access_semantics": payload["holdout_access_semantics"],
         "available_population": payload["available_population"],
         "audited_population": payload["audited_population"],
         "counts": payload["counts"],
@@ -869,6 +1085,7 @@ def run_audit(config: AuditConfig) -> AuditResult:
     checksum = hashlib.sha256(fingerprint.encode("utf-8")).hexdigest()[:16]
     return AuditResult(
         config=payload["config"],
+        holdout_access_semantics=payload["holdout_access_semantics"],
         available_population=available_population,
         audited_population=_serialise(audited_population),
         counts=counts,

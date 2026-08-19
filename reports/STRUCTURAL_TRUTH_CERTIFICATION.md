@@ -1,6 +1,10 @@
 # Structural Truth Certification
 
-Previous reviewed SHA: `283039e7b8f03bbe5178668c8ebe91b9f7ebdc91`
+Previous reviewed SHA: `2e9958e7e0c274989d1cca4280373d25fd543ff0`
+
+Corrected audit fingerprint: `7d17cb56c1d9afe3`
+
+Corrected fresh-world fingerprint: `f9d1e3d3cafb5470`
 
 ## Reproduction
 
@@ -9,128 +13,149 @@ python tools/live_structure_truth.py --json reports/structural_truth_summary.jso
 python tools/fresh_world_causality.py --audit-json reports/structural_truth_summary.json --ordinary-per-bucket 8 --json reports/fresh_world_causality.json
 ```
 
-Both tools load only TEACH and VALIDATE. HOLDOUT was not loaded.
+## SUPERSEDED RESULT
 
-## Population
+The previous certification independently concatenated all TEACH sessions and all
+VALIDATE sessions. Because the committed split is interleaved by month, that deleted
+intervening VALIDATE/HOLDOUT time and made non-adjacent source sessions adjacent. Its 58
+TEACH blocks, 10 VALIDATE blocks, 83 causal cuts, 24 both-current cases, 24 range
+selections, and 0.118% combined prevalence are retained in Git history but are
+superseded. Gates A and B were re-opened and are not inherited from that run.
 
-Available and audited population are different machine fields. The available count can no
-longer be rendered as the audited count without explicitly reading the wrong key.
+## REPLAY INTEGRITY FIX
 
-| Bucket | Available sessions | Available M5 candles | Blocks processed | History consumed | Live observed | Sessions touched | First / last timestamp |
-|---|---:|---:|---:|---:|---:|---:|---|
-| TEACH | 543 | 40,725 | 58 | 23,200 | 17,400 | 542 | 2023-08-01 09:20 / 2026-08-10 11:20 |
-| VALIDATE | 97 | 7,275 | 10 | 4,000 | 3,000 | 94 | 2024-01-01 09:20 / 2026-03-24 11:20 |
+The research loader now starts from the chronological source-session index. Every source
+day receives an ordinal, date, classification, and split bucket. A research episode is a
+maximal run of replayable sessions whose source ordinals are consecutive and whose bucket
+does not change. An excluded, abbreviated, failed-gap, or different-bucket source session
+ends the episode.
 
-Every complete 400-history/300-live block was processed. The unconsumed tail was not
-described as audited.
+Every 400-history/300-live block is built inside one episode. Runtime invariants reject a
+non-consecutive ordinal set, an omitted source session, a split mismatch, or history/live
+from different episodes. No calendar-gap threshold is used.
 
-## Structural Prevalence
+## VALIDATE EXPOSURE CAVEAT
 
-| Bucket | Cluster only | Range only | Both detected | Neither | Both current | Cluster inside range | Range inside cluster | Partial | Disjoint | Selected cluster | Selected range |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| TEACH | 3,009 | 23 | 25 | 8,433 | 22 | 25 | 0 | 0 | 0 | 0 | 22 |
-| VALIDATE | 483 | 0 | 2 | 1,577 | 2 | 2 | 0 | 0 | 0 | 0 | 2 |
+PR #1's superseded certification already emitted case-level VALIDATE structural-event
+metadata, including timestamps and candle-linked cuts. That exposure cannot be undone and
+the committed split was not changed after seeing it.
 
-The conditional selection rule is systematic in this sample: all 24 both-current cases
-selected the enclosing range. The cases are rare: 22/17,400 TEACH live candles (0.126%)
-and 2/3,000 VALIDATE live candles (0.067%). This proves the case exists; it does not prove
-that a production redesign is material.
+All corrected artifacts enforce aggregate-only VALIDATE output. VALIDATE reports contain
+counts by event/layer/classification, fingerprints, and pass/fail only. They contain no
+VALIDATE timestamp, price, structure id, band, event trace, or session-linked candle
+index. TEACH remains the only case-level debugging surface.
+
+## HOLDOUT ACCESS SEMANTICS
+
+`split.holdout()` was not called. `ReplayFeed.source_days()` builds the continuity index
+from timestamps only. The price path receives an explicit TEACH/VALIDATE day whitelist,
+and filtering happens before Decimal conversion and Candle construction. Therefore zero
+HOLDOUT price sessions were converted into research Candles, aggregated, replayed,
+inspected, rendered, measured, or passed to `MapSnapshot`, `Frontier`, the local audit,
+the fresh-world harness, or `StructuralFrame`.
+
+Underlying file decoders may encounter raw columns while applying the whitelist; this
+report does not claim that data files containing HOLDOUT rows were never opened.
+
+## CORRECTED AUDITED POPULATION
+
+| Bucket | Source sessions assigned | Replayable sessions | Eligible episodes | Long enough | M5 candles | Blocks | History | Live | Sessions touched | Unused warm-up/tail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| TEACH | 548 | 543 | 12 | 10 | 40,725 | 52 | 20,800 | 15,600 | 489 | 4,325 |
+| VALIDATE | 98 | 97 | 5 | 5 | 7,275 | 9 | 3,600 | 2,700 | 86 | 975 |
+
+All 61 complete episode-local blocks were processed. Short episodes and incomplete tails
+remain visible as unused population and are not described as audited.
+
+## Corrected Structural Prevalence
+
+| Bucket | Cluster only | Range only | Both | Neither | Both current | Cluster inside range | Range inside cluster | Selected range | Selected cluster |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| TEACH | 2,626 | 14 | 19 | 7,426 | 16 | 19 | 0 | 16 | 0 |
+| VALIDATE | 475 | 3 | 4 | 1,422 | 1 | 4 | 0 | 1 | 0 |
+
+Both-current prevalence is 16/15,600 TEACH live candles (0.103%), 1/2,700 VALIDATE
+live candles (0.037%), and 17/18,300 combined (0.093%). All 17 selected the enclosing
+range. The scale-collapse case is systematic when present but remains rare.
 
 | Bucket | Major births | Revisits | Accepted breaks | Micro create | Micro confirm | Micro break | Micro collapse | Releases | Simultaneous releases |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| TEACH | 320 | 808 | 880 | 322 | 58 | 35 | 285 | 1,348 | 71 |
-| VALIDATE | 55 | 136 | 144 | 41 | 7 | 3 | 38 | 194 | 0 |
+| TEACH | 277 | 730 | 777 | 303 | 70 | 47 | 252 | 1,227 | 72 |
+| VALIDATE | 50 | 119 | 137 | 38 | 9 | 5 | 33 | 175 | 1 |
 
-## Fresh-World Method
+| Bucket | Local absent + Micro absent | Local absent + Micro found | Local found + Micro absent | Local found + Micro found |
+|---|---:|---:|---:|---:|
+| TEACH | 13,637 | 924 | 522 | 517 |
+| VALIDATE | 2,448 | 107 | 81 | 64 |
 
-For each cut, World A built a fresh `MapSnapshot` from the fixed historical window, built a
-fresh `Frontier`, fed only through the cut, and serialized the complete perception value.
-World B started from another fresh snapshot/frontier, fed normally, serialized the value
-immediately at the cut, then continued. World B was never reconstructed from a finished
-frontier with `upto=k`.
+LOCAL research candidates appeared on 1,039/15,600 TEACH live candles (6.66%) and
+145/2,700 VALIDATE live candles (5.37%). LOCAL remains observational and unpublished.
 
-The canonical value includes frozen and causally available structures, emitted cluster and
-range proposals, `Reading`, `Frontier.current`, `left`, `candidate`, `MicroView`, `MapState`,
-`EyeState`, `ReleaseState`, all simultaneous releases, `ReferencePath`, `LiveThesis`, thesis
-identity and invalidation, LOCAL research observations, and `StructuralFrame`.
+## CORRECTED FRESH-WORLD RESULT
 
-## Causal Cuts
+World A builds a fresh snapshot/frontier from one episode's fixed history, feeds only
+through cut `k`, and captures the complete perception world. World B uses independent
+objects, captures immediately at `k`, then continues normally. No finished frontier is
+rewound.
 
-- Total: 83; TEACH: 40; VALIDATE: 43.
-- Ordinary deterministic spread: 16 cuts.
-- Six cuts each: major birth, forming-to-confirmed, edge approach, break attempt, accepted
-  major break, re-entry, revisit, leaving, new major structure, micro create/confirm/break/
-  collapse, LOCAL appearance/disappearance, simultaneous cluster/range, release create/
-  held/given-back, reference identity change, route/watch change, thesis birth, generation
-  change, thesis invalidation/reversal, and session start.
-- Simultaneous release: 3 TEACH cuts. VALIDATE had no simultaneous release in 3,000 observed
-  live candles, so no synthetic VALIDATE case was invented.
+For each event type and bucket the harness selects exact first, middle, and last
+occurrences where available, or every occurrence when rare, then tests `k-1/k/k+1`.
+Ordinary cuts remain spread over the full corrected chronology.
 
-Every event cut includes `k-1`, `k`, and `k+1` where the block boundary permits it.
+- Event types covered: 26/26 TEACH and 26/26 VALIDATE.
+- Event occurrences sampled: 78 TEACH and 76 VALIDATE; 154 total.
+- Total distinct causal cuts after neighborhood overlap: 287; 142 TEACH and 145 VALIDATE.
+- Mismatch cuts/fields: 0/0 TEACH and 0/0 VALIDATE.
+- Future leaks: 0. Identity drift: 0. Bugs: 0. Determinism: PASS.
 
-## Causality Result
-
-| Result | TEACH | VALIDATE | Total |
-|---|---:|---:|---:|
-| Mismatch cuts | 0 | 0 | 0 |
-| Mismatch fields | 0 | 0 | 0 |
-| Future leaks | 0 | 0 | 0 |
-| Mutable-reference leaks | 0 | 0 | 0 |
-| Identity drift | 0 | 0 | 0 |
-| Bugs | 0 | 0 | 0 |
-
-`PRESENTATION_ONLY` and `EXPECTED_LIFECYCLE_DIFFERENCE` were also zero. Determinism: PASS.
-Audit fingerprint: `2ac55a9f4cddeede`. Fresh-world fingerprint: `5607fc3e34ef177f`.
-
-The auxiliary batch-snapshot/live-frontier geometry comparison remains separate from this
-test. In its bounded simultaneous sample it found one `LIVE_FRONTIER_ONLY` TEACH case. That
-is cross-algorithm counter-evidence, not a future leak, and remains visible in the JSON.
-
-## Verification
-
-Focused observer/guard suites:
-
-```bash
-python -m pytest tests/test_live_structure_truth_audit.py tests/test_fresh_world_causality.py tests/test_frame.py tests/test_frontier.py tests/test_micro.py tests/test_livemap.py tests/test_livemap_quarantine.py tests/test_eye.py tests/test_release.py tests/test_reference.py tests/test_route.py tests/test_participation.py tests/test_reactor.py tests/test_static_prohibitions.py tests/test_check_no_secrets.py --basetemp C:\Users\hp\Desktop\traderpar\.pytest-focused-certification
-```
-
-Result: `416 passed` in 298.42s.
-
-Full repository suite:
-
-```bash
-python -m pytest --basetemp C:\Users\hp\Desktop\traderpar\.pytest-full-certification
-```
-
-Result: `1362 passed` in 1006.36s. Pytest emitted one known cache-path warning; tests and
-their external base temp completed successfully.
+At every selected cut World B retained the actual `Reading`, `MapState`, `EyeState`,
+`ReleaseState`, `ReferencePath`, `LiveThesis`, and `StructuralFrame`. The same objects were
+canonicalized before and after future candles. Mutable-reference leaks: 0. Intentionally
+mutable `Frontier.current` was compared causally but was not subjected to this immutability
+contract.
 
 ## Gates
 
-- Gate A: YES. Cluster/range/live emissions were equal in 83 independent fresh-world cuts.
-- Gate B: YES for causal BROAD live perception. `Frontier.current` was stable in every cut;
-  this does not claim equivalence to every retrospective batch-snapshot geometry.
-- Gate C: CASE EXISTS: YES. PRODUCTION CHANGE JUSTIFIED: NO. Selection was 24/24 range when
-  both were current, but both-current prevalence was 0.118% of audited live candles.
-- Gate D: NO. LOCAL remains research-only; no production lifecycle identity is certified.
-- Gate E: YES. Micro stayed subordinate and was causally stable through create, confirm,
-  break, and collapse cuts.
-- Gate F: YES. `StructuralFrame` now joins facts without directional local semantics,
-  scalar release selection, or approached-side priority.
-- Gate G: NOT YET. Causal perception is certified, but the raw structural-response ledger
-  remains the next milestone before any shadow work.
-- Gate H: NOT REACHED. No shadow component was built or run.
+- Gate A, causal perception: **YES** on the corrected source-contiguous universe; 287
+  independent-world cuts matched.
+- Gate B, BROAD / `Frontier.current`: **YES** for causal live perception. This is not a
+  claim that retrospective batch geometry and live lifecycle are identical algorithms.
+- Gate C, scale collapse: **CASE EXISTS YES; MATERIAL PRODUCTION CHANGE NO**. All 17
+  both-current cases selected range, but combined prevalence is 0.093%.
+- Gate D, LOCAL publication: **NO**. LOCAL remains research-only.
+- Gate E, Micro subordination: **YES**. Create/confirm/break/collapse neighborhoods were
+  causally stable without promoting Micro into map history.
+- Gate F, StructuralFrame factual composition: **YES**. Accepted factual joins and plural
+  release/approach semantics remain intact.
+- Gate G, ready for structural-response study: **YES, READY; NOT EXECUTED**. Only the
+  schema is finalized in `reports/STRUCTURAL_RESPONSE_AUDIT.md`.
+- Gate H, shadow trader: **NOT REACHED**. No shadow component was built or run.
+
+## Verification
+
+Focused feed/episode/observer/causality/frame suites used an external base temp: **454
+passed**. The focused regressions include split compression barriers, observer exclusion,
+aggregate-only VALIDATE serialization, multi-occurrence sampling, retained-object
+immutability, and corrected fresh-world equality.
+
+Full repository suite used an external base temp: **1,371 passed**.
+
+No `.github/workflows` directory exists in this repository state. These are local pytest
+results; no CI verification is claimed.
 
 ## Evidence Balance
 
-Strongest positive evidence: 83 independent event-targeted cuts matched across the complete
-perception world with no blocking mismatch.
+Strongest positive evidence: all 287 event-targeted and chronology-spread cuts matched
+across the complete perception world, while the same seven retained trader-facing object
+types stayed immutable after future candles.
 
-Strongest counter-evidence: range selection was unanimous when both scales were current,
-and one auxiliary prefix comparison produced live-frontier-only geometry. The measured
-prevalence is too small to justify changing production before response behavior is measured.
+Strongest counter-evidence: range selection remained unanimous in all 17 both-current
+cases, and the bounded TEACH prefix comparison still contains one `LIVE_SCALE_COLLAPSE`.
+The corrected prevalence is only 0.093%, so perception integrity does not by itself justify
+a production architecture change.
 
-## Next Milestone
+## Next Single Milestone
 
-Specify and execute the raw structural-response ledger on TEACH and VALIDATE only. Do not
-publish LOCAL and do not begin a shadow component until that ledger is reviewed.
+Reviewer approval of the finalized raw structural-response ledger schema, followed by one
+TEACH/aggregate-only-VALIDATE response study. Do not publish LOCAL and do not build or run
+a shadow trader before that review.

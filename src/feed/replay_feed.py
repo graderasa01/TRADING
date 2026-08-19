@@ -32,7 +32,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, time as dtime, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import Iterator, Sequence
+from typing import Iterable, Iterator, Sequence
 
 from src.domain.models import IST, Candle, to_decimal
 
@@ -85,6 +85,16 @@ class Session:
         return len(self.candles)
 
 
+@dataclass(frozen=True, slots=True)
+class SourceDay:
+    """One chronological day present in the source, before replay exclusions."""
+
+    day: date
+    first: dtime
+    last: dtime
+    kind: str
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # session classification — D-018. Shared with tools/verify_data.py by rule, and
 # pinned by a test so the two cannot drift apart.
@@ -101,7 +111,31 @@ def classify_session(day: date, first: dtime, last: dtime) -> tuple[str, str]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-def _read_file(path: Path, symbol: str) -> list[tuple[datetime, Decimal, Decimal, Decimal, Decimal, int]]:
+def _normalise_ts(value) -> datetime:
+    ts = value if isinstance(value, datetime) else datetime.fromisoformat(str(value))
+    return ts if ts.tzinfo else ts.replace(tzinfo=IST)
+
+
+def _read_timestamps(path: Path) -> Iterable[datetime]:
+    """Read only source timestamps; OHLC values never enter the research index."""
+    if path.suffix == ".parquet":
+        import pyarrow.parquet as pq
+
+        values = pq.read_table(path, columns=["ts"]).column("ts").to_pylist()
+        return tuple(_normalise_ts(value).astimezone(IST) for value in values)
+
+    import csv
+
+    with path.open(newline="", encoding="utf-8") as fh:
+        return tuple(
+            _normalise_ts(row["ts"]).astimezone(IST)
+            for row in csv.DictReader(fh)
+        )
+
+
+def _read_file(path: Path, symbol: str, *,
+               wanted_days: frozenset[date] | None = None
+               ) -> list[tuple[datetime, Decimal, Decimal, Decimal, Decimal, int]]:
     if path.suffix == ".parquet":
         import pyarrow.parquet as pq
 
@@ -112,12 +146,14 @@ def _read_file(path: Path, symbol: str) -> list[tuple[datetime, Decimal, Decimal
         import csv
 
         with path.open(newline="", encoding="utf-8") as fh:
-            rows = [(datetime.fromisoformat(r["ts"]), r["open"], r["high"],
+            rows = [(_normalise_ts(r["ts"]), r["open"], r["high"],
                      r["low"], r["close"], r["volume"]) for r in csv.DictReader(fh)]
     out = []
     for ts, o, h, l, c, v in rows:
-        ts = ts if ts.tzinfo else ts.replace(tzinfo=IST)
-        out.append((ts.astimezone(IST), to_decimal(o), to_decimal(h),
+        ts = _normalise_ts(ts).astimezone(IST)
+        if wanted_days is not None and ts.date() not in wanted_days:
+            continue
+        out.append((ts, to_decimal(o), to_decimal(h),
                     to_decimal(l), to_decimal(c), int(v or 0)))
     return out
 
@@ -158,17 +194,21 @@ class ReplayFeed:
         self.skipped: list[tuple[date, str]] = []
 
     # ── loading ──
-    def _raw_by_day(self, start: date | None, end: date | None) -> dict[date, list]:
+    def _data_files(self) -> list[Path]:
         folder = self.data_root / self.symbol.replace(" ", "_")
         if not folder.is_dir():
             raise FileNotFoundError(
                 f"no data for {self.symbol} at {folder}. "
                 f"Run: python tools/fetch_kite.py fetch --years 3")
+        return [path for path in sorted(folder.iterdir())
+                if path.suffix in (".parquet", ".csv")]
+
+    def _raw_by_day(self, start: date | None, end: date | None,
+                    days: Sequence[date] | None = None) -> dict[date, list]:
         by_day: dict[date, list] = {}
-        for path in sorted(folder.iterdir()):
-            if path.suffix not in (".parquet", ".csv"):
-                continue
-            for row in _read_file(path, self.symbol):
+        wanted_days = frozenset(days) if days is not None else None
+        for path in self._data_files():
+            for row in _read_file(path, self.symbol, wanted_days=wanted_days):
                 day = row[0].date()
                 if start and day < start:
                     continue
@@ -206,7 +246,7 @@ class ReplayFeed:
     # ── the public iterator ──
     def sessions(self, start: date | None = None, end: date | None = None,
                  days: Sequence[date] | None = None) -> Iterator[Session]:
-        by_day = self._raw_by_day(start, end)
+        by_day = self._raw_by_day(start, end, days)
         wanted = sorted(set(days) & set(by_day)) if days is not None else sorted(by_day)
         prev_close: Decimal | None = None
         pdh: Decimal | None = None
@@ -264,10 +304,25 @@ class ReplayFeed:
 
     def available_days(self, start: date | None = None, end: date | None = None) -> list[date]:
         """Normal + full-weekend sessions only. Cheap — reads timestamps, not candles."""
-        out = []
-        for day, rows in sorted(self._raw_by_day(start, end).items()):
-            rows = sorted(rows, key=lambda r: r[0])
-            kind, _ = classify_session(day, rows[0][0].time(), rows[-1][0].time())
-            if kind != "abbreviated" or not self.skip_abbreviated:
-                out.append(day)
-        return out
+        return [source.day for source in self.source_days(start, end)
+                if source.kind != "abbreviated" or not self.skip_abbreviated]
+
+    def source_days(self, start: date | None = None,
+                    end: date | None = None) -> list[SourceDay]:
+        """Every chronological source day, including abbreviated session barriers."""
+        spans: dict[date, tuple[dtime, dtime]] = {}
+        for path in self._data_files():
+            for ts in _read_timestamps(path):
+                day = ts.date()
+                if start and day < start:
+                    continue
+                if end and day > end:
+                    continue
+                at = ts.time()
+                first, last = spans.get(day, (at, at))
+                spans[day] = (min(first, at), max(last, at))
+        return [
+            SourceDay(day=day, first=first, last=last,
+                      kind=classify_session(day, first, last)[0])
+            for day, (first, last) in sorted(spans.items())
+        ]

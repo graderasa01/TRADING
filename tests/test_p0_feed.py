@@ -19,6 +19,7 @@ from decimal import Decimal
 import pytest
 
 from src.domain.models import IST, Candle, InvariantError, to_decimal
+from src.feed import replay_feed as replay_feed_mod
 from src.feed.aggregator import (
     Aggregator, AlignmentError, PartialCandle, aggregate_all, bucket_start,
 )
@@ -230,6 +231,27 @@ def test_two_missing_minutes_raise_rather_than_guess(tmp_path):
     feed = ReplayFeed("GAP TWO", tmp_path, skip_abbreviated=False)
     with pytest.raises(FeedGapError, match="2 consecutive"):
         feed._to_candles(DAY, feed._raw_by_day(None, None)[DAY])
+
+
+def test_session_day_whitelist_reaches_price_conversion(tmp_path, monkeypatch):
+    folder = tmp_path / "TEST"
+    folder.mkdir()
+    source = folder / "source.csv"
+    source.write_text("placeholder", encoding="utf-8")
+    seen: list[frozenset[date] | None] = []
+    at = datetime.combine(DAY, dtime(9, 15), tzinfo=IST)
+
+    def fake_read(_path, _symbol, *, wanted_days=None):
+        seen.append(wanted_days)
+        return [(at, Decimal(100), Decimal(101), Decimal(99), Decimal(100), 0)]
+
+    monkeypatch.setattr(replay_feed_mod, "_read_file", fake_read)
+    feed = ReplayFeed(SYMBOL, tmp_path, skip_abbreviated=False, fill_gaps=False)
+
+    sessions = list(feed.sessions(days=[DAY]))
+
+    assert len(sessions) == 1
+    assert seen == [frozenset({DAY})]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
