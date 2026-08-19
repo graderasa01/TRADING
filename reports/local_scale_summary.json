@@ -1,0 +1,18 @@
+{
+  "source": "reports/structural_truth_summary.json",
+  "command": "python tools/live_structure_truth.py --max-blocks 1 --json reports/structural_truth_summary.json",
+  "matrix": {
+    "LOCAL yes / MICRO yes": 25,
+    "LOCAL yes / MICRO no": 16,
+    "LOCAL no / MICRO yes": 29,
+    "LOCAL no / MICRO no": 530
+  },
+  "local_relations": {
+    "same": 20,
+    "overlapping": 5,
+    "absent": 16
+  },
+  "publication": "research-only",
+  "mutates_major_map": false,
+  "conclusion": "LOCAL and Micro are not equivalent in the smoke audit; lifecycle evidence remains insufficient for production publication."
+}

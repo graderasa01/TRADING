@@ -1,0 +1,12 @@
+{
+  "status": "not promoted",
+  "scores_added": false,
+  "thresholds_added": false,
+  "detectors_changed": false,
+  "verified_by": [
+    "tests/test_release.py",
+    "tests/test_eye.py",
+    "tests/test_frame.py"
+  ],
+  "next_measurement": "raw causal response ledger for frozen cluster/range/local/micro boundaries"
+}

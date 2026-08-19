@@ -1,0 +1,21 @@
+{
+  "structural_frame": {
+    "status": "implemented",
+    "module": "src/livemap/frame.py",
+    "detector_imports": false,
+    "trader_imports": false,
+    "prefix_causal_test": "passed",
+    "local_publication": "research_input_only",
+    "shadow_trader_reached": false
+  },
+  "gates": {
+    "A": "INSUFFICIENT EVIDENCE",
+    "B": "YES",
+    "C": "YES",
+    "D": "INSUFFICIENT EVIDENCE",
+    "E": "YES",
+    "F": "YES",
+    "G": "INSUFFICIENT EVIDENCE",
+    "H": "INSUFFICIENT EVIDENCE"
+  }
+}

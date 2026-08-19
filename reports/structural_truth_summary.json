@@ -1,0 +1,471 @@
+{
+  "config": {
+    "history": 400,
+    "live": 300,
+    "max_blocks": 1,
+    "prefix_examples": 12,
+    "trace_examples": 8
+  },
+  "counts": {
+    "choose": {
+      "BOTH": 1,
+      "CLUSTER_ONLY": 116,
+      "NEITHER": 255
+    },
+    "depth": {
+      "max_snapshot_depth": 0,
+      "snapshot_nested": 0,
+      "snapshot_nodes": 19
+    },
+    "holders": {
+      "births": 12,
+      "no_holder": 12
+    },
+    "live": {
+      "finalised": 12,
+      "micro_breaks": 0,
+      "micro_confirmed": 3,
+      "micro_created": 12
+    },
+    "local": {
+      "LOCAL_ABSENT": 559,
+      "LOCAL_FOUND": 41,
+      "MICRO_CONFIRMED": 14
+    },
+    "local_relations": {
+      "absent": 16,
+      "overlapping": 5,
+      "same": 20
+    },
+    "micro_matrix": {
+      "LOCAL_ABSENT + MICRO_ABSENT": 530,
+      "LOCAL_ABSENT + MICRO_FOUND": 29,
+      "LOCAL_FOUND + MICRO_ABSENT": 16,
+      "LOCAL_FOUND + MICRO_FOUND": 25
+    },
+    "prefix": {
+      "PRESENTATION_ONLY": 1
+    },
+    "reference_age_ABOVE_NEXT": {
+      "max": 466,
+      "n": 600,
+      "sum": 142546
+    },
+    "reference_age_BELOW_NEXT": {
+      "max": 470,
+      "n": 406,
+      "sum": 66750
+    },
+    "simultaneous": {
+      "BOTH_CURRENT": 1,
+      "BOTH_DETECTED": 1,
+      "BOTH_WITH_CONTAINMENT": 1,
+      "LIVE_SELECTED_RANGE": 1,
+      "cluster_inside_range": 1
+    }
+  },
+  "examples": {
+    "holders": [
+      {
+        "at": "2023-08-08T14:00:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "deterministic": true,
+        "holders": [],
+        "index": 431,
+        "live_band": {
+          "high": "44991.39475",
+          "low": "44945.79150"
+        },
+        "live_id": "L01",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2023-08-09T13:30:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "deterministic": true,
+        "holders": [],
+        "index": 500,
+        "live_band": {
+          "high": "44650.93250",
+          "low": "44567.27200"
+        },
+        "live_id": "L02",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2023-08-10T14:20:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "deterministic": true,
+        "holders": [],
+        "index": 585,
+        "live_band": {
+          "high": "44572.61875",
+          "low": "44474.33475"
+        },
+        "live_id": "L03",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2023-08-11T10:10:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "deterministic": true,
+        "holders": [],
+        "index": 610,
+        "live_band": {
+          "high": "44352.70750",
+          "low": "44309.86225"
+        },
+        "live_id": "L04",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2023-08-14T09:20:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "deterministic": true,
+        "holders": [],
+        "index": 675,
+        "live_band": {
+          "high": "44266.05075",
+          "low": "44139.01600"
+        },
+        "live_id": "L05",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2023-08-14T10:35:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "deterministic": true,
+        "holders": [],
+        "index": 690,
+        "live_band": {
+          "high": "43887.70925",
+          "low": "43837.64900"
+        },
+        "live_id": "L06",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2024-01-08T13:15:00+05:30",
+        "block": 1,
+        "bucket": "validate",
+        "deterministic": true,
+        "holders": [],
+        "index": 422,
+        "live_band": {
+          "high": "47812.5350",
+          "low": "47759.3450"
+        },
+        "live_id": "L01",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      },
+      {
+        "at": "2024-01-08T15:30:00+05:30",
+        "block": 1,
+        "bucket": "validate",
+        "deterministic": true,
+        "holders": [],
+        "index": 449,
+        "live_band": {
+          "high": "47492.60550",
+          "low": "47424.94125"
+        },
+        "live_id": "L02",
+        "live_kind": "cluster",
+        "tightest_holder": null
+      }
+    ],
+    "local": [
+      {
+        "at": "2023-08-08T14:10:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "44997.742",
+          "low": "44954.712"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 10,
+        "index": 433,
+        "micro_relation": "absent",
+        "parent_band": {
+          "high": "44991.39475",
+          "low": "44945.79150"
+        },
+        "parent_id": "L01",
+        "parent_kind": "cluster",
+        "price": "44979.8",
+        "production_micro_band": null,
+        "production_micro_id": null,
+        "production_micro_state": null
+      },
+      {
+        "at": "2023-08-08T14:15:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "45000.635",
+          "low": "44958.545"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 8,
+        "index": 434,
+        "micro_relation": "absent",
+        "parent_band": {
+          "high": "44991.39475",
+          "low": "44945.79150"
+        },
+        "parent_id": "L01",
+        "parent_kind": "cluster",
+        "price": "44982.85",
+        "production_micro_band": null,
+        "production_micro_id": null,
+        "production_micro_state": null
+      },
+      {
+        "at": "2023-08-08T14:20:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "45001.1975",
+          "low": "44958.7325"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 15,
+        "index": 435,
+        "micro_relation": "absent",
+        "parent_band": {
+          "high": "44991.39475",
+          "low": "44945.79150"
+        },
+        "parent_id": "L01",
+        "parent_kind": "cluster",
+        "price": "44950.4",
+        "production_micro_band": null,
+        "production_micro_id": null,
+        "production_micro_state": null
+      },
+      {
+        "at": "2023-08-08T14:25:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "44998.33875",
+          "low": "44958.83550"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 12,
+        "index": 436,
+        "micro_relation": "absent",
+        "parent_band": {
+          "high": "44991.39475",
+          "low": "44945.79150"
+        },
+        "parent_id": "L01",
+        "parent_kind": "cluster",
+        "price": "45008.2",
+        "production_micro_band": null,
+        "production_micro_id": null,
+        "production_micro_state": null
+      },
+      {
+        "at": "2023-08-09T13:45:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "44656.76500",
+          "low": "44605.93450"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 10,
+        "index": 503,
+        "micro_relation": "same",
+        "parent_band": {
+          "high": "44650.93250",
+          "low": "44567.27200"
+        },
+        "parent_id": "L02",
+        "parent_kind": "cluster",
+        "price": "44625.2",
+        "production_micro_band": {
+          "high": "44656.76500",
+          "low": "44605.93450"
+        },
+        "production_micro_id": "L02.m1",
+        "production_micro_state": "CONFIRMED"
+      },
+      {
+        "at": "2023-08-09T13:55:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "44656.17500",
+          "low": "44609.35875"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 12,
+        "index": 505,
+        "micro_relation": "same",
+        "parent_band": {
+          "high": "44650.93250",
+          "low": "44567.27200"
+        },
+        "parent_id": "L02",
+        "parent_kind": "cluster",
+        "price": "44634.65",
+        "production_micro_band": {
+          "high": "44656.76500",
+          "low": "44605.93450"
+        },
+        "production_micro_id": "L02.m1",
+        "production_micro_state": "CONFIRMED"
+      },
+      {
+        "at": "2023-08-09T14:00:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "44658.83125",
+          "low": "44612.60000"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 12,
+        "index": 506,
+        "micro_relation": "same",
+        "parent_band": {
+          "high": "44650.93250",
+          "low": "44567.27200"
+        },
+        "parent_id": "L02",
+        "parent_kind": "cluster",
+        "price": "44655.2",
+        "production_micro_band": {
+          "high": "44656.76500",
+          "low": "44605.93450"
+        },
+        "production_micro_id": "L02.m1",
+        "production_micro_state": "CONFIRMED"
+      },
+      {
+        "at": "2023-08-10T13:20:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "candidate_band": {
+          "high": "44662.17175",
+          "low": "44619.53775"
+        },
+        "candidate_kind": "cluster",
+        "candidate_window": 8,
+        "index": 573,
+        "micro_relation": "same",
+        "parent_band": {
+          "high": "44650.93250",
+          "low": "44567.27200"
+        },
+        "parent_id": "L02",
+        "parent_kind": "cluster",
+        "price": "44625.5",
+        "production_micro_band": {
+          "high": "44662.17175",
+          "low": "44619.53775"
+        },
+        "production_micro_id": "L02.m1",
+        "production_micro_state": "CONFIRMED"
+      }
+    ],
+    "prefix": [
+      {
+        "at": "2023-08-08T14:30:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "classification": "PRESENTATION_ONLY",
+        "cluster_band": {
+          "high": "44999.96625",
+          "low": "44954.98875"
+        },
+        "historical_parent_id": null,
+        "historical_tight_band": {
+          "high": "45075.93950",
+          "low": "45031.09475"
+        },
+        "historical_tight_id": "C04",
+        "historical_tight_kind": "cluster",
+        "index": 437,
+        "live_current_band": {
+          "high": "45076.94425",
+          "low": "44970.49225"
+        },
+        "live_current_kind": "cluster",
+        "live_parent_id": null,
+        "micro_band": null,
+        "micro_id": null,
+        "price": "45020.35",
+        "range_band": {
+          "high": "45038.75",
+          "low": "44932.5"
+        }
+      }
+    ],
+    "simultaneous": [
+      {
+        "at": "2023-08-08T14:30:00+05:30",
+        "block": 1,
+        "bucket": "teach",
+        "cluster": {
+          "high": "44999.96625",
+          "low": "44954.98875"
+        },
+        "cluster_current": true,
+        "cluster_window": 12,
+        "index": 437,
+        "known_match": "C08",
+        "price": "45020.35",
+        "range": {
+          "high": "45038.75",
+          "low": "44932.5"
+        },
+        "range_current": true,
+        "range_window": 15,
+        "relation": "cluster_inside_range",
+        "selected_band": {
+          "high": "45038.75",
+          "low": "44932.5"
+        },
+        "selected_kind": "range"
+      }
+    ]
+  },
+  "fingerprint": "cadb60743b0d4267",
+  "populations": {
+    "teach": {
+      "blocks": 1,
+      "m5_candles": 40725,
+      "sessions": 543
+    },
+    "validate": {
+      "blocks": 1,
+      "m5_candles": 7275,
+      "sessions": 97
+    }
+  },
+  "timings": {
+    "audit_seconds": 2.040879,
+    "frontier_seconds": 1.044755,
+    "load_seconds": 7.270633,
+    "local_scan_seconds": 0.068238,
+    "prefix_rebuild_seconds": 0.191604,
+    "total_seconds": 9.311574
+  }
+}
