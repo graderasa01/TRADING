@@ -453,14 +453,25 @@ def _v2_gates(buckets: dict[str, dict], v1_buckets: dict[str, dict]) -> dict:
     return gates
 
 
-def _bucket_quality(replays: Sequence[EpisodeReplay]) -> dict:
+def _bucket_quality_with_positions(
+        replays: Sequence[EpisodeReplay]) -> tuple[dict, list]:
+    """Aggregate one bucket and hand back the position records it already built.
+
+    Building the position ledger is the expensive half of this analysis, so a caller
+    that also needs the records reuses these rather than rebuilding them.
+    """
+
     bucket = aggregate_quality(replays)
     positions = [item for replay in replays
                  for item in build_position_quality(replay.machine)]
     bucket["position_risk_quality"] = _position_risk_ledger(positions)
     bucket["adverse_exit_ledger"] = _adverse_exit_ledger(positions)
     bucket["reentry_integrity"] = _reentry_integrity(replays, positions)
-    return bucket
+    return bucket, positions
+
+
+def _bucket_quality(replays: Sequence[EpisodeReplay]) -> dict:
+    return _bucket_quality_with_positions(replays)[0]
 
 
 def _replay_universe(
@@ -507,6 +518,20 @@ def run_brain_v2_study(config: StudyConfig | None = None) -> dict:
     v2_buckets = {bucket: _bucket_quality(replays)
                   for bucket, replays in v2_replays.items()}
     del v2_replays
+
+    return brain_v2_payload(
+        v1_buckets, v2_buckets, frozen, source_population, skipped, config)
+
+
+def brain_v2_payload(
+        v1_buckets: dict[str, dict], v2_buckets: dict[str, dict], frozen: dict,
+        source_population: dict, skipped: Counter, config: StudyConfig,
+        ) -> dict:
+    """Build the Brain V2 audit payload from already-aggregated buckets.
+
+    Extracted so a later brain can reproduce fingerprint ``8e2d85d387843a57`` from the
+    same code that produced it, rather than from a second copy of the same dictionary.
+    """
 
     deterministic = {
         "study": "DYNAMIC_REACTIVE_TRADER_BRAIN_V2_AUDIT",
