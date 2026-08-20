@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from src.livemap.shadow import (
+    BRAIN_V1,
     COMPLETED,
     CONTINUATION_UP,
     DOWN,
@@ -233,7 +234,12 @@ def test_falsification_overshoot_uses_accepted_close_and_exit_is_still_first_cau
 
 
 def test_acceptance_delay_separates_first_cross_from_additional_falsification_overshoot():
-    machine = DynamicShadowTrader(TEACH, "teach-EP001")
+    # Pinned to BRAIN_V1: this trace *is* the V1 pathology the ledger was built to
+    # expose — the close crosses the frozen level and the position stays open until
+    # accepted failure arrives later. Under BRAIN_V2 a rotation leaves on the cross, so
+    # the same stream can no longer produce a delayed falsification overshoot. The
+    # measurement itself is unchanged and still applies to continuations.
+    machine = DynamicShadowTrader(TEACH, "teach-EP001", brain=BRAIN_V1)
     machine.observe_truth(truth(
         0, "100", location="AT_LOWER_EDGE", approaching_lower=True))
     machine.observe_truth(truth(1, "101"))
@@ -255,7 +261,8 @@ def test_acceptance_delay_separates_first_cross_from_additional_falsification_ov
 
 
 def test_recovery_after_first_cross_is_not_negative_additional_overshoot():
-    machine = DynamicShadowTrader(TEACH, "teach-EP001")
+    # Pinned to BRAIN_V1 for the same reason as the test above.
+    machine = DynamicShadowTrader(TEACH, "teach-EP001", brain=BRAIN_V1)
     machine.observe_truth(truth(
         0, "100", location="AT_LOWER_EDGE", approaching_lower=True))
     machine.observe_truth(truth(1, "101"))

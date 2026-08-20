@@ -11,6 +11,24 @@ The separation is deliberate:
 
 Every public result is frozen.  A later candle replaces the current internal record and
 can never mutate a snapshot that was already emitted.
+
+Two brain versions exist, and the difference is exactly one rule:
+
+``BRAIN_V1``
+    An open shadow position is closed only when its own hypothesis reaches a terminal
+    lifecycle state.  This is the frozen behaviour audited as fingerprint
+    ``bf497495e394bb87`` and is retained so that historical evidence stays reproducible.
+
+``BRAIN_V2``
+    Identical, plus: **market hypothesis falsification and open-position risk are
+    separate events.**  An open ROTATION position is returned to FLAT on the first
+    closed candle whose close sits at or beyond the position's own frozen Broad
+    invalidation level on the adverse side, without waiting for the broader hypothesis
+    to receive an accepted structural failure.  The hypothesis lifecycle is untouched by
+    that exit; only participation for that one hypothesis instance is consumed.
+
+``BRAIN_V2`` is the default because it is the current authoritative cognition.  A brain
+version is a frozen semantic identity, never a tunable parameter.
 """
 
 from __future__ import annotations
@@ -45,6 +63,20 @@ HYPOTHESIS_FAMILIES = frozenset({
     FAILED_UP_RETURN,
     FAILED_DOWN_RETURN,
 })
+ROTATION_FAMILIES = frozenset({LOWER_ROTATION, UPPER_ROTATION})
+CONTINUATION_FAMILIES = frozenset({CONTINUATION_UP, CONTINUATION_DOWN})
+
+#: Frozen semantic identities, never tunable parameters.
+BRAIN_V1 = "BRAIN_V1_HYPOTHESIS_FALSIFICATION_ONLY_EXIT"
+BRAIN_V2 = "BRAIN_V2_ROTATION_POSITION_RISK_EXIT"
+BRAIN_VERSIONS = frozenset({BRAIN_V1, BRAIN_V2})
+
+#: Open-position risk exit.  Deliberately distinguishable from the hypothesis-level
+#: ``ACCEPTED_STRUCTURAL_FAILURE``: the market thesis may still be alive when the open
+#: participation no longer deserves exposure.
+POSITION_INVALIDATION_LEVEL_CROSSED = "POSITION_INVALIDATION_LEVEL_CROSSED"
+POSITION_RISK_EXIT_REASONS = frozenset({POSITION_INVALIDATION_LEVEL_CROSSED})
+PARTICIPATION_CONSUMED_BY_POSITION_RISK = "PARTICIPATION_CONSUMED_BY_POSITION_RISK_EXIT"
 
 OBSERVING = "OBSERVING"
 ACTIVE = "ACTIVE"
@@ -438,6 +470,23 @@ def _reached(price: Decimal, destination: Decimal, direction: str, tolerance: De
             else price <= destination + tolerance)
 
 
+def crossed_invalidation(price: Decimal, level: Decimal, side: str) -> bool:
+    """Does a closed candle sit at or beyond ``level`` on the adverse side of ``side``?
+
+    No tolerance skirt is applied and none is invented here.  The repo's ``tolerance``
+    conventions are generous in the *favourable* direction — ``_reached`` accepts a
+    destination that is one skirt short, and ``_at_lower``/``_at_upper`` accept an area
+    one skirt wide — because being generous there only ever admits a fact earlier.  On
+    an adverse risk boundary the same skirt would keep an open position exposed for
+    longer, which is the opposite of what this predicate is for.  This is also the exact
+    predicate the V2 quality audit already used to measure
+    ``first_invalidation_close_cross_index``, so the corrected exit lands on precisely
+    the candle that audit named.
+    """
+
+    return price <= level if side == UP else price >= level
+
+
 def _micro_location(truth: MarketTruth) -> str:
     micro = truth.micro
     if micro.low is None or micro.high is None:
@@ -537,20 +586,32 @@ def market_truth_from_frame(
 class DynamicShadowTrader:
     """One source-episode-scoped dynamic hypothesis and shadow-position machine."""
 
-    def __init__(self, bucket: str, source_episode_id: str) -> None:
+    def __init__(
+            self, bucket: str, source_episode_id: str, *, brain: str = BRAIN_V2,
+            ) -> None:
         if bucket not in RESEARCH_BUCKETS:
             raise ValueError("dynamic shadow research accepts TEACH/VALIDATE only")
+        if brain not in BRAIN_VERSIONS:
+            raise ValueError(f"unknown brain version {brain!r}")
         self.bucket = bucket
         self.source_episode_id = source_episode_id
+        self.brain = brain
         self.decisions: list[ShadowDecision] = []
         self.position_episodes: list[PositionEpisode] = []
         self._hypotheses: dict[str, _HypothesisRecord] = {}
         self._hypothesis_history: dict[str, list[HypothesisState]] = {}
         self._anchor: _MovementAnchor | None = None
         self._position: _OpenPosition | None = None
+        self._risk_consumed: set[str] = set()
         self._previous: MarketTruth | None = None
         self._last_index: int | None = None
         self._last_source_ordinal: int | None = None
+
+    @property
+    def risk_consumed_hypotheses(self) -> frozenset[str]:
+        """Hypothesis instances whose participation a position-risk exit consumed."""
+
+        return frozenset(self._risk_consumed)
 
     @property
     def hypothesis_history(self) -> dict[str, tuple[HypothesisState, ...]]:
@@ -1155,6 +1216,17 @@ class DynamicShadowTrader:
                     truth.price, hypothesis.movement_destination.price,
                     hypothesis.side or UP, truth.tolerance)),
         }
+        if hypothesis.hypothesis_id in self._risk_consumed:
+            # A position-risk exit consumes participation for that one hypothesis
+            # instance.  The hypothesis itself stays observable and may still become
+            # STRESSED, recover, COMPLETE or be FALSIFIED; it simply cannot open a
+            # second position.  A genuinely new position needs a genuinely new
+            # structural premise, which carries a new hypothesis identity.
+            return ParticipationState(
+                HYPOTHESIS_VALID_BUT_NO_PARTICIPATION,
+                reasons=(PARTICIPATION_CONSUMED_BY_POSITION_RISK,),
+                **common,
+            )
         if hypothesis.invalidation is None:
             return ParticipationState(
                 HYPOTHESIS_VALID_BUT_NO_PARTICIPATION,
@@ -1216,6 +1288,16 @@ class DynamicShadowTrader:
                 reason = record.terminal_reason or record.state
                 self._close_position(truth, record, reason)
                 return EXIT, (reason, "RETURNED_TO_FLAT_BEFORE_ANY_REASSESSMENT")
+            if self._position_risk_breached(truth):
+                self._risk_consumed.add(self._position.hypothesis_id)
+                self._close_position(
+                    truth, record, POSITION_INVALIDATION_LEVEL_CROSSED)
+                return EXIT, (
+                    POSITION_INVALIDATION_LEVEL_CROSSED,
+                    "OPEN_POSITION_RISK_IS_NOT_HYPOTHESIS_FALSIFICATION",
+                    "PARTICIPATION_CONSUMED_FOR_THIS_HYPOTHESIS_INSTANCE",
+                    "RETURNED_TO_FLAT_BEFORE_ANY_REASSESSMENT",
+                )
             return HOLD, ("ACTIVE_HYPOTHESIS_PREMISE_REMAINS_INTACT",)
 
         if participation.status == PARTICIPATION_AVAILABLE:
@@ -1240,6 +1322,27 @@ class DynamicShadowTrader:
         if participation.status == NO_ACTIVE_HYPOTHESIS:
             return NO_ACTION, participation.reasons
         return WAIT, participation.reasons
+
+    def _position_risk_breached(self, truth: MarketTruth) -> bool:
+        """Has an open ROTATION position's own frozen invalidation been crossed?
+
+        This asks a different question from the hypothesis lifecycle.  A rotation
+        hypothesis stays formally unresolved until production accepted structural
+        failure, and that is not changed here.  An *open position* does not need to
+        remain exposed after the level it was entered against has been closed beyond.
+
+        Continuations are deliberately excluded: their invalidation is the released
+        Broad edge that price has already left, a structurally different geometry, and
+        nothing in the audit named them.
+        """
+
+        position = self._position
+        if self.brain != BRAIN_V2 or position is None:
+            return False
+        if position.family not in ROTATION_FAMILIES:
+            return False
+        return crossed_invalidation(
+            truth.price, position.invalidation.level, position.side)
 
     def _update_open_position(self, truth: MarketTruth, movement: MovementState) -> None:
         assert self._position is not None
@@ -1317,13 +1420,16 @@ class DynamicShadowTrader:
         )
 
 
-def replay_truths(truths: Iterable[MarketTruth]) -> list[ShadowDecision]:
+def replay_truths(
+        truths: Iterable[MarketTruth], *, brain: str = BRAIN_V2,
+        ) -> list[ShadowDecision]:
     """Replay a pre-frozen source episode, primarily for deterministic synthetic tests."""
 
     items = list(truths)
     if not items:
         return []
-    machine = DynamicShadowTrader(items[0].bucket, items[0].source_episode_id)
+    machine = DynamicShadowTrader(
+        items[0].bucket, items[0].source_episode_id, brain=brain)
     return [machine.observe_truth(item) for item in items]
 
 
@@ -1331,8 +1437,12 @@ __all__ = [
     "ACTIONS",
     "ACTIVE",
     "AT_REFERENCE",
+    "BRAIN_V1",
+    "BRAIN_V2",
+    "BRAIN_VERSIONS",
     "COMPLETED",
     "CONTINUATION_DOWN",
+    "CONTINUATION_FAMILIES",
     "CONTINUATION_UP",
     "DOWN",
     "EARLY",
@@ -1356,6 +1466,10 @@ __all__ = [
     "NO_ACTIVE_HYPOTHESIS",
     "OBSERVING",
     "PARTICIPATION_AVAILABLE",
+    "PARTICIPATION_CONSUMED_BY_POSITION_RISK",
+    "POSITION_INVALIDATION_LEVEL_CROSSED",
+    "POSITION_RISK_EXIT_REASONS",
+    "ROTATION_FAMILIES",
     "SHADOW_LONG",
     "SHADOW_SHORT",
     "STRESSED",
@@ -1376,6 +1490,7 @@ __all__ = [
     "ShadowDecision",
     "ShadowPositionState",
     "StructuralInvalidation",
+    "crossed_invalidation",
     "market_truth_from_frame",
     "replay_truths",
 ]

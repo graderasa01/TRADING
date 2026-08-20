@@ -26,6 +26,7 @@ if str(REPO_ROOT) not in sys.path:
 from src.learning.split import TEACH, VALIDATE
 from src.livemap.shadow import (
     ACTIVE,
+    BRAIN_V1,
     COMPLETED,
     CONTINUATION_DOWN,
     CONTINUATION_UP,
@@ -797,17 +798,32 @@ def _fingerprint(payload: dict) -> str:
 
 
 def run_quality_study(config: StudyConfig | None = None) -> dict:
+    """Reproduce the frozen V1 final quality audit.
+
+    Pinned to ``BRAIN_V1``: this report is the historical record that produced the Q3
+    blocker, and it must stay reproducible after the Brain V2 correction landed.
+    """
+
     config = config or StudyConfig()
     episodes, source_population = load_research_episodes()
     replay_by_bucket: dict[str, list[EpisodeReplay]] = {TEACH: [], VALIDATE: []}
     skipped = Counter()
     for bucket in (TEACH, VALIDATE):
         for episode in episodes[bucket]:
-            replay = run_episode(episode, config)
+            replay = run_episode(episode, config, brain=BRAIN_V1)
             if replay is None:
                 skipped[bucket] += 1
             else:
                 replay_by_bucket[bucket].append(replay)
+    return quality_payload(replay_by_bucket, source_population, skipped, config)
+
+
+def quality_payload(
+        replay_by_bucket: dict[str, Sequence[EpisodeReplay]], source_population: dict,
+        skipped: Counter, config: StudyConfig,
+        ) -> dict:
+    """Build the frozen V1 quality payload from already-replayed BRAIN_V1 episodes."""
+
     v1_fingerprint = _recompute_v1_fingerprint(
         replay_by_bucket, source_population, skipped, config)
     if v1_fingerprint != EXPECTED_V1_FINGERPRINT:

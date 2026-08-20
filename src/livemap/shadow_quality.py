@@ -24,10 +24,12 @@ from src.livemap.shadow import (
     ORIGIN_TO_MIDPOINT,
     OUTSIDE_EDGE_TO_MAPPED_REFERENCE,
     POSITION_ACTIVE,
+    POSITION_RISK_EXIT_REASONS,
     UP,
     UPPER_ROTATION,
     DynamicShadowTrader,
     ShadowDecision,
+    crossed_invalidation,
 )
 
 SUPPORTIVE_BROAD_MIDPOINT = "BROAD_MIDPOINT_REACHED"
@@ -46,6 +48,7 @@ SUPPORTIVE_LANDMARKS = frozenset({
 OBJECTIVE_COMPLETION = "OBJECTIVE_COMPLETION"
 STRUCTURAL_REORIENTATION_HANDOFF = "STRUCTURAL_REORIENTATION_HANDOFF"
 FALSIFICATION_EXIT = "FALSIFICATION"
+POSITION_RISK_EXIT = "POSITION_RISK_EXIT"
 RESEARCH_BOUNDARY = "RESEARCH_BOUNDARY"
 OTHER_EXIT = "OTHER"
 
@@ -121,6 +124,12 @@ class PositionQualityRecord:
     premise_false_at_first_invalidation_cross: bool | None
     first_invalidation_cross_overshoot_points: Decimal | None
     first_invalidation_cross_overshoot_atr: float | None
+    entered_already_beyond_invalidation: bool
+    position_risk_exit: bool
+    position_risk_exit_overshoot_points: Decimal | None
+    position_risk_exit_overshoot_atr: float | None
+    bars_open_before_position_risk_exit: int | None
+    hypothesis_status_at_position_risk_exit: str | None
     falsified: bool
     falsification_overshoot_points: Decimal | None
     falsification_overshoot_atr: float | None
@@ -262,6 +271,8 @@ def _first_state_index(
 def _exit_class(reason: str, falsified: bool) -> str:
     if falsified:
         return FALSIFICATION_EXIT
+    if reason in POSITION_RISK_EXIT_REASONS:
+        return POSITION_RISK_EXIT
     if reason in {"STRUCTURAL_OBJECTIVE_REACHED", "MAPPED_REFERENCE_REACHED"}:
         return OBJECTIVE_COMPLETION
     if reason in {
@@ -275,8 +286,9 @@ def _exit_class(reason: str, falsified: bool) -> str:
     return OTHER_EXIT
 
 
-def _crossed_invalidation(price: Decimal, level: Decimal, side: str) -> bool:
-    return price <= level if side == UP else price >= level
+#: One definition of the adverse crossing, shared with the state machine so the
+#: measurement and the corrected exit can never drift apart.
+_crossed_invalidation = crossed_invalidation
 
 
 def _overshoot(price: Decimal, level: Decimal, side: str) -> Decimal:
@@ -356,6 +368,14 @@ def build_position_quality(
             None if overshoot_change is None else max(-overshoot_change, Decimal(0)))
         objective = episode.exit_reason in {
             "STRUCTURAL_OBJECTIVE_REACHED", "MAPPED_REFERENCE_REACHED"}
+        risk_exit = episode.exit_reason in POSITION_RISK_EXIT_REASONS
+        risk_overshoot = (
+            _overshoot(exit_decision.market.price, record.invalidation.level, episode.side)
+            if risk_exit else None)
+        risk_status = (
+            _snapshot(exit_decision, episode.hypothesis_id).state
+            if risk_exit and _snapshot(exit_decision, episode.hypothesis_id) is not None
+            else None)
 
         output.append(PositionQualityRecord(
             source_episode_id=episode.source_episode_id,
@@ -403,6 +423,14 @@ def build_position_quality(
             first_invalidation_cross_overshoot_points=first_cross_overshoot,
             first_invalidation_cross_overshoot_atr=_atr_ratio(
                 first_cross_overshoot, entry_atr),
+            entered_already_beyond_invalidation=_crossed_invalidation(
+                episode.entry_price, record.invalidation.level, episode.side),
+            position_risk_exit=risk_exit,
+            position_risk_exit_overshoot_points=risk_overshoot,
+            position_risk_exit_overshoot_atr=_atr_ratio(risk_overshoot, entry_atr),
+            bars_open_before_position_risk_exit=(
+                episode.exit_index - episode.entry_index if risk_exit else None),
+            hypothesis_status_at_position_risk_exit=risk_status,
             falsified=falsified,
             falsification_overshoot_points=overshoot,
             falsification_overshoot_atr=_atr_ratio(overshoot, entry_atr),
@@ -665,6 +693,7 @@ __all__ = [
     "FALSIFICATION_EXIT",
     "NEW_STRUCTURE_REORIENTATION",
     "OBJECTIVE_COMPLETION",
+    "POSITION_RISK_EXIT",
     "POSSIBLE_SAME_STRUCTURE_CHURN",
     "RESEARCH_BOUNDARY",
     "SAME_STRUCTURE_OPPOSITE_EDGE_ROTATION",

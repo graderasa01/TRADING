@@ -31,6 +31,7 @@ from src.learning.split import TEACH, VALIDATE
 from src.livemap import frame as structural_frame
 from src.livemap.shadow import (
     ACTIVE,
+    BRAIN_V1,
     COMPLETED,
     CONTINUATION_DOWN,
     CONTINUATION_UP,
@@ -70,6 +71,23 @@ class EpisodeReplay:
     live_candles: int
 
 
+@dataclass(frozen=True, slots=True)
+class EpisodeFrames:
+    """One source episode's causal frames, built once and replayable by any brain.
+
+    Frame construction is the expensive half of this study and is entirely independent
+    of the brain reading it, so a brain comparison must not rebuild it twice: doing so
+    would also risk the two arms disagreeing for a reason that has nothing to do with
+    the brains.
+    """
+
+    bucket: str
+    source_episode_id: str
+    frames: tuple
+    source_ordinals: tuple[int, ...]
+    tolerances: tuple[Decimal, ...]
+
+
 def _json_default(value):
     if isinstance(value, Decimal):
         return str(value)
@@ -99,7 +117,10 @@ def _fraction(numerator: int, denominator: int) -> dict:
     }
 
 
-def run_episode(episode: ResearchEpisode, config: StudyConfig) -> EpisodeReplay | None:
+def build_episode_frames(
+        episode: ResearchEpisode, config: StudyConfig) -> EpisodeFrames | None:
+    """Build the causal StructuralFrames of one source episode, brain-independent."""
+
     candles = episode.candles
     if len(candles) <= config.history:
         return None
@@ -123,18 +144,46 @@ def run_episode(episode: ResearchEpisode, config: StudyConfig) -> EpisodeReplay 
     frames = structural_frame.observe(snapshot, frontier, locals_by_index=locals_by_index)
     source_episode_id = f"{episode.bucket}-EP{episode.ordinal:03d}"
     source_ordinal_by_day = {item.day: item.source_ordinal for item in episode.sessions}
-    machine = DynamicShadowTrader(episode.bucket, source_episode_id)
-    for position, frame in enumerate(frames):
+    ordinals: list[int] = []
+    tolerances: list[Decimal] = []
+    for frame in frames:
         candle = frontier.candles[frame.index]
         if candle.session_date not in source_ordinal_by_day:
             raise AssertionError("dynamic replay crossed its source episode barrier")
+        ordinals.append(source_ordinal_by_day[candle.session_date])
+        tolerances.append(tol_at(frontier.candles, frame.index, frontier.tol_atr))
+    return EpisodeFrames(
+        bucket=episode.bucket,
+        source_episode_id=source_episode_id,
+        frames=tuple(frames),
+        source_ordinals=tuple(ordinals),
+        tolerances=tuple(tolerances),
+    )
+
+
+def replay_frames(prepared: EpisodeFrames, *, brain: str) -> EpisodeReplay:
+    """Read one prepared source episode with exactly one brain version."""
+
+    machine = DynamicShadowTrader(
+        prepared.bucket, prepared.source_episode_id, brain=brain)
+    last = len(prepared.frames) - 1
+    for position, frame in enumerate(prepared.frames):
         machine.observe_frame(
             frame,
-            source_ordinal=source_ordinal_by_day[candle.session_date],
-            tolerance=tol_at(frontier.candles, frame.index, frontier.tol_atr),
-            source_end=position == len(frames) - 1,
+            source_ordinal=prepared.source_ordinals[position],
+            tolerance=prepared.tolerances[position],
+            source_end=position == last,
         )
-    return EpisodeReplay(episode.bucket, machine, len(frames))
+    return EpisodeReplay(prepared.bucket, machine, len(prepared.frames))
+
+
+def run_episode(
+        episode: ResearchEpisode, config: StudyConfig, *, brain: str,
+        ) -> EpisodeReplay | None:
+    prepared = build_episode_frames(episode, config)
+    if prepared is None:
+        return None
+    return replay_frames(prepared, brain=brain)
 
 
 def _status_population(replays: Sequence[EpisodeReplay]) -> tuple[dict, list]:
@@ -545,13 +594,17 @@ def _gates(buckets: dict[str, dict]) -> dict:
 
 
 def run_study(config: StudyConfig | None = None) -> dict:
+    """Reproduce the frozen V1 audit.  This report is historical evidence: it is pinned
+    to ``BRAIN_V1`` on purpose so that fingerprint ``bf497495e394bb87`` stays
+    reproducible from the current source tree."""
+
     config = config or StudyConfig()
     episodes, source_population = load_research_episodes()
     by_bucket: dict[str, list[EpisodeReplay]] = {TEACH: [], VALIDATE: []}
     skipped = Counter()
     for bucket in (TEACH, VALIDATE):
         for episode in episodes[bucket]:
-            replay = run_episode(episode, config)
+            replay = run_episode(episode, config, brain=BRAIN_V1)
             if replay is None:
                 skipped[bucket] += 1
             else:
