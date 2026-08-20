@@ -1,0 +1,633 @@
+{
+  "buckets": {
+    "teach": {
+      "edge_encounter_population": {
+        "lower": {
+          "accepted_breaks": 938,
+          "bars_inside": {
+            "count": 2117,
+            "max": 8.0,
+            "mean": 1.263108,
+            "median": 1.0,
+            "min": 0.0
+          },
+          "bars_outside": {
+            "count": 2117,
+            "max": 6.0,
+            "mean": 1.47898,
+            "median": 2.0,
+            "min": 0.0
+          },
+          "encounters": 2117,
+          "end_reasons": {
+            "ACCEPTED_BREAK": 938,
+            "CONTROLLING_STRUCTURE_REPLACED": 105,
+            "MIDPOINT_REACHED": 562,
+            "MOVED_INSIDE": 173,
+            "OPPOSITE_EDGE_REACHED": 246,
+            "RECLAIM_HELD_INSIDE": 93
+          },
+          "max_inside_excursion_points": {
+            "count": 2117,
+            "max": 922.34425,
+            "mean": 51.679642,
+            "median": 42.91375,
+            "min": 0.0
+          },
+          "max_outside_excursion_points": {
+            "count": 2117,
+            "max": 606.534,
+            "mean": 55.247403,
+            "median": 39.69125,
+            "min": 0.0
+          },
+          "midpoint_reaches": 905,
+          "next_close_inside_or_at": 1011,
+          "next_reference_reaches": 859,
+          "opposite_edge_reaches": 265,
+          "origin_close_at": 993,
+          "origin_close_inside": 993,
+          "origin_close_outside": 1124,
+          "reclaims": 628,
+          "repeated_encounters": 684,
+          "retests": 253,
+          "touches": 2047
+        },
+        "upper": {
+          "accepted_breaks": 976,
+          "bars_inside": {
+            "count": 2133,
+            "max": 6.0,
+            "mean": 1.201125,
+            "median": 1.0,
+            "min": 0.0
+          },
+          "bars_outside": {
+            "count": 2133,
+            "max": 8.0,
+            "mean": 1.488514,
+            "median": 2.0,
+            "min": 0.0
+          },
+          "encounters": 2133,
+          "end_reasons": {
+            "ACCEPTED_BREAK": 976,
+            "CONTROLLING_STRUCTURE_REPLACED": 97,
+            "MIDPOINT_REACHED": 607,
+            "MOVED_INSIDE": 129,
+            "OPPOSITE_EDGE_REACHED": 244,
+            "RECLAIM_HELD_INSIDE": 78,
+            "SOURCE_EPISODE_BOUNDARY": 2
+          },
+          "max_inside_excursion_points": {
+            "count": 2133,
+            "max": 575.2755,
+            "mean": 48.816442,
+            "median": 41.7575,
+            "min": 0.0
+          },
+          "max_outside_excursion_points": {
+            "count": 2133,
+            "max": 1324.40825,
+            "mean": 58.1305,
+            "median": 38.26,
+            "min": 0.0
+          },
+          "midpoint_reaches": 932,
+          "next_close_inside_or_at": 996,
+          "next_reference_reaches": 810,
+          "opposite_edge_reaches": 253,
+          "origin_close_at": 991,
+          "origin_close_inside": 991,
+          "origin_close_outside": 1142,
+          "reclaims": 584,
+          "repeated_encounters": 700,
+          "retests": 211,
+          "touches": 2056
+        }
+      },
+      "local_research_sidecar": {
+        "absent": 3910,
+        "present": 340,
+        "relations_to_micro": {
+          "CONTAINS_MICRO": 75,
+          "DISTINCT_FROM_MICRO": 48,
+          "INSIDE_MICRO": 5,
+          "NO_PRODUCTION_MICRO": 212
+        }
+      },
+      "micro_context": {
+        "ABSENT": {
+          "accepted_breaks": 1707,
+          "encounters": 3865,
+          "midpoint_reaches": 1734,
+          "reclaims": 1117
+        },
+        "BREAK_DOWN": {
+          "accepted_breaks": 3,
+          "encounters": 3,
+          "midpoint_reaches": 0,
+          "reclaims": 1
+        },
+        "BREAK_UP": {
+          "accepted_breaks": 5,
+          "encounters": 6,
+          "midpoint_reaches": 0,
+          "reclaims": 1
+        },
+        "COLLAPSED": {
+          "accepted_breaks": 82,
+          "encounters": 134,
+          "midpoint_reaches": 26,
+          "reclaims": 28
+        },
+        "CONFIRMED": {
+          "accepted_breaks": 37,
+          "encounters": 54,
+          "midpoint_reaches": 7,
+          "reclaims": 15
+        },
+        "CREATED": {
+          "accepted_breaks": 24,
+          "encounters": 66,
+          "midpoint_reaches": 26,
+          "reclaims": 14
+        },
+        "FORMING": {
+          "accepted_breaks": 56,
+          "encounters": 122,
+          "midpoint_reaches": 44,
+          "reclaims": 36
+        }
+      },
+      "null_comparisons": {
+        "LOWER_INTERIOR_QUARTER": {
+          "encounters": 2555,
+          "next_close_inside_structure": 1608,
+          "next_close_on_interior_side": 1512,
+          "origin_close_on_interior_side": 1661
+        },
+        "MIDPOINT": {
+          "encounters": 2617,
+          "next_close_inside_structure": 1696,
+          "next_close_on_interior_side": 1304,
+          "origin_close_on_interior_side": 1279
+        },
+        "UPPER_INTERIOR_QUARTER": {
+          "encounters": 2604,
+          "next_close_inside_structure": 1661,
+          "next_close_on_interior_side": 1594,
+          "origin_close_on_interior_side": 1697
+        }
+      },
+      "release_subpopulation": {
+        "end_reasons": {
+          "GIVEBACK": 2492,
+          "SOURCE_EPISODE_BOUNDARY": 112
+        },
+        "episodes": 2604,
+        "givebacks": 2492,
+        "held_bars": {
+          "count": 2604,
+          "max": 6925.0,
+          "mean": 130.920123,
+          "median": 3.0,
+          "min": 0.0
+        },
+        "linked_to_encounter": 1949,
+        "scales": {
+          "INNER": 150,
+          "MICRO": 61,
+          "OUTER": 2393
+        },
+        "simultaneous_release_candles": 50,
+        "simultaneous_releases_preserved": 113
+      },
+      "sequence_counts": {
+        "lower_encounter_midpoint_upper_encounter": 579,
+        "outside_close_reclaim": 1212,
+        "reclaim_retest_remain_inside": 110,
+        "touch_close_inside_next_inside": 840,
+        "touch_outside_close_accepted_break": 1914
+      },
+      "sequence_subsequent_transitions": {
+        "lower_encounter_midpoint_upper_encounter": {
+          "ACCEPTED_BREAK": 274,
+          "CONTROLLING_STRUCTURE_REPLACED": 22,
+          "MIDPOINT_REACHED": 180,
+          "MOVED_INSIDE": 14,
+          "OPPOSITE_EDGE_REACHED": 80,
+          "RECLAIM_HELD_INSIDE": 9
+        },
+        "outside_close_reclaim": {
+          "ACCEPTED_BREAK": 161,
+          "CONTROLLING_STRUCTURE_REPLACED": 29,
+          "MIDPOINT_REACHED": 622,
+          "OPPOSITE_EDGE_REACHED": 229,
+          "RECLAIM_HELD_INSIDE": 171
+        },
+        "reclaim_retest_remain_inside": {
+          "RECLAIM_HELD_INSIDE": 110
+        },
+        "touch_close_inside_next_inside": {
+          "ACCEPTED_BREAK": 61,
+          "CONTROLLING_STRUCTURE_REPLACED": 6,
+          "MIDPOINT_REACHED": 391,
+          "MOVED_INSIDE": 191,
+          "OPPOSITE_EDGE_REACHED": 183,
+          "RECLAIM_HELD_INSIDE": 8
+        },
+        "touch_outside_close_accepted_break": {
+          "ACCEPTED_BREAK": 1914
+        }
+      },
+      "structure_population": {
+        "accepted_breaks": 1914,
+        "current_bars": {
+          "count": 2119,
+          "max": 167.0,
+          "mean": 6.925437,
+          "median": 4.0,
+          "min": 1.0
+        },
+        "end_reasons": {
+          "ACCEPTED_BREAK": 1914,
+          "CONTROLLING_STRUCTURE_REPLACED": 202,
+          "SOURCE_EPISODE_BOUNDARY": 3
+        },
+        "episodes": 2119,
+        "finalisations": 1914,
+        "inside_bars": {
+          "count": 2119,
+          "max": 166.0,
+          "mean": 4.948089,
+          "median": 3.0,
+          "min": 0.0
+        },
+        "kinds": {
+          "cluster": 2095,
+          "range": 24
+        },
+        "leaving_observations": 1346,
+        "lifetime_bars": {
+          "count": 2119,
+          "max": 168.0,
+          "mean": 7.924021,
+          "median": 5.0,
+          "min": 1.0
+        },
+        "opposite_edge_traversals": 518,
+        "reentries": 887,
+        "revisit_episodes": 1690,
+        "revisit_observations": 2127,
+        "visits": 2119
+      }
+    },
+    "validate": {
+      "edge_encounter_population": {
+        "lower": {
+          "accepted_breaks": 134,
+          "bars_inside": {
+            "count": 278,
+            "max": 5.0,
+            "mean": 1.183453,
+            "median": 1.0,
+            "min": 0.0
+          },
+          "bars_outside": {
+            "count": 278,
+            "max": 6.0,
+            "mean": 1.539568,
+            "median": 2.0,
+            "min": 0.0
+          },
+          "encounters": 278,
+          "end_reasons": {
+            "ACCEPTED_BREAK": 134,
+            "CONTROLLING_STRUCTURE_REPLACED": 10,
+            "MIDPOINT_REACHED": 78,
+            "MOVED_INSIDE": 15,
+            "OPPOSITE_EDGE_REACHED": 34,
+            "RECLAIM_HELD_INSIDE": 6,
+            "SOURCE_EPISODE_BOUNDARY": 1
+          },
+          "max_inside_excursion_points": {
+            "count": 278,
+            "max": 1095.52425,
+            "mean": 58.951788,
+            "median": 46.347125,
+            "min": 0.0
+          },
+          "max_outside_excursion_points": {
+            "count": 278,
+            "max": 1882.783,
+            "mean": 77.86196,
+            "median": 47.87025,
+            "min": 0.0
+          },
+          "midpoint_reaches": 124,
+          "next_close_inside_or_at": 124,
+          "next_reference_reaches": 92,
+          "opposite_edge_reaches": 36,
+          "origin_close_at": 136,
+          "origin_close_inside": 136,
+          "origin_close_outside": 142,
+          "reclaims": 80,
+          "repeated_encounters": 92,
+          "retests": 30,
+          "touches": 271
+        },
+        "upper": {
+          "accepted_breaks": 114,
+          "bars_inside": {
+            "count": 269,
+            "max": 5.0,
+            "mean": 1.260223,
+            "median": 1.0,
+            "min": 0.0
+          },
+          "bars_outside": {
+            "count": 269,
+            "max": 6.0,
+            "mean": 1.457249,
+            "median": 2.0,
+            "min": 0.0
+          },
+          "encounters": 269,
+          "end_reasons": {
+            "ACCEPTED_BREAK": 114,
+            "CONTROLLING_STRUCTURE_REPLACED": 13,
+            "MIDPOINT_REACHED": 81,
+            "MOVED_INSIDE": 15,
+            "OPPOSITE_EDGE_REACHED": 41,
+            "RECLAIM_HELD_INSIDE": 5
+          },
+          "max_inside_excursion_points": {
+            "count": 269,
+            "max": 216.583,
+            "mean": 56.406568,
+            "median": 48.274,
+            "min": 0.0
+          },
+          "max_outside_excursion_points": {
+            "count": 269,
+            "max": 1108.32175,
+            "mean": 71.873986,
+            "median": 48.0575,
+            "min": 0.0
+          },
+          "midpoint_reaches": 131,
+          "next_close_inside_or_at": 128,
+          "next_reference_reaches": 91,
+          "opposite_edge_reaches": 44,
+          "origin_close_at": 130,
+          "origin_close_inside": 130,
+          "origin_close_outside": 139,
+          "reclaims": 77,
+          "repeated_encounters": 78,
+          "retests": 24,
+          "touches": 260
+        }
+      },
+      "local_research_sidecar": {
+        "absent": 506,
+        "present": 41,
+        "relations_to_micro": {
+          "CONTAINS_MICRO": 10,
+          "DISTINCT_FROM_MICRO": 6,
+          "NO_PRODUCTION_MICRO": 25
+        }
+      },
+      "micro_context": {
+        "ABSENT": {
+          "accepted_breaks": 218,
+          "encounters": 492,
+          "midpoint_reaches": 239,
+          "reclaims": 148
+        },
+        "BREAK_DOWN": {
+          "accepted_breaks": 0,
+          "encounters": 1,
+          "midpoint_reaches": 0,
+          "reclaims": 0
+        },
+        "COLLAPSED": {
+          "accepted_breaks": 8,
+          "encounters": 15,
+          "midpoint_reaches": 6,
+          "reclaims": 3
+        },
+        "CONFIRMED": {
+          "accepted_breaks": 8,
+          "encounters": 10,
+          "midpoint_reaches": 1,
+          "reclaims": 3
+        },
+        "CREATED": {
+          "accepted_breaks": 4,
+          "encounters": 9,
+          "midpoint_reaches": 4,
+          "reclaims": 0
+        },
+        "FORMING": {
+          "accepted_breaks": 10,
+          "encounters": 20,
+          "midpoint_reaches": 5,
+          "reclaims": 3
+        }
+      },
+      "null_comparisons": {
+        "LOWER_INTERIOR_QUARTER": {
+          "encounters": 349,
+          "next_close_inside_structure": 219,
+          "next_close_on_interior_side": 211,
+          "origin_close_on_interior_side": 241
+        },
+        "MIDPOINT": {
+          "encounters": 329,
+          "next_close_inside_structure": 215,
+          "next_close_on_interior_side": 160,
+          "origin_close_on_interior_side": 151
+        },
+        "UPPER_INTERIOR_QUARTER": {
+          "encounters": 343,
+          "next_close_inside_structure": 217,
+          "next_close_on_interior_side": 215,
+          "origin_close_on_interior_side": 224
+        }
+      },
+      "release_subpopulation": {
+        "end_reasons": {
+          "GIVEBACK": 307,
+          "SOURCE_EPISODE_BOUNDARY": 28
+        },
+        "episodes": 335,
+        "givebacks": 307,
+        "held_bars": {
+          "count": 335,
+          "max": 972.0,
+          "mean": 55.895522,
+          "median": 3.0,
+          "min": 0.0
+        },
+        "linked_to_encounter": 252,
+        "scales": {
+          "INNER": 8,
+          "MICRO": 9,
+          "OUTER": 318
+        },
+        "simultaneous_release_candles": 4,
+        "simultaneous_releases_preserved": 8
+      },
+      "sequence_counts": {
+        "lower_encounter_midpoint_upper_encounter": 79,
+        "outside_close_reclaim": 157,
+        "reclaim_retest_remain_inside": 6,
+        "touch_close_inside_next_inside": 109,
+        "touch_outside_close_accepted_break": 248
+      },
+      "sequence_subsequent_transitions": {
+        "lower_encounter_midpoint_upper_encounter": {
+          "ACCEPTED_BREAK": 35,
+          "CONTROLLING_STRUCTURE_REPLACED": 4,
+          "MIDPOINT_REACHED": 22,
+          "MOVED_INSIDE": 3,
+          "OPPOSITE_EDGE_REACHED": 13,
+          "RECLAIM_HELD_INSIDE": 2
+        },
+        "outside_close_reclaim": {
+          "ACCEPTED_BREAK": 20,
+          "CONTROLLING_STRUCTURE_REPLACED": 4,
+          "MIDPOINT_REACHED": 84,
+          "OPPOSITE_EDGE_REACHED": 38,
+          "RECLAIM_HELD_INSIDE": 11
+        },
+        "reclaim_retest_remain_inside": {
+          "RECLAIM_HELD_INSIDE": 6
+        },
+        "touch_close_inside_next_inside": {
+          "ACCEPTED_BREAK": 7,
+          "MIDPOINT_REACHED": 54,
+          "MOVED_INSIDE": 22,
+          "OPPOSITE_EDGE_REACHED": 26
+        },
+        "touch_outside_close_accepted_break": {
+          "ACCEPTED_BREAK": 248
+        }
+      },
+      "structure_population": {
+        "accepted_breaks": 248,
+        "current_bars": {
+          "count": 273,
+          "max": 82.0,
+          "mean": 6.882784,
+          "median": 5.0,
+          "min": 2.0
+        },
+        "end_reasons": {
+          "ACCEPTED_BREAK": 248,
+          "CONTROLLING_STRUCTURE_REPLACED": 23,
+          "SOURCE_EPISODE_BOUNDARY": 2
+        },
+        "episodes": 273,
+        "finalisations": 248,
+        "inside_bars": {
+          "count": 273,
+          "max": 81.0,
+          "mean": 4.871795,
+          "median": 3.0,
+          "min": 0.0
+        },
+        "kinds": {
+          "cluster": 273
+        },
+        "leaving_observations": 176,
+        "lifetime_bars": {
+          "count": 273,
+          "max": 83.0,
+          "mean": 7.875458,
+          "median": 6.0,
+          "min": 3.0
+        },
+        "opposite_edge_traversals": 80,
+        "reentries": 110,
+        "revisit_episodes": 193,
+        "revisit_observations": 257,
+        "visits": 273
+      }
+    }
+  },
+  "config": {
+    "history": 400
+  },
+  "consumption": {
+    "teach": {
+      "history_candles_consumed": 4400,
+      "live_candles_observed": 36250,
+      "source_episodes_available": 12,
+      "source_episodes_processed": 11,
+      "source_episodes_shorter_than_or_equal_to_history": 1
+    },
+    "validate": {
+      "history_candles_consumed": 2000,
+      "live_candles_observed": 5275,
+      "source_episodes_available": 5,
+      "source_episodes_processed": 5,
+      "source_episodes_shorter_than_or_equal_to_history": 0
+    }
+  },
+  "decision_gates": {
+    "LOCAL_PUBLICATION": {
+      "answer": "NO",
+      "basis": "LOCAL remains an optional research sidecar"
+    },
+    "R1_STRUCTURAL_RESPONSE_EXISTS": {
+      "answer": "YES",
+      "basis": "natural-lifecycle structure and edge responses were observed in both buckets"
+    },
+    "R2_EDGE_RESPONSE_EXISTS": {
+      "answer": "INCONCLUSIVE",
+      "basis": "interior pseudo-levels are deterministic but not topologically equivalent to boundaries"
+    },
+    "R3_RESPONSE_IS_REPEATABLE": {
+      "answer": "YES",
+      "basis": "shared non-zero sequence families: 5"
+    },
+    "R4_MICRO_ADDS_INFORMATION": {
+      "answer": "INCONCLUSIVE",
+      "basis": "Micro strata are descriptive and no untuned separation criterion was introduced"
+    },
+    "R5_READY_FOR_HYPOTHESIS_BRAIN": {
+      "answer": "NO",
+      "basis": "R2 is not supported; R5 requires R1-R3"
+    }
+  },
+  "fingerprint": "7d373af2a9e1389e",
+  "fixed_horizon_role": "SECONDARY_NULL_DESCRIPTION_ONLY",
+  "holdout_price_sessions_converted": 0,
+  "local_published": false,
+  "origin_policy": "FROZEN_AT_CAUSAL_CANDLE_FUTURE_APPEND_ONLY",
+  "primary_horizon": "NATURAL_STRUCTURAL_LIFECYCLE",
+  "source_population": {
+    "buckets": {
+      "teach": {
+        "eligible_episodes": 12,
+        "m5_candles": 40725,
+        "replayable_sessions": 543,
+        "source_sessions_assigned": 548
+      },
+      "validate": {
+        "eligible_episodes": 5,
+        "m5_candles": 7275,
+        "replayable_sessions": 97,
+        "source_sessions_assigned": 98
+      }
+    },
+    "excluded_price_sessions_converted": 0,
+    "price_sessions_replayed": 640,
+    "price_sessions_requested": 641,
+    "source_sessions_indexed": 751
+  },
+  "study": "STRUCTURE_LIFECYCLE_RESPONSE_V1",
+  "validate_output": "AGGREGATE_ONLY"
+}

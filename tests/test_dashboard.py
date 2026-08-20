@@ -305,3 +305,68 @@ def test_the_trader_panel_answers_the_nine_questions(built):
 def test_the_scenarios_are_the_production_ones(built):
     assert set(built["scenarios"]) == set(OB.SCENARIOS)
     assert set(built["scenario_names"]) == set(OB.SCENARIOS)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# STRUCTURAL OPPORTUNITY GEOMETRY — the panel copies it, it does not compute it
+# ═════════════════════════════════════════════════════════════════════════════
+def test_every_frame_carries_the_structural_geometry(built):
+    frames = built["frames"]
+    withgeo = [f for f in frames if f["geo"] is not None]
+
+    assert len(withgeo) == len(frames)
+    for f in withgeo:
+        geo = f["geo"]
+        assert set(geo) >= {"controlling", "price", "internal", "external",
+                            "movement", "local", "events"}
+        assert geo["internal"]["state"] in {
+            "INTERNAL_GEOMETRY_AVAILABLE", "INTERNAL_GEOMETRY_CONSUMED",
+            "AT_EDGE_DECISION", "OUTSIDE_REFERENCE_AVAILABLE", "NO_MAPPED_SPACE",
+            "UNKNOWN"}
+
+
+def test_the_geometry_json_copies_the_production_geometry(session, built):
+    frames = OB.frames(session.snapshot, list(session.history), list(session.live),
+                       execution=S.contract_for(session, True))
+    for produced, rendered in zip(frames, built["frames"], strict=True):
+        geometry = produced.structure_geometry
+        assert geometry is not None
+        current = rendered["geo"]["controlling"]
+        if geometry.controlling is None:
+            assert current is None
+            continue
+        assert current["id"] == geometry.controlling.structure_id
+        assert current["kind"] == geometry.controlling.kind
+        assert current["width"] == float(geometry.controlling.width_points)
+        assert current["mid"] == float(geometry.controlling.midpoint)
+
+
+def test_the_geometry_panel_preserves_the_real_kind_and_never_says_broad_range(built):
+    kinds = {f["geo"]["controlling"]["kind"] for f in built["frames"]
+             if f["geo"]["controlling"] is not None}
+
+    assert kinds, "the block produced no controlling structure"
+    assert kinds <= {"cluster", "range"}
+    js = (STATIC / "app.js").read_text(encoding="utf-8").lower()
+    assert "broad range" not in js
+    assert "broad cluster" not in js
+
+
+def test_the_browser_code_does_not_recompute_the_geometry():
+    """The panel renders `f.geo`. It must not derive a midpoint, width or room itself."""
+    js = (STATIC / "app.js").read_text(encoding="utf-8")
+    js = re.sub(r"/\*.*?\*/", "", js, flags=re.S)
+    banned = [
+        (r"\(\s*C\.lo\s*\+\s*C\.hi\s*\)", "recomputing the controlling midpoint"),
+        (r"C\.hi\s*-\s*C\.lo", "recomputing the controlling width"),
+        (r"geo\.[a-z_]+\s*[-+*/]\s*geo\.", "deriving one geometry fact from another"),
+    ]
+    for pattern, why in banned:
+        assert not re.search(pattern, js), f"app.js recomputes geometry: {why}"
+
+
+def test_the_geometry_layer_carries_no_execution_vocabulary(built):
+    encoded = json.dumps([f["geo"] for f in built["frames"]])
+    for word in ("order", "size", "lots", "stop_loss", "target", "score",
+                 "probability", "confidence", "rank"):
+        assert word not in encoded.lower(), f"the geometry payload mentions {word!r}"

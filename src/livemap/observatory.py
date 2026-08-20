@@ -50,7 +50,10 @@ from decimal import Decimal
 from typing import Sequence
 
 from src.boxes.frontier import Frontier
+from src.boxes.structure import tol_at
 from src.livemap.interpreter import Interpreter
+from src.livemap import frame as SFR
+from src.livemap import geometry as GEO
 from src.livemap import boundary as BD
 from src.livemap import participation as PE
 from src.livemap import position as POS
@@ -144,6 +147,10 @@ class Frame:
     events: tuple[str, ...] = ()
     contract: str = RE.NoExecution.name
     contract_validated: bool = False
+    #: The structural opportunity geometry for this candle — what the controlling
+    #: structure is, how big it is, and how much room is left inside and outside it.
+    #: Read-only, like everything else here; the panel renders it, nothing decides on it.
+    structure_geometry: GEO.StructureGeometry | None = None
 
     # ── convenience reads, so a renderer never re-derives ───────────────────
     @property
@@ -372,6 +379,16 @@ def frames_of(snapshot, f: Frontier, track: dict[int, Geometry], *,
     interp = Interpreter(snapshot, f)
     mapstates = {s.index: s for s in interp.states()}
 
+    # §K the structural opportunity geometry, built from the same StructuralFrames the
+    # research replay reads. Built here rather than in the page so the dashboard and the
+    # study cannot end up describing the same candle two different ways.
+    observer = GEO.GeometryObserver()
+    geometries: dict[int, GEO.StructureGeometry] = {}
+    for structural in SFR.observe(snapshot, f):
+        geometries[structural.index] = observer.observe(
+            structural,
+            tolerance=tol_at(f.candles, structural.index, f.tol_atr))
+
     out: list[Frame] = []
     previous: PE.ParticipationContext | None = None
     candles = {r.index: c for r, c in zip(f.readings, f.candles[-len(f.readings):])} \
@@ -395,7 +412,8 @@ def frames_of(snapshot, f: Frontier, track: dict[int, Geometry], *,
             geometry=track.get(d.index, Geometry(index=d.index)),
             context=ctx, decision=d, state=st, request=req,
             why=why(d, st), reference=path, events=events(ctx, d, st, previous),
-            contract=execution.name, contract_validated=bool(execution.validated)))
+            contract=execution.name, contract_validated=bool(execution.validated),
+            structure_geometry=geometries.get(d.index)))
         previous = ctx
     return out
 

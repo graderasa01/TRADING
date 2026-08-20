@@ -1,0 +1,53 @@
+{
+  "structural_frame": {
+    "status": "implemented_and_fresh_world_certified",
+    "module": "src/livemap/frame.py",
+    "removed_fields": [
+      "local_invalidation",
+      "broken_edge",
+      "release_held",
+      "approached_edge"
+    ],
+    "factual_fields": [
+      "local_low",
+      "local_high",
+      "distance_to_local_low",
+      "distance_to_local_high",
+      "approached_edges",
+      "broken_edges",
+      "broken_releases",
+      "active_release"
+    ],
+    "forbidden_surface_imports": false,
+    "local_publication": "research_input_only",
+    "shadow_component_reached": false
+  },
+  "fresh_world": {
+    "result": "PASS",
+    "supersedes_bucket_compressed_result": true,
+    "source_contiguous": true,
+    "cuts": 287,
+    "teach_cuts": 142,
+    "validate_cuts": 145,
+    "event_types_covered_per_bucket": 26,
+    "event_occurrences_sampled": 154,
+    "teach_mismatch_cuts": 0,
+    "validate_mismatch_cuts": 0,
+    "future_leaks": 0,
+    "mutable_reference_leaks": 0,
+    "identity_drift": 0,
+    "bugs": 0,
+    "fingerprint": "f9d1e3d3cafb5470"
+  },
+  "gates": {
+    "A": "YES",
+    "B": "YES",
+    "C_case_exists": "YES",
+    "C_production_change_justified": "NO",
+    "D": "NO",
+    "E": "YES",
+    "F": "YES",
+    "G": "YES - READY, NOT EXECUTED",
+    "H": "NOT REACHED"
+  }
+}
