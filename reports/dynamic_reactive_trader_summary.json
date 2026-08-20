@@ -1,0 +1,961 @@
+{
+  "broker_or_live_execution": false,
+  "buckets": {
+    "teach": {
+      "closed_candles_observed": 36250,
+      "counter_evidence": {
+        "conflict_wait_candles": 0,
+        "continuation_entries_on_acceptance_candle": 0,
+        "entries_after_midpoint": 0,
+        "entries_at_reached_reference": 0,
+        "entries_on_any_release_candle": 3,
+        "entries_on_hypothesis_birth_candle": 0,
+        "largest_hypothesis_family_share": 0.298821,
+        "no_active_hypothesis_candles": 14485,
+        "valid_but_wait_candles": 5816
+      },
+      "descriptive_rates": {
+        "falsified_positions_per_closed_position": {
+          "denominator": 1190,
+          "numerator": 435,
+          "rate": 0.365546
+        },
+        "hypotheses_created_per_candle": {
+          "denominator": 36250,
+          "numerator": 5515,
+          "rate": 0.152138
+        },
+        "landmark_positions_per_closed_position": {
+          "denominator": 1190,
+          "numerator": 856,
+          "rate": 0.719328
+        },
+        "shadow_entries_per_candle": {
+          "denominator": 36250,
+          "numerator": 1190,
+          "rate": 0.032828
+        },
+        "side_flips_per_closed_position": {
+          "denominator": 1190,
+          "numerator": 561,
+          "rate": 0.471429
+        },
+        "valid_but_wait_per_candle": {
+          "denominator": 36250,
+          "numerator": 5816,
+          "rate": 0.160441
+        }
+      },
+      "false_switch": {
+        "exit_followed_by_no_opposite_hypothesis": 687,
+        "exit_with_opposite_hypothesis_already_visible": 650,
+        "independent_reverse_entries_on_later_candle": 561,
+        "raw_position_side_flips": 561,
+        "same_candle_reverse_entries": 0
+      },
+      "hypothesis_population": {
+        "by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": 197,
+          "FAILED_UP_RELEASE_RETURN_INSIDE": 232,
+          "OUTSIDE_CONTINUATION_DOWN": 895,
+          "OUTSIDE_CONTINUATION_UP": 921,
+          "ROTATION_FROM_LOWER_AREA": 1622,
+          "ROTATION_FROM_UPPER_AREA": 1648
+        },
+        "created": 5515,
+        "ever_reached_status": {
+          "ACTIVE": 2775,
+          "COMPLETED": 2966,
+          "EXPIRED": 4,
+          "FALSIFIED": 2545,
+          "OBSERVING": 3699,
+          "STRESSED": 1168
+        },
+        "final_status": {
+          "COMPLETED": 2966,
+          "EXPIRED": 4,
+          "FALSIFIED": 2545
+        },
+        "lifetime_bars": {
+          "count": 5515,
+          "max": 105.0,
+          "mean": 5.240617,
+          "median": 3.0,
+          "min": 2.0
+        }
+      },
+      "micro_context_at_entry": {
+        "ABSENT": 1128,
+        "COLLAPSED": 8,
+        "CONFIRMED": 5,
+        "FINALIZED": 1,
+        "FORMING": 48
+      },
+      "participation_population": {
+        "actions": {
+          "ENTER_LONG_SHADOW": 578,
+          "ENTER_SHORT_SHADOW": 612,
+          "EXIT": 1190,
+          "HOLD": 5956,
+          "NO_ACTION": 14485,
+          "WAIT": 13429
+        },
+        "continuation_entries_on_acceptance_candle": 0,
+        "entries_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": 0,
+          "FAILED_UP_RELEASE_RETURN_INSIDE": 0,
+          "OUTSIDE_CONTINUATION_DOWN": 329,
+          "OUTSIDE_CONTINUATION_UP": 289,
+          "ROTATION_FROM_LOWER_AREA": 289,
+          "ROTATION_FROM_UPPER_AREA": 283
+        },
+        "entries_on_any_release_candle": 3,
+        "entries_on_hypothesis_birth_candle": 0,
+        "exit_reasons": {
+          "ACCEPTED_RETURN_INSIDE_RELEASED_STRUCTURE": 113,
+          "ACCEPTED_STRUCTURAL_FAILURE": 284,
+          "CONTROLLING_STRUCTURE_CHANGED": 38,
+          "MAPPED_REFERENCE_REACHED": 272,
+          "NEW_CONTROLLING_STRUCTURE_ESTABLISHED": 233,
+          "SOURCE_EPISODE_BOUNDARY": 1,
+          "STRUCTURAL_OBJECTIVE_REACHED": 249
+        },
+        "exits": 1190,
+        "holds": 5956,
+        "hypotheses_without_participation": 4325,
+        "long_entries": 578,
+        "participation_states": {
+          "HYPOTHESIS_OBSERVING": 7613,
+          "HYPOTHESIS_VALID_BUT_NO_PARTICIPATION": 5816,
+          "NO_ACTIVE_HYPOTHESIS": 14485,
+          "PARTICIPATION_AVAILABLE": 1190,
+          "POSITION_ACTIVE": 7146
+        },
+        "shadow_entries": 1190,
+        "short_entries": 612,
+        "waits": 13429
+      },
+      "source_episode_spread": {
+        "entries_per_source_episode": {
+          "count": 11,
+          "max": 249.0,
+          "mean": 108.181818,
+          "median": 80.0,
+          "min": 8.0
+        },
+        "landmark_positions_per_source_episode": {
+          "count": 11,
+          "max": 186.0,
+          "mean": 77.818182,
+          "median": 57.0,
+          "min": 6.0
+        },
+        "largest_source_episode_entry_share": 0.209244,
+        "source_episodes": 11,
+        "source_episodes_with_entry": 11,
+        "source_episodes_with_landmark_participation": 11,
+        "waits_per_source_episode": {
+          "count": 11,
+          "max": 2879.0,
+          "mean": 1220.818182,
+          "median": 891.0,
+          "min": 58.0
+        }
+      },
+      "source_episodes_processed": 11,
+      "stay_with_move": {
+        "bars_position_remained_active": {
+          "count": 1190,
+          "max": 83.0,
+          "mean": 7.005042,
+          "median": 5.0,
+          "min": 2.0
+        },
+        "closed_shadow_positions": 1190,
+        "distance_entry_to_falsification": {
+          "count": 435,
+          "max": 570.05,
+          "mean": 69.623218,
+          "median": 52.55,
+          "min": 3.05
+        },
+        "exit_after_falsification_violations": 0,
+        "exited_on_first_causal_falsification": 435,
+        "falsified_position_bars_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "FAILED_UP_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "OUTSIDE_CONTINUATION_DOWN": {
+            "count": 57,
+            "max": 25.0,
+            "mean": 6.298246,
+            "median": 5.0,
+            "min": 2.0
+          },
+          "OUTSIDE_CONTINUATION_UP": {
+            "count": 56,
+            "max": 15.0,
+            "mean": 5.875,
+            "median": 5.0,
+            "min": 2.0
+          },
+          "ROTATION_FROM_LOWER_AREA": {
+            "count": 164,
+            "max": 39.0,
+            "mean": 6.506098,
+            "median": 5.0,
+            "min": 3.0
+          },
+          "ROTATION_FROM_UPPER_AREA": {
+            "count": 158,
+            "max": 57.0,
+            "mean": 6.924051,
+            "median": 4.0,
+            "min": 3.0
+          }
+        },
+        "landmarks_reached": {
+          "BROAD_MIDPOINT_REACHED": 312,
+          "NEXT_STRUCTURAL_REFERENCE_REACHED": 526,
+          "OPPOSITE_BROAD_EDGE_REACHED": 248,
+          "STRUCTURAL_TRANSITION_REACHED": 356
+        },
+        "path_participation_fraction": {
+          "count": 1190,
+          "max": 1.0,
+          "mean": 0.49897,
+          "median": 0.52012,
+          "min": 0.0
+        },
+        "positions_falsified": 435,
+        "positions_reaching_structural_landmark": 856,
+        "structural_path_available_at_entry": {
+          "count": 1190,
+          "max": 1157.742,
+          "mean": 89.948993,
+          "median": 58.031,
+          "min": 8.447
+        },
+        "structural_path_traversed_while_valid": {
+          "count": 1190,
+          "max": 560.35,
+          "mean": 36.09674,
+          "median": 25.505,
+          "min": 0.0
+        }
+      },
+      "timing": {
+        "entries": 1190,
+        "entries_with_broad_midpoint_applicable": 571,
+        "hypothesis_birth_bars_from_movement_origin": {
+          "count": 1190,
+          "max": 54.0,
+          "mean": 0.889076,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "invalidation_distance_atr_at_entry": {
+          "count": 1190,
+          "max": 8.829269,
+          "mean": 0.797788,
+          "median": 0.49368,
+          "min": 0.000149
+        },
+        "invalidation_distance_atr_at_entry_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "FAILED_UP_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "OUTSIDE_CONTINUATION_DOWN": {
+            "count": 329,
+            "max": 7.836844,
+            "mean": 1.218887,
+            "median": 1.007899,
+            "min": 0.255269
+          },
+          "OUTSIDE_CONTINUATION_UP": {
+            "count": 289,
+            "max": 8.829269,
+            "mean": 1.323306,
+            "median": 1.048154,
+            "min": 0.254241
+          },
+          "ROTATION_FROM_LOWER_AREA": {
+            "count": 289,
+            "max": 1.61888,
+            "mean": 0.295836,
+            "median": 0.25159,
+            "min": 0.000149
+          },
+          "ROTATION_FROM_UPPER_AREA": {
+            "count": 283,
+            "max": 1.842929,
+            "mean": 0.284176,
+            "median": 0.245846,
+            "min": 0.000928
+          }
+        },
+        "invalidation_distance_points_at_entry": {
+          "count": 1190,
+          "max": 573.56,
+          "mean": 44.312576,
+          "median": 24.869,
+          "min": 0.0075
+        },
+        "invalidation_distance_points_at_entry_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "FAILED_UP_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "OUTSIDE_CONTINUATION_DOWN": {
+            "count": 329,
+            "max": 451.584,
+            "mean": 68.419521,
+            "median": 52.49225,
+            "min": 7.201
+          },
+          "OUTSIDE_CONTINUATION_UP": {
+            "count": 289,
+            "max": 573.56,
+            "mean": 76.913666,
+            "median": 52.7185,
+            "min": 8.92425
+          },
+          "ROTATION_FROM_LOWER_AREA": {
+            "count": 289,
+            "max": 88.148,
+            "mean": 14.338775,
+            "median": 12.80875,
+            "min": 0.0075
+          },
+          "ROTATION_FROM_UPPER_AREA": {
+            "count": 283,
+            "max": 55.345,
+            "mean": 13.604198,
+            "median": 11.59475,
+            "min": 0.045
+          }
+        },
+        "midpoint_already_crossed_before_entry": 0,
+        "movement_consumed_atr_at_entry": {
+          "count": 1190,
+          "max": 8.829269,
+          "mean": 0.797477,
+          "median": 0.49368,
+          "min": 0.0
+        },
+        "movement_consumed_points_at_entry": {
+          "count": 1190,
+          "max": 573.56,
+          "mean": 44.301784,
+          "median": 24.869,
+          "min": 0.0
+        },
+        "next_reference_already_reached_before_entry": 0,
+        "participation_bars_after_hypothesis_birth": {
+          "count": 1190,
+          "max": 26.0,
+          "mean": 1.944538,
+          "median": 1.0,
+          "min": 1.0
+        },
+        "structural_room_atr_at_entry": {
+          "count": 1190,
+          "max": 20.111035,
+          "mean": 1.685575,
+          "median": 1.16855,
+          "min": 0.250082
+        },
+        "structural_room_points_at_entry": {
+          "count": 1190,
+          "max": 1157.742,
+          "mean": 89.948993,
+          "median": 58.031,
+          "min": 8.447
+        }
+      }
+    },
+    "validate": {
+      "closed_candles_observed": 5275,
+      "counter_evidence": {
+        "conflict_wait_candles": 0,
+        "continuation_entries_on_acceptance_candle": 0,
+        "entries_after_midpoint": 0,
+        "entries_at_reached_reference": 0,
+        "entries_on_any_release_candle": 0,
+        "entries_on_hypothesis_birth_candle": 0,
+        "largest_hypothesis_family_share": 0.300268,
+        "no_active_hypothesis_candles": 2008,
+        "valid_but_wait_candles": 1083
+      },
+      "descriptive_rates": {
+        "falsified_positions_per_closed_position": {
+          "denominator": 143,
+          "numerator": 56,
+          "rate": 0.391608
+        },
+        "hypotheses_created_per_candle": {
+          "denominator": 5275,
+          "numerator": 746,
+          "rate": 0.141422
+        },
+        "landmark_positions_per_closed_position": {
+          "denominator": 143,
+          "numerator": 94,
+          "rate": 0.657343
+        },
+        "shadow_entries_per_candle": {
+          "denominator": 5275,
+          "numerator": 143,
+          "rate": 0.027109
+        },
+        "side_flips_per_closed_position": {
+          "denominator": 143,
+          "numerator": 83,
+          "rate": 0.58042
+        },
+        "valid_but_wait_per_candle": {
+          "denominator": 5275,
+          "numerator": 1083,
+          "rate": 0.205308
+        }
+      },
+      "false_switch": {
+        "exit_followed_by_no_opposite_hypothesis": 83,
+        "exit_with_opposite_hypothesis_already_visible": 71,
+        "independent_reverse_entries_on_later_candle": 83,
+        "raw_position_side_flips": 83,
+        "same_candle_reverse_entries": 0
+      },
+      "hypothesis_population": {
+        "by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": 38,
+          "FAILED_UP_RELEASE_RETURN_INSIDE": 33,
+          "OUTSIDE_CONTINUATION_DOWN": 128,
+          "OUTSIDE_CONTINUATION_UP": 106,
+          "ROTATION_FROM_LOWER_AREA": 217,
+          "ROTATION_FROM_UPPER_AREA": 224
+        },
+        "created": 746,
+        "ever_reached_status": {
+          "ACTIVE": 356,
+          "COMPLETED": 400,
+          "EXPIRED": 4,
+          "FALSIFIED": 342,
+          "OBSERVING": 512,
+          "STRESSED": 146
+        },
+        "final_status": {
+          "COMPLETED": 400,
+          "EXPIRED": 4,
+          "FALSIFIED": 342
+        },
+        "lifetime_bars": {
+          "count": 746,
+          "max": 60.0,
+          "mean": 5.705094,
+          "median": 3.0,
+          "min": 2.0
+        }
+      },
+      "micro_context_at_entry": {
+        "ABSENT": 135,
+        "COLLAPSED": 1,
+        "CONFIRMED": 2,
+        "FORMING": 5
+      },
+      "participation_population": {
+        "actions": {
+          "ENTER_LONG_SHADOW": 75,
+          "ENTER_SHORT_SHADOW": 68,
+          "EXIT": 143,
+          "HOLD": 934,
+          "NO_ACTION": 2008,
+          "WAIT": 2047
+        },
+        "continuation_entries_on_acceptance_candle": 0,
+        "entries_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": 0,
+          "FAILED_UP_RELEASE_RETURN_INSIDE": 0,
+          "OUTSIDE_CONTINUATION_DOWN": 40,
+          "OUTSIDE_CONTINUATION_UP": 48,
+          "ROTATION_FROM_LOWER_AREA": 27,
+          "ROTATION_FROM_UPPER_AREA": 28
+        },
+        "entries_on_any_release_candle": 0,
+        "entries_on_hypothesis_birth_candle": 0,
+        "exit_reasons": {
+          "ACCEPTED_RETURN_INSIDE_RELEASED_STRUCTURE": 20,
+          "ACCEPTED_STRUCTURAL_FAILURE": 33,
+          "CONTROLLING_STRUCTURE_CHANGED": 3,
+          "MAPPED_REFERENCE_REACHED": 35,
+          "NEW_CONTROLLING_STRUCTURE_ESTABLISHED": 33,
+          "STRUCTURAL_OBJECTIVE_REACHED": 19
+        },
+        "exits": 143,
+        "holds": 934,
+        "hypotheses_without_participation": 603,
+        "long_entries": 75,
+        "participation_states": {
+          "HYPOTHESIS_OBSERVING": 964,
+          "HYPOTHESIS_VALID_BUT_NO_PARTICIPATION": 1083,
+          "NO_ACTIVE_HYPOTHESIS": 2008,
+          "PARTICIPATION_AVAILABLE": 143,
+          "POSITION_ACTIVE": 1077
+        },
+        "shadow_entries": 143,
+        "short_entries": 68,
+        "waits": 2047
+      },
+      "source_episode_spread": {
+        "entries_per_source_episode": {
+          "count": 5,
+          "max": 38.0,
+          "mean": 28.6,
+          "median": 29.0,
+          "min": 20.0
+        },
+        "landmark_positions_per_source_episode": {
+          "count": 5,
+          "max": 26.0,
+          "mean": 18.8,
+          "median": 19.0,
+          "min": 14.0
+        },
+        "largest_source_episode_entry_share": 0.265734,
+        "source_episodes": 5,
+        "source_episodes_with_entry": 5,
+        "source_episodes_with_landmark_participation": 5,
+        "waits_per_source_episode": {
+          "count": 5,
+          "max": 514.0,
+          "mean": 409.4,
+          "median": 352.0,
+          "min": 331.0
+        }
+      },
+      "source_episodes_processed": 5,
+      "stay_with_move": {
+        "bars_position_remained_active": {
+          "count": 143,
+          "max": 46.0,
+          "mean": 8.531469,
+          "median": 6.0,
+          "min": 2.0
+        },
+        "closed_shadow_positions": 143,
+        "distance_entry_to_falsification": {
+          "count": 56,
+          "max": 703.1,
+          "mean": 89.483929,
+          "median": 58.975,
+          "min": 10.7
+        },
+        "exit_after_falsification_violations": 0,
+        "exited_on_first_causal_falsification": 56,
+        "falsified_position_bars_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "FAILED_UP_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "OUTSIDE_CONTINUATION_DOWN": {
+            "count": 9,
+            "max": 12.0,
+            "mean": 6.333333,
+            "median": 6.0,
+            "min": 3.0
+          },
+          "OUTSIDE_CONTINUATION_UP": {
+            "count": 11,
+            "max": 46.0,
+            "mean": 10.454545,
+            "median": 6.0,
+            "min": 3.0
+          },
+          "ROTATION_FROM_LOWER_AREA": {
+            "count": 19,
+            "max": 17.0,
+            "mean": 7.947368,
+            "median": 5.0,
+            "min": 3.0
+          },
+          "ROTATION_FROM_UPPER_AREA": {
+            "count": 17,
+            "max": 8.0,
+            "mean": 4.588235,
+            "median": 4.0,
+            "min": 3.0
+          }
+        },
+        "landmarks_reached": {
+          "BROAD_MIDPOINT_REACHED": 29,
+          "NEXT_STRUCTURAL_REFERENCE_REACHED": 55,
+          "OPPOSITE_BROAD_EDGE_REACHED": 19,
+          "STRUCTURAL_TRANSITION_REACHED": 41
+        },
+        "path_participation_fraction": {
+          "count": 143,
+          "max": 1.0,
+          "mean": 0.466283,
+          "median": 0.40044,
+          "min": 0.0
+        },
+        "positions_falsified": 56,
+        "positions_reaching_structural_landmark": 94,
+        "structural_path_available_at_entry": {
+          "count": 143,
+          "max": 1739.11,
+          "mean": 147.060559,
+          "median": 61.172,
+          "min": 13.45625
+        },
+        "structural_path_traversed_while_valid": {
+          "count": 143,
+          "max": 832.4,
+          "mean": 47.93828,
+          "median": 26.15,
+          "min": 0.0
+        }
+      },
+      "timing": {
+        "entries": 143,
+        "entries_with_broad_midpoint_applicable": 55,
+        "hypothesis_birth_bars_from_movement_origin": {
+          "count": 143,
+          "max": 27.0,
+          "mean": 0.797203,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "invalidation_distance_atr_at_entry": {
+          "count": 143,
+          "max": 11.424786,
+          "mean": 1.064095,
+          "median": 0.650786,
+          "min": 0.004082
+        },
+        "invalidation_distance_atr_at_entry_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "FAILED_UP_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "OUTSIDE_CONTINUATION_DOWN": {
+            "count": 40,
+            "max": 11.424786,
+            "mean": 1.352471,
+            "median": 1.102245,
+            "min": 0.264524
+          },
+          "OUTSIDE_CONTINUATION_UP": {
+            "count": 48,
+            "max": 9.561404,
+            "mean": 1.68993,
+            "median": 1.09204,
+            "min": 0.305749
+          },
+          "ROTATION_FROM_LOWER_AREA": {
+            "count": 27,
+            "max": 0.900229,
+            "mean": 0.32726,
+            "median": 0.286533,
+            "min": 0.004082
+          },
+          "ROTATION_FROM_UPPER_AREA": {
+            "count": 28,
+            "max": 0.917997,
+            "mean": 0.289787,
+            "median": 0.25683,
+            "min": 0.014352
+          }
+        },
+        "invalidation_distance_points_at_entry": {
+          "count": 143,
+          "max": 1323.133,
+          "mean": 79.510037,
+          "median": 37.393,
+          "min": 0.287
+        },
+        "invalidation_distance_points_at_entry_by_family": {
+          "FAILED_DOWN_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "FAILED_UP_RELEASE_RETURN_INSIDE": {
+            "count": 0,
+            "max": null,
+            "mean": null,
+            "median": null,
+            "min": null
+          },
+          "OUTSIDE_CONTINUATION_DOWN": {
+            "count": 40,
+            "max": 1323.133,
+            "mean": 100.629488,
+            "median": 58.40175,
+            "min": 11.63
+          },
+          "OUTSIDE_CONTINUATION_UP": {
+            "count": 48,
+            "max": 1073.72175,
+            "mean": 133.118547,
+            "median": 71.1635,
+            "min": 10.5575
+          },
+          "ROTATION_FROM_LOWER_AREA": {
+            "count": 27,
+            "max": 48.25,
+            "mean": 16.416944,
+            "median": 11.586,
+            "min": 0.287
+          },
+          "ROTATION_FROM_UPPER_AREA": {
+            "count": 28,
+            "max": 64.34,
+            "mean": 18.278857,
+            "median": 12.5645,
+            "min": 0.814
+          }
+        },
+        "midpoint_already_crossed_before_entry": 0,
+        "movement_consumed_atr_at_entry": {
+          "count": 143,
+          "max": 11.424786,
+          "mean": 1.064095,
+          "median": 0.650786,
+          "min": 0.004082
+        },
+        "movement_consumed_points_at_entry": {
+          "count": 143,
+          "max": 1323.133,
+          "mean": 79.510037,
+          "median": 37.393,
+          "min": 0.287
+        },
+        "next_reference_already_reached_before_entry": 0,
+        "participation_bars_after_hypothesis_birth": {
+          "count": 143,
+          "max": 7.0,
+          "mean": 1.902098,
+          "median": 1.0,
+          "min": 1.0
+        },
+        "structural_room_atr_at_entry": {
+          "count": 143,
+          "max": 19.916514,
+          "mean": 2.117812,
+          "median": 1.184976,
+          "min": 0.28454
+        },
+        "structural_room_points_at_entry": {
+          "count": 143,
+          "max": 1739.11,
+          "mean": 147.060559,
+          "median": 61.172,
+          "min": 13.45625
+        }
+      }
+    }
+  },
+  "config": {
+    "history": 400
+  },
+  "decision_gates": {
+    "D1_MOVEMENT_STATE_CAUSAL": {
+      "answer": "YES",
+      "basis": "immutable closed-candle movement states were emitted inside every source barrier"
+    },
+    "D2_HYPOTHESIS_LIFECYCLE_CAUSAL": {
+      "answer": "YES",
+      "basis": "hypotheses were born, updated, and terminally classified from current-or-prior facts"
+    },
+    "D3_PARTICIPATION_SEPARATE_FROM_HYPOTHESIS": {
+      "answer": "YES",
+      "basis": "both buckets contain active hypotheses that remained flat for structural reasons"
+    },
+    "D4_STRUCTURAL_INVALIDATION_WORKS": {
+      "answer": "YES",
+      "basis": "every entry carried factual invalidation and no exit lagged a first falsification"
+    },
+    "D5_NO_AUTOMATIC_REVERSAL": {
+      "answer": "YES",
+      "basis": "same-candle opposite shadow entry after exit is absent"
+    },
+    "D6_SHADOW_TRADER_CAN_FOLLOW_MOVEMENT": {
+      "answer": "YES",
+      "basis": "entries followed causal hypothesis formation, structural landmarks were reached, exits were causal, and behaviour appeared in multiple source episodes in both buckets"
+    },
+    "D7_READY_FOR_EXECUTION_RESEARCH": {
+      "answer": "NO",
+      "basis": "this remains a research-only shadow machine without execution, costs, or unseen-forward study"
+    }
+  },
+  "fingerprint": "bf497495e394bb87",
+  "holdout_price_sessions_converted": 0,
+  "r2_structural_research_reference": {
+    "LOCAL_PUBLICATION": "NO",
+    "R2_CLUSTER": "INCONCLUSIVE",
+    "R2_RANGE": "INSUFFICIENT_POPULATION",
+    "R4_MICRO": "INCONCLUSIVE",
+    "fingerprint": "5ebd256debc3e35a"
+  },
+  "source_episodes_shorter_than_or_equal_to_history": {
+    "teach": 1
+  },
+  "source_population": {
+    "buckets": {
+      "teach": {
+        "eligible_episodes": 12,
+        "m5_candles": 40725,
+        "replayable_sessions": 543,
+        "source_sessions_assigned": 548
+      },
+      "validate": {
+        "eligible_episodes": 5,
+        "m5_candles": 7275,
+        "replayable_sessions": 97,
+        "source_sessions_assigned": 98
+      }
+    },
+    "excluded_price_sessions_converted": 0,
+    "price_sessions_replayed": 640,
+    "price_sessions_requested": 641,
+    "source_sessions_indexed": 751
+  },
+  "study": "DYNAMIC_STRUCTURAL_REACTIVE_SHADOW_TRADER_V1",
+  "teach_validate_descriptive_repeatability": {
+    "falsified_positions_per_closed_position": {
+      "absolute_rate_difference": 0.026062,
+      "teach": {
+        "denominator": 1190,
+        "numerator": 435,
+        "rate": 0.365546
+      },
+      "validate_aggregate": {
+        "denominator": 143,
+        "numerator": 56,
+        "rate": 0.391608
+      }
+    },
+    "hypotheses_created_per_candle": {
+      "absolute_rate_difference": 0.010716,
+      "teach": {
+        "denominator": 36250,
+        "numerator": 5515,
+        "rate": 0.152138
+      },
+      "validate_aggregate": {
+        "denominator": 5275,
+        "numerator": 746,
+        "rate": 0.141422
+      }
+    },
+    "landmark_positions_per_closed_position": {
+      "absolute_rate_difference": 0.061985,
+      "teach": {
+        "denominator": 1190,
+        "numerator": 856,
+        "rate": 0.719328
+      },
+      "validate_aggregate": {
+        "denominator": 143,
+        "numerator": 94,
+        "rate": 0.657343
+      }
+    },
+    "shadow_entries_per_candle": {
+      "absolute_rate_difference": 0.005719,
+      "teach": {
+        "denominator": 36250,
+        "numerator": 1190,
+        "rate": 0.032828
+      },
+      "validate_aggregate": {
+        "denominator": 5275,
+        "numerator": 143,
+        "rate": 0.027109
+      }
+    },
+    "side_flips_per_closed_position": {
+      "absolute_rate_difference": 0.108991,
+      "teach": {
+        "denominator": 1190,
+        "numerator": 561,
+        "rate": 0.471429
+      },
+      "validate_aggregate": {
+        "denominator": 143,
+        "numerator": 83,
+        "rate": 0.58042
+      }
+    },
+    "valid_but_wait_per_candle": {
+      "absolute_rate_difference": 0.044867,
+      "teach": {
+        "denominator": 36250,
+        "numerator": 5816,
+        "rate": 0.160441
+      },
+      "validate_aggregate": {
+        "denominator": 5275,
+        "numerator": 1083,
+        "rate": 0.205308
+      }
+    }
+  },
+  "threshold_optimization": false,
+  "validate_output": "AGGREGATE_ONLY"
+}
