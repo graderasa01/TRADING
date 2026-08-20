@@ -25,6 +25,10 @@ const LAYERS = {
   /* §16 the reference layers. `primary` is on, `secondary` is not: the whole point of
    * this stage is that the chart opens showing the few references that matter now. */
   primary: 1, secondary: 0, areas: 1,
+  /* the structural opportunity geometry overlay: the controlling structure's own
+     midpoint, and where the current movement started. Both are facts the panel already
+     lists; drawing them is what makes a compressed cluster obvious at a glance. */
+  geometry: 1,
 };
 /* §27/§28 — two readabilities, not two truths. FOCUS dims everything that is not the
  * active path; MAP shows the structures as they are. Neither hides a fact. */
@@ -200,6 +204,32 @@ function draw(reframe = true) {
     }
   }
 
+  /* structural opportunity geometry — the Broad midpoint and the movement origin.
+     Drawn from `f.geo`, which is a copy of `StructureGeometry`. Nothing is derived here:
+     if the layer had no midpoint or no origin, nothing is drawn rather than guessed. */
+  if (LAYERS.geometry && f.geo) {
+    const C = f.geo.controlling, M = f.geo.movement;
+    if (C) {
+      const ym = Y(C.mid);
+      P.push(`<line x1="0" x2="${W - 78}" y1="${ym}" y2="${ym}" stroke="var(--accent)"
+        stroke-width="1" stroke-dasharray="7 4" opacity=".75"/>`);
+      P.push(`<text x="4" y="${ym - 4}" fill="var(--accent)" font-size="9.5"
+        >${esc(C.id)} midpoint ${fmt(C.mid, 1)} · ${esc(C.kind)} · width ${fmt(C.width, 1)} pts</text>`);
+    }
+    if (M && M.origin_price != null && M.origin_index != null) {
+      const yo = Y(M.origin_price);
+      const xo = X(Math.max(vis[0].i, M.origin_index));
+      P.push(`<circle cx="${xo}" cy="${yo}" r="3.5" fill="var(--hi)" opacity=".9"/>`);
+      if (M.direction) {
+        const yNow = Y(f.c), xNow = X(f.i);
+        P.push(`<line x1="${xo}" y1="${yo}" x2="${xNow}" y2="${yNow}" stroke="var(--hi)"
+          stroke-width="1" stroke-dasharray="2 3" opacity=".6"/>`);
+        P.push(`<text x="${xo + 6}" y="${yo - 5}" fill="var(--hi)" font-size="9.5"
+          >${esc(M.origin_reference || '')} ${esc(M.direction.toUpperCase())}</text>`);
+      }
+    }
+  }
+
   /* micro */
   if (LAYERS.micro && f.micro && f.micro.lo != null) {
     const y0 = Y(f.micro.hi), y1 = Y(f.micro.lo);
@@ -366,6 +396,86 @@ function panel(f) {
     h += '<h4>Blind mode</h4><div class="muted">Thesis, participation and action are '
       + 'hidden. Read the chart yourself, then switch to <b>System</b>.</div>';
     $('side').innerHTML = h; return;
+  }
+
+  /* ── structural opportunity geometry ─────────────────────────────────────
+     Broad is a ROLE. cluster / range is the KIND, and this panel never merges them.
+     Every number is a copy: the layer measures, it does not rule on size. */
+  const GEO = f.geo;
+  if (GEO) {
+    const C = GEO.controlling, P = GEO.price, I = GEO.internal,
+          E = GEO.external, M = GEO.movement, L = GEO.local;
+    const pts = (v, a) => v == null ? '—'
+      : fmt(v, 1) + ' pts' + (a == null ? '' : ` <span class="muted">${a.toFixed(2)} ATR</span>`);
+
+    h += '<h4>Controlling structure</h4>' + (C ? kv({
+      'Role': '<b>BROAD</b> <span class="muted">(the node price stands in)</span>',
+      'Kind': `<span class="tag">${esc(C.kind)}</span>`,
+      'Id': esc(C.id) + (C.parent ? ` <span class="muted">⊂ ${esc(C.parent)}</span>` : ''),
+      'High': fmt(C.hi, 1), 'Midpoint': fmt(C.mid, 1), 'Low': fmt(C.lo, 1),
+      'Width': pts(C.width, C.width_atr),
+    }) : '<div class="muted">no controlling structure on this candle</div>');
+
+    h += '<h4>Price geometry</h4>' + kv({
+      'Location': esc(P.location) + ' <span class="muted">/ ' + esc(P.containment) + '</span>',
+      'To low': pts(P.to_lower, P.to_lower_atr),
+      'To midpoint': pts(P.to_mid, P.to_mid_atr),
+      'To high': pts(P.to_upper, P.to_upper_atr),
+    });
+
+    h += '<h4>Internal space</h4>' + kv({
+      'State': `<span class="tag">${esc(I.state)}</span>`,
+      'Next landmark': esc(I.landmark || '—'),
+      'Room to landmark': pts(I.room_landmark, I.room_landmark_atr),
+      'Room to midpoint': pts(I.room_mid, I.room_mid_atr),
+      'Room to opposite edge': pts(I.room_opposite, I.room_opposite_atr),
+    });
+
+    const extRef = (r, edgeRoom, edgeAtr, label) => r ? kv({
+      [label]: esc(r.label) + ` <span class="muted">${esc(r.kind)}</span>`,
+      'Price': fmt(r.price, 1),
+      'From edge': pts(edgeRoom, edgeAtr),
+      'From price': pts(r.price_distance, r.price_distance_atr),
+    }) : `<div class="muted">${esc(label)} — nothing mapped</div>`;
+    h += '<h4>External space</h4>'
+      + extRef(E.above, E.room_above_edge, E.room_above_edge_atr, 'Above')
+      + '<div style="height:6px"></div>'
+      + extRef(E.below, E.room_below_edge, E.room_below_edge_atr, 'Below')
+      + (E.released ? `<div class="muted" style="margin-top:5px">outside ${esc(E.released)}</div>` : '');
+
+    h += '<h4>Movement</h4>' + (M.direction ? kv({
+      'Direction': `<span class="tag ${M.direction === 'up' ? 'LONG' : 'SHORT'}">${esc(M.direction.toUpperCase())}</span>`,
+      'Origin': esc(M.origin_reference || '—') + ` <span class="muted">c${M.origin_index}</span>`,
+      'Origin role': esc(M.origin_role || '—') + ` <span class="muted">${esc(M.origin_kind || '')}</span>`,
+      'Origin price': fmt(M.origin_price, 1),
+      'Travelled': pts(M.travelled, M.travelled_atr),
+      'Remaining': pts(M.remaining, null),
+      'Whole movement': M.whole_fraction == null ? '—' : (M.whole_fraction * 100).toFixed(1) + '%',
+      'Segment': esc(M.segment) + (M.segment_fraction == null ? ''
+        : ` <span class="muted">${(M.segment_fraction * 100).toFixed(1)}%</span>`),
+      'Path midpoint': fmt(M.path_midpoint, 1)
+        + ' <span class="muted">(not the Broad midpoint)</span>',
+    }) : '<div class="muted">no movement origin established on this candle</div>');
+
+    if (M.events.length)
+      h += '<h4>Provenance — how price got here</h4><div class="ev">'
+        + M.events.map(ev => `<span class="muted">c${ev.i}</span>
+            <span>${esc(ev.event)}</span>
+            <span class="muted">${esc(ev.id || '')} ${ev.price == null ? '' : fmt(ev.price, 1)}</span>`
+          ).join('') + '</div>';
+
+    h += '<h4>Local context</h4>' + kv({
+      'Micro': esc(L.micro_id || '—') + ' ' + esc(L.micro_state || '')
+        + (L.micro_width == null ? '' : ` <span class="muted">${fmt(L.micro_width, 1)} pts</span>`),
+      'Price vs micro': esc(L.micro_where),
+      'Local': esc(L.local_id || '—') + (L.local_kind ? ` <span class="muted">${esc(L.local_kind)}</span>` : '')
+        + (L.local_width == null ? '' : ` <span class="muted">${fmt(L.local_width, 1)} pts</span>`),
+      'Price vs local': esc(L.local_where),
+      'Holder': esc(L.local_holder || '—'),
+    });
+
+    if (GEO.events.length)
+      h += `<div class="code" style="margin-top:6px">${GEO.events.map(esc).join(' · ')}</div>`;
   }
 
   h += '<h4>Where am I</h4>' + kv({

@@ -176,7 +176,95 @@ def frame_json(f) -> dict:
         "eye": [[q, a] for q, a in OB.trader_eye(f)],
         "events": list(f.events),
         "ref": reference_json(f.reference),
+        "geo": geometry_json(f.structure_geometry),
     }
+
+
+def geometry_json(g) -> dict | None:
+    """The structural opportunity geometry. A copy — no field here is computed."""
+    if g is None:
+        return None
+    c, pg, i, e, m, lo = (g.controlling, g.price_geometry, g.internal, g.external,
+                          g.movement, g.local)
+
+    def ref(r):
+        return None if r is None else {
+            "id": r.structure_id, "kind": r.kind, "label": r.label,
+            "price": n(r.price), "dir": r.direction,
+            "edge_distance": n(r.edge_distance_points),
+            "edge_distance_atr": _round(r.edge_distance_atr),
+            "price_distance": n(r.price_distance_points),
+            "price_distance_atr": _round(r.price_distance_atr)}
+
+    return {
+        "controlling": None if c is None else {
+            "id": c.structure_id, "kind": c.kind, "lo": n(c.low), "hi": n(c.high),
+            "mid": n(c.midpoint), "width": n(c.width_points),
+            "width_atr": _round(c.width_atr), "parent": c.parent_id,
+            "status": c.status},
+        "price": {"price": n(pg.price), "location": pg.price_location,
+                  "containment": pg.containment,
+                  "to_lower": n(pg.distance_to_lower_points),
+                  "to_lower_atr": _round(pg.distance_to_lower_atr),
+                  "to_mid": n(pg.distance_to_midpoint_points),
+                  "to_mid_atr": _round(pg.distance_to_midpoint_atr),
+                  "to_upper": n(pg.distance_to_upper_points),
+                  "to_upper_atr": _round(pg.distance_to_upper_atr)},
+        "internal": {"state": i.state,
+                     "room_lower": n(i.room_to_lower_edge_points),
+                     "room_mid": n(i.room_to_midpoint_points),
+                     "room_mid_atr": _round(i.room_to_midpoint_atr),
+                     "room_upper": n(i.room_to_upper_edge_points),
+                     "landmark": i.next_internal_landmark,
+                     "room_landmark": n(i.room_to_next_internal_landmark_points),
+                     "room_landmark_atr": _round(i.room_to_next_internal_landmark_atr),
+                     "room_opposite": n(i.room_to_opposite_edge_points),
+                     "room_opposite_atr": _round(i.room_to_opposite_edge_atr)},
+        "external": {"above": ref(e.next_reference_above),
+                     "below": ref(e.next_reference_below),
+                     "room_above_edge": n(e.room_above_current_upper_to_next_reference_points),
+                     "room_above_edge_atr": _round(
+                         e.room_above_current_upper_to_next_reference_atr),
+                     "room_below_edge": n(e.room_below_current_lower_to_next_reference_points),
+                     "room_below_edge_atr": _round(
+                         e.room_below_current_lower_to_next_reference_atr),
+                     "released": e.outside_released_structure_id,
+                     "released_edge": n(e.released_edge)},
+        "movement": {"direction": m.direction, "origin_index": m.origin_index,
+                     "origin_price": n(m.origin_price),
+                     "origin_reference": m.origin_reference,
+                     "origin_structure": m.origin_structure_id,
+                     "origin_kind": m.origin_structure_kind,
+                     "origin_role": m.origin_role, "outside": m.outside,
+                     "destination": n(m.destination_price),
+                     "destination_reference": m.destination_reference,
+                     "path_midpoint": n(m.path_midpoint),
+                     "travelled": n(m.travelled_points),
+                     "travelled_atr": _round(m.travelled_atr),
+                     "remaining": n(m.remaining_points),
+                     "whole_fraction": _round(m.whole_movement_fraction),
+                     "segment": m.current_segment,
+                     "segment_fraction": _round(m.current_segment_fraction),
+                     "midpoint_crossed": m.midpoint_crossed,
+                     "opposite_reached": m.opposite_edge_reached,
+                     "events": [{"i": ev.index, "event": ev.event, "id": ev.structure_id,
+                                 "kind": ev.structure_kind, "price": n(ev.price)}
+                                for ev in m.events]},
+        "local": {"micro_id": lo.micro_id, "micro_state": lo.micro_state,
+                  "micro_lo": n(lo.micro_low), "micro_hi": n(lo.micro_high),
+                  "micro_width": n(lo.micro_width_points),
+                  "micro_where": lo.price_location_vs_micro,
+                  "local_id": lo.local_structure_id, "local_kind": lo.local_structure_kind,
+                  "local_lo": n(lo.local_low), "local_hi": n(lo.local_high),
+                  "local_width": n(lo.local_width_points),
+                  "local_holder": lo.local_holder_id,
+                  "local_where": lo.price_location_vs_local},
+        "events": list(g.structural_events),
+    }
+
+
+def _round(v):
+    return None if v is None else round(v, 3)
 
 
 def _ref(r) -> dict:
@@ -234,4 +322,4 @@ def payload(frames: Sequence, key: str, label: str,
 
 
 __all__ = ["BARS", "HIST", "TEACH_BLOCKS", "Session", "catalog", "load", "build",
-           "contract_for", "frame_json", "payload"]
+           "contract_for", "frame_json", "geometry_json", "payload"]
