@@ -27,8 +27,26 @@ Two brain versions exist, and the difference is exactly one rule:
     to receive an accepted structural failure.  The hypothesis lifecycle is untouched by
     that exit; only participation for that one hypothesis instance is consumed.
 
-``BRAIN_V2`` is the default because it is the current authoritative cognition.  A brain
-version is a frozen semantic identity, never a tunable parameter.
+``BRAIN_V3``
+    Identical to ``BRAIN_V2``, plus: a ROTATION hypothesis may not be participated in
+    merely because it first became ACTIVE.  It must additionally show
+    ``POST_ACTIVATION_INSIDE_HOLD_AND_PROGRESS`` — one later closed candle that still
+    holds the rotation premise inside the controlling Broad and continues factual
+    directional progress.  This mirrors the confirmation continuations have always
+    required (``OUTSIDE_HELD_AFTER_ACCEPTANCE`` plus
+    ``FACTUAL_PROGRESS_AFTER_ACCEPTANCE``); it is the same idea applied one family over,
+    not a new mechanism.
+
+**No brain version is approved for production.**  V1 failed its own Q3, V2 failed Q5, and
+V3's final historical audit (`59e18876a31b3565`) returned
+``ROTATION_PARTICIPATION_REMAINS_UNPROVEN_STOP_HISTORICAL_TUNING``.  The default is left
+at ``BRAIN_V2`` purely for continuity with the artifacts already published against it; it
+is not a statement that V2 is the best or the sanctioned brain.  Every research tool
+names its brain explicitly in the call, and there is no production runtime that could
+inherit a default.
+
+A brain version is a frozen semantic identity, never a tunable parameter, and the
+capability sets below say exactly which rule belongs to which version.
 """
 
 from __future__ import annotations
@@ -69,7 +87,13 @@ CONTINUATION_FAMILIES = frozenset({CONTINUATION_UP, CONTINUATION_DOWN})
 #: Frozen semantic identities, never tunable parameters.
 BRAIN_V1 = "BRAIN_V1_HYPOTHESIS_FALSIFICATION_ONLY_EXIT"
 BRAIN_V2 = "BRAIN_V2_ROTATION_POSITION_RISK_EXIT"
-BRAIN_VERSIONS = frozenset({BRAIN_V1, BRAIN_V2})
+BRAIN_V3 = "BRAIN_V3_ROTATION_POST_ACTIVATION_CONFIRMATION"
+BRAIN_VERSIONS = frozenset({BRAIN_V1, BRAIN_V2, BRAIN_V3})
+
+#: Which brains carry which rule.  Membership, not a chain of version comparisons, so a
+#: later brain cannot silently inherit or drop a rule by being "newer".
+POSITION_RISK_EXIT_BRAINS = frozenset({BRAIN_V2, BRAIN_V3})
+ROTATION_CONFIRMATION_BRAINS = frozenset({BRAIN_V3})
 
 #: Open-position risk exit.  Deliberately distinguishable from the hypothesis-level
 #: ``ACCEPTED_STRUCTURAL_FAILURE``: the market thesis may still be alive when the open
@@ -77,6 +101,15 @@ BRAIN_VERSIONS = frozenset({BRAIN_V1, BRAIN_V2})
 POSITION_INVALIDATION_LEVEL_CROSSED = "POSITION_INVALIDATION_LEVEL_CROSSED"
 POSITION_RISK_EXIT_REASONS = frozenset({POSITION_INVALIDATION_LEVEL_CROSSED})
 PARTICIPATION_CONSUMED_BY_POSITION_RISK = "PARTICIPATION_CONSUMED_BY_POSITION_RISK_EXIT"
+
+#: The BRAIN_V3 rotation confirmation, named the way continuations already name theirs.
+POST_ACTIVATION_INSIDE_HOLD_AND_PROGRESS = "POST_ACTIVATION_INSIDE_HOLD_AND_PROGRESS"
+ROTATION_AWAITING_POST_ACTIVATION_CONFIRMATION = (
+    "ROTATION_ACTIVE_AWAITING_POST_ACTIVATION_HOLD_AND_PROGRESS")
+
+#: Price locations that count as "inside the controlling Broad" for a rotation.  This is
+#: the set the existing move-away predicate already uses; nothing new is defined here.
+ROTATION_INTERIOR_LOCATIONS = frozenset({"INSIDE", "AT_LOWER_EDGE", "AT_UPPER_EDGE"})
 
 OBSERVING = "OBSERVING"
 ACTIVE = "ACTIVE"
@@ -414,14 +447,22 @@ class _HypothesisRecord:
     terminal_reason: str | None = None
     statuses_seen: set[str] = field(default_factory=set)
     terminal_index: int | None = None
+    #: The candle on which this record first reached ACTIVE.  A rotation's
+    #: post-activation confirmation must land strictly after it, so "later closed
+    #: candle" is anchored to a recorded fact rather than to a re-derived one.
+    first_active_index: int | None = None
 
     def __post_init__(self) -> None:
         self.statuses_seen.add(self.state)
+        if self.state == ACTIVE and self.first_active_index is None:
+            self.first_active_index = self.birth_index
 
     def set_state(self, state: str, index: int, reason: str | None = None) -> None:
         self.state = state
         self.last_update_index = index
         self.statuses_seen.add(state)
+        if state == ACTIVE and self.first_active_index is None:
+            self.first_active_index = index
         if state in TERMINAL_HYPOTHESIS_STATUSES:
             self.terminal_index = index
             self.terminal_reason = reason
@@ -957,6 +998,57 @@ class DynamicShadowTrader:
         else:
             record.last_update_index = truth.index
 
+        if self._rotation_post_activation_confirmed(record, truth, movement, side):
+            record.confirm(POST_ACTIVATION_INSIDE_HOLD_AND_PROGRESS)
+
+    def _rotation_post_activation_confirmed(
+            self, record: _HypothesisRecord, truth: MarketTruth,
+            movement: MovementState, side: str,
+            ) -> bool:
+        """Has one later closed candle held the rotation premise and progressed?
+
+        Every clause is an existing published fact re-read on this candle.  There is no
+        candle-body rule, no minimum distance, no ATR or percentage bound, no wick
+        shape, no volume and no notion of a "strong" candle: the only proof asked for is
+        that the market was still where the premise says it should be, and moved further
+        the way the premise says it should move.
+
+        The waiting period is not a parameter.  It is "the first later closed candle
+        that satisfies these facts", so there is nothing here to search over.
+        """
+
+        if self.brain not in ROTATION_CONFIRMATION_BRAINS:
+            return False
+        if record.family not in ROTATION_FAMILIES:
+            return False
+        # 1. strictly after the activation candle, and the premise is still live.
+        if record.first_active_index is None or truth.index <= record.first_active_index:
+            return False
+        if record.state != ACTIVE:
+            # STRESSED is the factual statement "price is back in the origin area",
+            # which is the opposite of holding away from it.  Terminal states are
+            # already gone by this point.
+            return False
+        # 2. the frozen Broad invalidation has not been crossed.
+        if record.invalidation is not None and crossed_invalidation(
+                truth.price, record.invalidation.level, side):
+            return False
+        # 3. price is still inside the controlling Broad this hypothesis was born on.
+        if truth.broad_id != record.structure_id:
+            return False
+        if truth.price_location not in ROTATION_INTERIOR_LOCATIONS:
+            return False
+        # 4. further directional progress against the previous closed candle.
+        if self._previous is None or _directional_distance(
+                self._previous.price, truth.price, side) <= ZERO:
+            return False
+        # 5. the structural destination is still ahead.
+        if record.destination is None or _reached(
+                truth.price, record.destination.price, side, truth.tolerance):
+            return False
+        # 6. the permitted rotation participation segment is not already consumed.
+        return movement.midpoint_crossed is not True
+
     def _update_continuation(
             self, record: _HypothesisRecord, truth: MarketTruth,
             movement: MovementState,
@@ -1260,6 +1352,16 @@ class DynamicShadowTrader:
                     reasons=("WAITING_FOR_POST_ACCEPTANCE_HOLD_AND_PROGRESS",),
                     **common,
                 )
+        if (hypothesis.family in ROTATION_FAMILIES
+                and self.brain in ROTATION_CONFIRMATION_BRAINS
+                and POST_ACTIVATION_INSIDE_HOLD_AND_PROGRESS
+                not in hypothesis.confirmation_facts):
+            # Becoming ACTIVE is the premise forming, not the market agreeing with it.
+            return ParticipationState(
+                HYPOTHESIS_VALID_BUT_NO_PARTICIPATION,
+                reasons=(ROTATION_AWAITING_POST_ACTIVATION_CONFIRMATION,),
+                **common,
+            )
         if movement.phase in {NOT_ESTABLISHED, AT_REFERENCE, STRUCTURAL_TRANSITION}:
             return ParticipationState(
                 HYPOTHESIS_VALID_BUT_NO_PARTICIPATION,
@@ -1337,7 +1439,7 @@ class DynamicShadowTrader:
         """
 
         position = self._position
-        if self.brain != BRAIN_V2 or position is None:
+        if self.brain not in POSITION_RISK_EXIT_BRAINS or position is None:
             return False
         if position.family not in ROTATION_FAMILIES:
             return False
@@ -1439,6 +1541,7 @@ __all__ = [
     "AT_REFERENCE",
     "BRAIN_V1",
     "BRAIN_V2",
+    "BRAIN_V3",
     "BRAIN_VERSIONS",
     "COMPLETED",
     "CONTINUATION_DOWN",
@@ -1468,8 +1571,13 @@ __all__ = [
     "PARTICIPATION_AVAILABLE",
     "PARTICIPATION_CONSUMED_BY_POSITION_RISK",
     "POSITION_INVALIDATION_LEVEL_CROSSED",
+    "POSITION_RISK_EXIT_BRAINS",
     "POSITION_RISK_EXIT_REASONS",
+    "POST_ACTIVATION_INSIDE_HOLD_AND_PROGRESS",
+    "ROTATION_AWAITING_POST_ACTIVATION_CONFIRMATION",
+    "ROTATION_CONFIRMATION_BRAINS",
     "ROTATION_FAMILIES",
+    "ROTATION_INTERIOR_LOCATIONS",
     "SHADOW_LONG",
     "SHADOW_SHORT",
     "STRESSED",
